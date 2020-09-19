@@ -1,0 +1,61 @@
+package com.krystal.bull.storage
+
+import org.bitcoins.crypto.{SchnorrNonce, Sha256Digest}
+import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
+import slick.lifted.{ForeignKeyQuery, ProvenShape}
+
+import scala.concurrent.{ExecutionContext, Future}
+
+case class EventOutcomeDAO()(implicit
+    val ec: ExecutionContext,
+    override val appConfig: AppConfig)
+    extends CRUD[EventOutcomeDb, SchnorrNonce]
+    with SlickUtil[EventOutcomeDb, SchnorrNonce] {
+
+  import profile.api._
+
+  private val mappers = new DbCommonsColumnMappers(profile)
+
+  import mappers._
+
+  implicit val sha256Mapper: BaseColumnType[Sha256Digest] =
+    MappedColumnType.base[Sha256Digest, String](_.hex, Sha256Digest.fromHex)
+
+  override val table: TableQuery[EventOutcomeTable] = TableQuery[EventOutcomeTable]
+
+  private lazy val eventTable: profile.api.TableQuery[EventDAO#EventTable] =
+    EventDAO().table
+
+  override def createAll(
+      ts: Vector[EventOutcomeDb]): Future[Vector[EventOutcomeDb]] =
+    createAllNoAutoInc(ts, safeDatabase)
+
+  override protected def findByPrimaryKeys(
+      ids: Vector[SchnorrNonce]): Query[EventOutcomeTable, EventOutcomeDb, Seq] =
+    table.filter(_.nonce.inSet(ids))
+
+  override protected def findAll(
+      ts: Vector[EventOutcomeDb]): Query[EventOutcomeTable, EventOutcomeDb, Seq] =
+    findByPrimaryKeys(ts.map(_.nonce))
+
+  class EventOutcomeTable(tag: Tag)
+      extends Table[EventOutcomeDb](tag, schemaName, "event_outcomes") {
+
+    def nonce: Rep[SchnorrNonce] = column("nonce", O.PrimaryKey)
+
+    def message: Rep[String] = column("message")
+
+    def hashedMessage: Rep[Sha256Digest] = column("hashed_message")
+
+    def * : ProvenShape[EventOutcomeDb] =
+      (nonce,
+       message,
+       hashedMessage) <> (EventOutcomeDb.tupled, EventOutcomeDb.unapply)
+
+    def fk: ForeignKeyQuery[_, EventDb] = {
+      foreignKey("fk_nonce",
+                 sourceColumns = nonce,
+                 targetTableQuery = eventTable)(_.nonce)
+    }
+  }
+}
