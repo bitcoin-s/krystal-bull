@@ -11,6 +11,7 @@ enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
 lazy val `krystal-bull` = project
   .in(file("."))
   .aggregate(krystalBull)
+  .settings(CommonSettings.settings: _*)
 
 lazy val krystalBull = project
   .in(file("krystal-bull"))

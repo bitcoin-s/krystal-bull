@@ -88,12 +88,5 @@ object Deps {
                                          Compile.bitcoinsKM,
                                          Compile.bitcoinsTestKit)
 
-  val gui: List[ModuleID] = List(Compile.akkaActor,
-                                 Compile.akkaHttp,
-                                 Compile.akkaStream,
-                                 Compile.bitcoins,
-                                 Compile.bitcoinsKM,
-                                 Compile.bitcoinsTestKit,
-                                 Compile.scalaFx,
-                                 Compile.scodec) ++ Compile.javaFxDeps
+  val gui: List[ModuleID] = krystalBull ++ Compile.javaFxDeps
 }
