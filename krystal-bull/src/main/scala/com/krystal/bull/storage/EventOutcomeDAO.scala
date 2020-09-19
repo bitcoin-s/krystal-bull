@@ -9,8 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 case class EventOutcomeDAO()(implicit
     val ec: ExecutionContext,
     override val appConfig: AppConfig)
-    extends CRUD[EventOutcomeDb, SchnorrNonce]
-    with SlickUtil[EventOutcomeDb, SchnorrNonce] {
+    extends CRUD[EventOutcomeDb, (SchnorrNonce, String)]
+    with SlickUtil[EventOutcomeDb, (SchnorrNonce, String)] {
 
   import profile.api._
 
@@ -21,27 +21,34 @@ case class EventOutcomeDAO()(implicit
   implicit val sha256Mapper: BaseColumnType[Sha256Digest] =
     MappedColumnType.base[Sha256Digest, String](_.hex, Sha256Digest.fromHex)
 
-  override val table: TableQuery[EventOutcomeTable] = TableQuery[EventOutcomeTable]
+  override val table: TableQuery[EventOutcomeTable] =
+    TableQuery[EventOutcomeTable]
 
-  private lazy val eventTable: profile.api.TableQuery[EventDAO#EventTable] =
+  private lazy val eventTable: TableQuery[EventDAO#EventTable] =
     EventDAO().table
 
   override def createAll(
       ts: Vector[EventOutcomeDb]): Future[Vector[EventOutcomeDb]] =
     createAllNoAutoInc(ts, safeDatabase)
 
-  override protected def findByPrimaryKeys(
-      ids: Vector[SchnorrNonce]): Query[EventOutcomeTable, EventOutcomeDb, Seq] =
-    table.filter(_.nonce.inSet(ids))
+  override protected def findByPrimaryKeys(ids: Vector[
+    (SchnorrNonce, String)]): Query[EventOutcomeTable, EventOutcomeDb, Seq] =
+    table
+      .filter(_.nonce.inSet(ids.map(_._1)))
+      .filter(_.message.inSet(ids.map(_._2)))
 
-  override protected def findAll(
-      ts: Vector[EventOutcomeDb]): Query[EventOutcomeTable, EventOutcomeDb, Seq] =
-    findByPrimaryKeys(ts.map(_.nonce))
+  override protected def findAll(ts: Vector[EventOutcomeDb]): Query[
+    EventOutcomeTable,
+    EventOutcomeDb,
+    Seq] = {
+    val ids = ts.map(t => (t.nonce, t.message))
+    findByPrimaryKeys(ids)
+  }
 
   class EventOutcomeTable(tag: Tag)
       extends Table[EventOutcomeDb](tag, schemaName, "event_outcomes") {
 
-    def nonce: Rep[SchnorrNonce] = column("nonce", O.PrimaryKey)
+    def nonce: Rep[SchnorrNonce] = column("nonce")
 
     def message: Rep[String] = column("message")
 

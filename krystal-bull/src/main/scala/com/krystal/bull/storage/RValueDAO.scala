@@ -32,6 +32,14 @@ case class RValueDAO()(implicit
       ts: Vector[RValueDb]): Query[RValueTable, RValueDb, Seq] =
     findByPrimaryKeys(ts.map(_.nonce))
 
+  def findMostRecent: Future[Option[RValueDb]] = {
+    val query = table
+      .sortBy(_.keyIndex.desc)
+      .take(1)
+
+    safeDatabase.run(query.result.headOption)
+  }
+
   class RValueTable(tag: Tag)
       extends Table[RValueDb](tag, schemaName, "r_values") {
 

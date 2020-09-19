@@ -1,8 +1,11 @@
 package com.krystal.bull
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path, Paths}
 
+import com.krystal.bull.storage.SeedStorage
 import com.typesafe.config.Config
+import org.bitcoins.core.config.{BitcoinNetworks, NetworkParameters}
+import org.bitcoins.core.protocol.blockchain.ChainParams
 import org.bitcoins.core.util.FutureUtil
 import org.bitcoins.db.AppConfig
 
@@ -24,6 +27,18 @@ case class KrystalBullAppConfig(
   override protected[bitcoins] def moduleName: String = "config"
 
   override protected[bitcoins] def baseDatadir: Path = directory
+
+  lazy val networkParameters: NetworkParameters = chain.network
+
+  /** The path to our encrypted mnemonic seed */
+  lazy val seedPath: Path = {
+    baseDatadir.resolve(SeedStorage.ENCRYPTED_SEED_FILE_NAME)
+  }
+
+  /** Checks if our oracle as a mnemonic seed associated with it */
+  def seedExists(): Boolean = {
+    Files.exists(seedPath)
+  }
 }
 
 object KrystalBullAppConfig {

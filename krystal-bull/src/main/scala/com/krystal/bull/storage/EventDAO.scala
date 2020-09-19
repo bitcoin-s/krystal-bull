@@ -23,7 +23,7 @@ case class EventDAO()(implicit
 
   override val table: TableQuery[EventTable] = TableQuery[EventTable]
 
-  private lazy val rValueTable: profile.api.TableQuery[RValueDAO#RValueTable] =
+  private lazy val rValueTable: TableQuery[RValueDAO#RValueTable] =
     RValueDAO().table
 
   override def createAll(ts: Vector[EventDb]): Future[Vector[EventDb]] =

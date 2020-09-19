@@ -23,7 +23,7 @@ object SeedStorage {
   private val logger = LoggerFactory.getLogger(getClass)
 
   /** Checks if a wallet seed exists in datadir */
-  def seedExists(seedPath: java.nio.file.Path): Boolean = {
+  def seedExists(seedPath: Path): Boolean = {
     Files.exists(seedPath)
   }
 
@@ -167,7 +167,7 @@ object SeedStorage {
     */
   def decryptMnemonicFromDisk(
       seedPath: Path,
-      passphrase: AesPassword): Either[ReadMnemonicError, DecryptedMnemonic] = {
+      passphrase: AesPassword): DecryptedMnemonic = {
 
     val encryptedEither = readEncryptedMnemonicFromDisk(seedPath)
 
@@ -186,8 +186,8 @@ object SeedStorage {
       }
 
     decryptedEither match {
-      case Left(value)  => Left(value)
-      case Right(value) => Right(value)
+      case Left(err)    => sys.error(err.toString)
+      case Right(value) => value
     }
   }
 }
