@@ -11,7 +11,7 @@ import scodec.bits.ByteVector
 
 import scala.util.{Failure, Success, Try}
 
-object Storage {
+object SeedStorage {
 
   val ENCRYPTED_SEED_FILE_NAME: String = "encrypted-seed.json"
 
