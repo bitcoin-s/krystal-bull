@@ -1,11 +1,10 @@
-package com.krystal.bull
+package com.krystal.bull.core
 
 import java.nio.file.{Files, Path, Paths}
 
-import com.krystal.bull.storage.SeedStorage
+import com.krystal.bull.core.storage.SeedStorage
 import com.typesafe.config.Config
-import org.bitcoins.core.config.{BitcoinNetworks, NetworkParameters}
-import org.bitcoins.core.protocol.blockchain.ChainParams
+import org.bitcoins.core.config.NetworkParameters
 import org.bitcoins.core.util.FutureUtil
 import org.bitcoins.db.AppConfig
 
@@ -20,13 +19,13 @@ case class KrystalBullAppConfig(
 
   override type ConfigType = KrystalBullAppConfig
 
-  override protected[bitcoins] def newConfigOfType(
+  override def newConfigOfType(
       configOverrides: Seq[Config]): KrystalBullAppConfig =
     KrystalBullAppConfig(directory, configOverrides: _*)
 
-  override protected[bitcoins] def moduleName: String = "config"
+  override def moduleName: String = "config"
 
-  override protected[bitcoins] def baseDatadir: Path = directory
+  override def baseDatadir: Path = directory
 
   lazy val networkParameters: NetworkParameters = chain.network
 

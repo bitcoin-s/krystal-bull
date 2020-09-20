@@ -1,4 +1,4 @@
-package com.krystal.bull
+package com.krystal.bull.core
 
 import org.bitcoins.crypto.StringFactory
 

@@ -1,6 +1,6 @@
-package com.krystal.bull.storage
+package com.krystal.bull.core.storage
 
-import com.krystal.bull.SigningVersion
+import com.krystal.bull.core.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrNonce}
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
 import slick.lifted.{ForeignKeyQuery, ProvenShape}

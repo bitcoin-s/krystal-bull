@@ -1,7 +1,7 @@
-package com.krystal.bull
+package com.krystal.bull.core
 
-import com.krystal.bull.SigningVersion._
-import com.krystal.bull.storage._
+import com.krystal.bull.core.SigningVersion._
+import com.krystal.bull.core.storage._
 import org.bitcoins.core.crypto.ExtPrivateKey
 import org.bitcoins.core.hd._
 import org.bitcoins.core.protocol.Bech32Address
@@ -97,8 +97,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       eventDb = eventOpt match {
         case Some(value) =>
           require(
-            eventDb.attestationOpt.isEmpty,
-            s"Event already has been signed, attestation: ${eventDb.attestationOpt.get}")
+            value.attestationOpt.isEmpty,
+            s"Event already has been signed, attestation: ${value.attestationOpt.get}")
           value
         case None =>
           throw new RuntimeException(

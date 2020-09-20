@@ -1,4 +1,4 @@
-package com.krystal.bull.storage
+package com.krystal.bull.core.storage
 
 import java.nio.file.{Files, Path}
 import java.time.Instant

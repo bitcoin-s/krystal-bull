@@ -1,4 +1,4 @@
-package com.krystal.bull.storage
+package com.krystal.bull.core.storage
 
 import org.bitcoins.crypto.{SchnorrNonce, Sha256Digest}
 

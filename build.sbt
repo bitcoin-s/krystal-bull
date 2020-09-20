@@ -10,15 +10,23 @@ enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
 
 lazy val `krystal-bull` = project
   .in(file("."))
-  .aggregate(krystalBull)
+  .aggregate(core, gui)
   .settings(CommonSettings.settings: _*)
 
-lazy val krystalBull = project
-  .in(file("krystal-bull"))
+lazy val core = project
+  .in(file("core"))
   .settings(CommonSettings.settings: _*)
   .settings(
-    name := "krystal-bull",
-    libraryDependencies ++= Deps.krystalBull
+    name := "krystal-bull-core",
+    libraryDependencies ++= Deps.core
+  )
+
+lazy val gui = project
+  .in(file("gui"))
+  .settings(CommonSettings.settings: _*)
+  .settings(
+    name := "gui",
+    libraryDependencies ++= Deps.gui
   )
 
 assemblyMergeStrategy in assembly := {

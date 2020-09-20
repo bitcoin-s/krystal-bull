@@ -36,9 +36,6 @@ object Deps {
     val bitcoins =
       "org.bitcoin-s" %% "bitcoin-s-core" % V.bitcoinsV withSources () withJavadoc ()
 
-    val bitcoinsKM =
-      "org.bitcoin-s" %% "bitcoin-s-key-manager" % V.bitcoinsV withSources () withJavadoc ()
-
     val bitcoinsTestKit =
       "org.bitcoin-s" %% "bitcoin-s-testkit" % V.bitcoinsV withSources () withJavadoc ()
 
@@ -80,13 +77,12 @@ object Deps {
       "org.scodec" %% "scodec-bits" % V.scodecV withSources () withJavadoc ()
   }
 
-  val krystalBull: List[ModuleID] = List(Compile.akkaActor,
+  val core: List[ModuleID] = List(Compile.akkaActor,
                                          Compile.akkaHttp,
                                          Compile.akkaStream,
                                          Compile.ujson,
                                          Compile.bitcoins,
-                                         Compile.bitcoinsKM,
                                          Compile.bitcoinsTestKit)
 
-  val gui: List[ModuleID] = krystalBull ++ Compile.javaFxDeps
+  val gui: List[ModuleID] = core ++ Compile.javaFxDeps
 }
