@@ -4,7 +4,9 @@ import java.nio.file.{Files, Path}
 import java.time.Instant
 import java.util.NoSuchElementException
 
-import org.bitcoins.crypto.{AesEncryptedData, AesIV, AesPassword, AesSalt}
+import org.bitcoins.core.crypto.ExtKeyVersion.SegWitMainNetPriv
+import org.bitcoins.core.crypto.{BIP39Seed, ExtPrivateKey}
+import org.bitcoins.crypto._
 import org.bitcoins.keymanager.{DecryptedMnemonic, EncryptedMnemonic}
 import org.slf4j.LoggerFactory
 import scodec.bits.ByteVector
@@ -189,6 +191,22 @@ object SeedStorage {
       case Left(err)    => sys.error(err.toString)
       case Right(value) => value
     }
+  }
+
+  def getPrivateKeyFromDisk(
+      seedPath: Path,
+      passphrase: AesPassword,
+      bip39PasswordOpt: Option[String]): ExtPrivateKey = {
+    val mnemonic = decryptMnemonicFromDisk(seedPath, passphrase).mnemonicCode
+    val seed = bip39PasswordOpt match {
+      case Some(pw) =>
+        BIP39Seed.fromMnemonic(mnemonic = mnemonic, password = pw)
+      case None =>
+        BIP39Seed.fromMnemonic(mnemonic = mnemonic,
+                               password = BIP39Seed.EMPTY_PASSWORD)
+    }
+
+    seed.toExtPrivateKey(SegWitMainNetPriv)
   }
 }
 
