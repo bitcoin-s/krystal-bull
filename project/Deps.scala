@@ -78,11 +78,11 @@ object Deps {
   }
 
   val core: List[ModuleID] = List(Compile.akkaActor,
-                                         Compile.akkaHttp,
-                                         Compile.akkaStream,
-                                         Compile.ujson,
-                                         Compile.bitcoins,
-                                         Compile.bitcoinsTestKit)
+                                  Compile.akkaHttp,
+                                  Compile.akkaStream,
+                                  Compile.ujson,
+                                  Compile.bitcoins,
+                                  Compile.bitcoinsTestKit,
+                                  Compile.scalaFx) ++ Compile.javaFxDeps
 
-  val gui: List[ModuleID] = core ++ Compile.javaFxDeps
 }

@@ -1,12 +1,15 @@
 package com.krystal.bull.core
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Path, Paths}
 
 import com.krystal.bull.core.storage.SeedStorage
 import com.typesafe.config.Config
 import org.bitcoins.core.config.NetworkParameters
-import org.bitcoins.core.util.FutureUtil
+import org.bitcoins.core.crypto.MnemonicCode
+import org.bitcoins.core.util.{FutureUtil, TimeUtil}
+import org.bitcoins.crypto.AesPassword
 import org.bitcoins.db.AppConfig
+import org.bitcoins.keymanager.DecryptedMnemonic
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Properties
@@ -36,7 +39,23 @@ case class KrystalBullAppConfig(
 
   /** Checks if our oracle as a mnemonic seed associated with it */
   def seedExists(): Boolean = {
-    Files.exists(seedPath)
+    SeedStorage.seedExists(seedPath)
+  }
+
+  def initialize(
+      password: AesPassword,
+      bip39PasswordOpt: Option[String] = None): KrystalBull = {
+    if (!seedExists()) {
+      val entropy = MnemonicCode.getEntropy256Bits
+      val mnemonicCode = MnemonicCode.fromEntropy(entropy)
+      val decryptedMnemonic = DecryptedMnemonic(mnemonicCode, TimeUtil.now)
+      val encrypted = decryptedMnemonic.encrypt(password)
+      SeedStorage.writeMnemonicToDisk(seedPath, encrypted)
+    }
+
+    val key =
+      SeedStorage.getPrivateKeyFromDisk(seedPath, password, bip39PasswordOpt)
+    KrystalBull(key)(this)
   }
 }
 

@@ -1,4 +1,13 @@
-package com.krystal.bull.gui
+package com.krystal.bull.core.gui
+
+import scalafx.application.JFXApp
+import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.Scene
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.TabPane.TabClosingPolicy
+import scalafx.scene.control._
+import scalafx.scene.image.Image
+import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 
 object HomeGUI extends JFXApp {
   // Catch unhandled exceptions on FX Application thread
@@ -29,42 +38,19 @@ object HomeGUI extends JFXApp {
     text <== GlobalData.statusText
   }
 
-  val psbtPane = new PSBTsPane(glassPane)
-
   val psbtTab: Tab = new Tab {
     text = "PSBTs"
-    content = psbtPane.view
-  }
-
-  val txPane = new TransactionsPane(glassPane)
-
-  val txTab: Tab = new Tab {
-    text = "Transactions"
-    content = txPane.view
-  }
-
-  val cryptoPane = new CryptoPane(glassPane)
-
-  val cryptoTab: Tab = new Tab {
-    text = "Crypto"
-    content = cryptoPane.view
-  }
-
-  val genPane = new GeneratorsPane(glassPane)
-
-  val genTab: Tab = new Tab {
-    text = "Generators"
-    content = genPane.view
+    content = new TextArea()
   }
 
   private val tabPane: TabPane = new TabPane() {
 
-    tabs = Seq(psbtTab, txTab, cryptoTab, genTab)
+    tabs = Seq(psbtTab)
 
     tabClosingPolicy = TabClosingPolicy.Unavailable
   }
 
-  private val model = new HomeGUIModel(psbtPane, txPane, genPane)
+  private val model = new HomeGUIModel()
 
   private val borderPane = new BorderPane {
     top = AppMenuBar.menuBar(model)
@@ -82,9 +68,9 @@ object HomeGUI extends JFXApp {
   }
 
   stage = new JFXApp.PrimaryStage {
-    title = "PSBT Toolkit"
+    title = "Krystal Bull"
     scene = homeScene
-    icons.add(new Image("/icons/psbt-toolkit.png"))
+    icons.add(new Image("/icons/krystal_bull.jpeg"))
     minHeight = 400
     minWidth = 400
   }
