@@ -18,7 +18,7 @@ object Deps {
 
     val scodecV = "1.1.17"
     val scalaFxV = "14-R19"
-    val bitcoinsV = "0.3.0+460-94c19035-SNAPSHOT"
+    val bitcoinsV = "0.3.0+461-bbb0f57c-SNAPSHOT"
     val javaFxV = "14.0.1"
   }
 

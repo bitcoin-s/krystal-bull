@@ -1,6 +1,6 @@
 package com.krystal.bull.storage
 
-import org.bitcoins.core.hd.{HDAccount, HDChainType, HDCoinType, HDPurpose}
+import org.bitcoins.core.hd._
 import org.bitcoins.crypto.SchnorrNonce
 
 case class RValueDb(
@@ -9,7 +9,15 @@ case class RValueDb(
     accountCoin: HDCoinType,
     accountIndex: Int,
     chainType: HDChainType,
-    keyIndex: Int)
+    keyIndex: Int) {
+
+  lazy val hdAddress: HDAddress = {
+    val hdCoin = HDCoin(purpose, accountCoin)
+    val hdAccount = HDAccount(hdCoin, accountIndex)
+    val hdChain = HDChain(chainType, hdAccount)
+    HDAddress(hdChain, keyIndex)
+  }
+}
 
 object RValueDbHelper {
 

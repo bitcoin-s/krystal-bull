@@ -1,5 +1,6 @@
 package com.krystal.bull.storage
 
+import com.krystal.bull.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrNonce}
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
 import slick.lifted.{ForeignKeyQuery, ProvenShape}
@@ -21,6 +22,10 @@ case class EventDAO()(implicit
   implicit val fieldElementMapper: BaseColumnType[FieldElement] =
     MappedColumnType.base[FieldElement, String](_.hex, FieldElement.fromHex)
 
+  implicit val signingVersionMapper: BaseColumnType[SigningVersion] =
+    MappedColumnType.base[SigningVersion, String](_.toString,
+                                                  SigningVersion.fromString)
+
   override val table: TableQuery[EventTable] = TableQuery[EventTable]
 
   private lazy val rValueTable: TableQuery[RValueDAO#RValueTable] =
@@ -37,13 +42,21 @@ case class EventDAO()(implicit
       ts: Vector[EventDb]): Query[EventTable, EventDb, Seq] =
     findByPrimaryKeys(ts.map(_.nonce))
 
+  def getPendingEvents: Future[Vector[EventDb]] = {
+    val query = table.filter(_.attestationOpt.inSet(None))
+
+    safeDatabase.runVec(query.result.transactionally)
+  }
+
   class EventTable(tag: Tag) extends Table[EventDb](tag, schemaName, "events") {
 
     def nonce: Rep[SchnorrNonce] = column("nonce", O.PrimaryKey)
 
     def label: Rep[String] = column("label")
 
-    def numOutcomes: Rep[Long] = column("numOutcomes")
+    def numOutcomes: Rep[Long] = column("num_outcomes")
+
+    def signingVersion: Rep[SigningVersion] = column("signing_version")
 
     def attestationOpt: Rep[Option[FieldElement]] = column("attestation")
 
@@ -51,6 +64,7 @@ case class EventDAO()(implicit
       (nonce,
        label,
        numOutcomes,
+       signingVersion,
        attestationOpt) <> (EventDb.tupled, EventDb.unapply)
 
     def fk: ForeignKeyQuery[_, RValueDb] = {
