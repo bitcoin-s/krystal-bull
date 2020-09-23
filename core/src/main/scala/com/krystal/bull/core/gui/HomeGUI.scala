@@ -70,7 +70,7 @@ object HomeGUI extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title = "Krystal Bull"
     scene = homeScene
-    icons.add(new Image("/icons/krystal_bull.jpeg"))
+    icons.add(new Image("/icons/krystal_bull.png"))
     minHeight = 400
     minWidth = 400
   }
