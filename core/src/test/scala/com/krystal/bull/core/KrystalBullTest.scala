@@ -25,7 +25,7 @@ class KrystalBullTest extends BitcoinSFixture {
     val destroy: KrystalBull => Future[Unit] = krystalBull => {
       val conf = krystalBull.conf
       conf.dropAll().flatMap { _ =>
-        FileUtil.deleteTmpDir(conf.datadir)
+        FileUtil.deleteTmpDir(conf.baseDatadir)
         conf.stop()
       }
     }
