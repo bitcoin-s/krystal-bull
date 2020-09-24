@@ -120,8 +120,9 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
       sig = eventDb.signingVersion match {
         case Mock =>
-          val k = getKValue(rValDb.keyIndex)
-          signingKey.schnorrSignWithNonce(eventOutcomeDb.hashedMessage.bytes, k)
+          val kVal = getKValue(rValDb.keyIndex)
+          signingKey.schnorrSignWithNonce(eventOutcomeDb.hashedMessage.bytes,
+                                          kVal)
       }
 
       updated = eventDb.copy(attestationOpt = Some(sig.sig))
