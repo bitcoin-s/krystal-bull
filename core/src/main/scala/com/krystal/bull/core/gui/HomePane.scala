@@ -1,13 +1,14 @@
 package com.krystal.bull.core.gui
 
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Button, Label}
+import scalafx.scene.control.Label
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, VBox}
 
 class HomePane(glassPane: VBox) {
 
   val model = new HomePaneModel()
+  model.setOracle()
 
   private val label: Label = new Label("Krystal Bull") {
     alignmentInParent = Pos.BottomCenter

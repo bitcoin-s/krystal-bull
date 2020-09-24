@@ -1,5 +1,8 @@
 package com.krystal.bull.core.gui
 
+import com.krystal.bull.core.KrystalBull
+import com.krystal.bull.core.gui.dialog.UnlockDialog
+import com.krystal.bull.core.storage.SeedStorage
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
@@ -12,11 +15,29 @@ class HomePaneModel() {
     ObjectProperty[Window](null.asInstanceOf[Window])
   }
 
-  def initOracle(): Unit = {
+  def setOracle(): Unit = {
+    GlobalData.krystalBullOpt match {
+      case None =>
+        val passwordOpt = UnlockDialog.showAndWait(parentWindow.value)
 
-    taskRunner.run(
-      caption = "Initialize Oracle",
-      op = {}
-    )
+        taskRunner.run(
+          caption = "Set Oracle",
+          op = {
+            passwordOpt match {
+              case Some(password) =>
+                val extKey = SeedStorage.getPrivateKeyFromDisk(
+                  GlobalData.appConfig.seedPath,
+                  password,
+                  None)
+                val kb = KrystalBull(extKey)(GlobalData.appConfig)
+                GlobalData.appConfig.initialize(kb)
+                GlobalData.krystalBullOpt = Some(kb)
+              case None =>
+            }
+          }
+        )
+      case Some(_) =>
+        ()
+    }
   }
 }
