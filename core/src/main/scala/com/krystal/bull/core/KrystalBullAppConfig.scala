@@ -1,6 +1,6 @@
 package com.krystal.bull.core
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path, Paths}
 
 import com.krystal.bull.core.storage.{
   EventDAO,
@@ -52,6 +52,11 @@ case class KrystalBullAppConfig(
   /** Checks if our oracle as a mnemonic seed associated with it */
   def seedExists(): Boolean = {
     SeedStorage.seedExists(seedPath)
+  }
+
+  def exists(): Boolean = {
+    SeedStorage.seedExists(seedPath) &&
+    Files.exists(baseDatadir.resolve("oracle.sqlite"))
   }
 
   def initialize(krystalBull: KrystalBull): Future[KrystalBull] = {

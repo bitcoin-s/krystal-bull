@@ -7,7 +7,7 @@ import scalafx.scene.input.{KeyCode, KeyCodeCombination}
 
 object AppMenuBar {
 
-  def menuBar(model: HomeGUIModel): MenuBar =
+  def menuBar(model: GUIModel): MenuBar =
     new MenuBar {
       menus = List(new FileMenu().fileMenu,
                    new ViewMenu().viewMenu,
@@ -105,7 +105,7 @@ private class ViewMenu() {
   }
 }
 
-private class HelpMenu(model: HomeGUIModel) {
+private class HelpMenu(model: GUIModel) {
 
   private val about =
     new MenuItem("_About") {

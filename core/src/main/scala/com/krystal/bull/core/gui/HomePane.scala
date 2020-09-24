@@ -1,14 +1,13 @@
-package com.krystal.bull.core.gui.landing
+package com.krystal.bull.core.gui
 
-import com.krystal.bull.core.gui.TaskRunner
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, VBox}
 
-class LandingPane(glassPane: VBox) {
+class HomePane(glassPane: VBox) {
 
-  val model = new LandingPaneModel()
+  val model = new HomePaneModel()
 
   private val label: Label = new Label("Krystal Bull") {
     alignmentInParent = Pos.BottomCenter
@@ -19,27 +18,24 @@ class LandingPane(glassPane: VBox) {
     alignmentInParent = Pos.Center
   }
 
-  private val initializeButton = new Button("Create new oracle") {
-    onAction = _ => model.initOracle()
-  }
+  private val oracleInfoStr =
+    s"My Public Key: ${GlobalData.krystalBullOpt.get.publicKey}" +
+      s"\nStaking Address: ${GlobalData.krystalBullOpt.get.stakingAddress}"
 
-  private val initText = new Label(
-    "You do not currently have an oracle wallet! You first need to " +
-      "initialize your oracle's wallet by clicking the button bellow.")
+  private val oracleInfoText = new Label(oracleInfoStr)
 
-  private val initBottom = new VBox() {
+  private val centerView = new VBox() {
     alignmentInParent = Pos.TopCenter
     alignment = Pos.TopCenter
     spacing = 10
-    children = Vector(initText, initializeButton)
+    children = Vector(imageView, oracleInfoText)
   }
 
   val view: BorderPane = new BorderPane {
     padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
 
     top = label
-    center = imageView
-    bottom = initBottom
+    center = centerView
   }
 
   imageView.fitHeight <== (view.height * 2) / 3

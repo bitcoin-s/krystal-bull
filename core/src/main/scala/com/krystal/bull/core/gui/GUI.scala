@@ -5,12 +5,11 @@ import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.TabPane.TabClosingPolicy
 import scalafx.scene.control._
 import scalafx.scene.image.Image
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 
-object HomeGUI extends JFXApp {
+object GUI extends JFXApp {
   // Catch unhandled exceptions on FX Application thread
   Thread
     .currentThread()
@@ -39,30 +38,23 @@ object HomeGUI extends JFXApp {
     text <== GlobalData.statusText
   }
 
-  val psbtTab: Tab = new Tab {
-    text = "PSBTs"
-    content = new TextArea()
+  private val model = new GUIModel()
+
+  private val startingPane = {
+    if (GlobalData.appConfig.exists())
+      new LandingPane(glassPane).view
+    else
+      new HomePane(glassPane).view
   }
-
-  private val tabPane: TabPane = new TabPane() {
-
-    tabs = Seq(psbtTab)
-
-    tabClosingPolicy = TabClosingPolicy.Unavailable
-  }
-
-  private val model = new HomeGUIModel()
 
   private val borderPane = new BorderPane {
     top = AppMenuBar.menuBar(model)
-    center = tabPane
+    center = startingPane
     bottom = statusLabel
   }
 
-  private val landingPane = new LandingPane(glassPane).view
-
   private val rootView = new StackPane {
-    children = Seq(landingPane, glassPane)
+    children = Seq(borderPane, glassPane)
   }
 
   val homeScene: Scene = new Scene(1000, 800) {
@@ -79,6 +71,10 @@ object HomeGUI extends JFXApp {
   }
 
   stage.sizeToScene()
+
+  def changeToHomeScene(): Unit = {
+    borderPane.center = new HomePane(glassPane).view
+  }
 
   override def stopApp(): Unit = {
     sys.exit()

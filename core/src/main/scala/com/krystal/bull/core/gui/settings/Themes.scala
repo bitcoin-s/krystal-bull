@@ -1,6 +1,6 @@
 package com.krystal.bull.core.gui.settings
 
-import com.krystal.bull.core.gui.HomeGUI.stage
+import com.krystal.bull.core.gui.GUI.stage
 
 sealed abstract class Theme {
   def fileLocation: String

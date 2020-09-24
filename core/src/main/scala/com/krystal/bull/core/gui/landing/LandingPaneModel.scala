@@ -1,8 +1,7 @@
 package com.krystal.bull.core.gui.landing
 
-import com.krystal.bull.core.KrystalBullAppConfig
 import com.krystal.bull.core.gui.dialog.InitOracleDialog
-import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.core.gui.{GUI, GlobalData, TaskRunner}
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
@@ -25,7 +24,7 @@ class LandingPaneModel() {
           case Some(kb) =>
             GlobalData.krystalBullOpt = Some(kb)
             GlobalData.appConfig.initialize(kb)
-          // TODO: move to correct scene
+            GUI.changeToHomeScene()
           case None =>
             ()
         }
