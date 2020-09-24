@@ -58,9 +58,7 @@ case class KrystalBullAppConfig(
     val result =
       FutureUtil.foldLeftAsync((), allTables)((_, table) => createTable(table))
 
-    result.failed.foreach { e =>
-      e.printStackTrace()
-    }
+    result.failed.foreach(_.printStackTrace())
 
     result.map(_ => krystalBull)
   }
