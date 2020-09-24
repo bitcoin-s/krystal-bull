@@ -47,7 +47,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
   protected[core] val eventDAO: EventDAO = EventDAO()
   protected[core] val eventOutcomeDAO: EventOutcomeDAO = EventOutcomeDAO()
 
-  private def getAuxRand(keyIndex: Int): ECPrivateKey = {
+  private def getKValue(keyIndex: Int): ECPrivateKey = {
     val coin = HDCoin(HDPurpose(PURPOSE), HDCoinType.fromNetwork(conf.network))
     val account = HDAccount(coin, 0)
     val chain = HDChain(HDChainType.External, account)
@@ -70,7 +70,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
         case None        => 0
       }
 
-      nonce = getAuxRand(index).schnorrNonce
+      nonce = getKValue(index).schnorrNonce
 
       rValueDb =
         RValueDbHelper(nonce, rValueAccount, HDChainType.fromInt(0), index)
@@ -120,15 +120,13 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
       sig = eventDb.signingVersion match {
         case Mock =>
-          val auxRand = getAuxRand(rValDb.keyIndex).bytes
-          BouncyCastleUtil.schnorrSign(eventOutcomeDb.hashedMessage.bytes,
-                                       signingKey,
-                                       auxRand)
+          val k = getKValue(rValDb.keyIndex)
+          signingKey.schnorrSignWithNonce(eventOutcomeDb.hashedMessage.bytes, k)
       }
 
       updated = eventDb.copy(attestationOpt = Some(sig.sig))
       _ <- eventDAO.update(updated)
-    } yield sig
+    } yield updated.sigOpt.get
   }
 }
 

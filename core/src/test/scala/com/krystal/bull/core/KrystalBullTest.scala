@@ -3,7 +3,7 @@ package com.krystal.bull.core
 import java.nio.file.{Files, Path}
 import java.sql.SQLException
 
-import org.bitcoins.crypto.AesPassword
+import org.bitcoins.crypto.{AesPassword, SchnorrDigitalSignature}
 import org.bitcoins.testkit.fixtures.BitcoinSFixture
 import org.bitcoins.testkit.util.FileUtil
 import org.scalatest.FutureOutcome
@@ -86,14 +86,17 @@ class KrystalBullTest extends BitcoinSFixture {
     for {
       eventDb <- krystalBull.createNewEvent("test", testOutcomes)
       sig <- krystalBull.signEvent(eventDb.nonce, outcome)
-      outcomes <- krystalBull.eventOutcomeDAO.findByNonce(eventDb.nonce)
-      outcomeDb = outcomes.find(_.message == outcome).get
+      outcomeDbs <- krystalBull.eventOutcomeDAO.findByNonce(eventDb.nonce)
+      outcomeDb = outcomeDbs.find(_.message == outcome).get
       signedEvent <- krystalBull.eventDAO.read(eventDb.nonce)
     } yield {
       assert(signedEvent.isDefined)
       assert(signedEvent.get.attestationOpt.contains(sig.sig))
       assert(
         krystalBull.publicKey.schnorrVerify(outcomeDb.hashedMessage.bytes, sig))
+      assert(
+        SchnorrDigitalSignature(signedEvent.get.nonce,
+                                signedEvent.get.attestationOpt.get) == sig)
     }
   }
 }
