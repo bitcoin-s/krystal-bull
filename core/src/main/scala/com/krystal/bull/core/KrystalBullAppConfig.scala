@@ -26,6 +26,8 @@ case class KrystalBullAppConfig(
     with DbManagement
     with JdbcProfileComponent[KrystalBullAppConfig] {
 
+  System.setProperty("krystal.bull.datadir", directory.toAbsolutePath.toString)
+
   import profile.api._
 
   override def start(): Future[Unit] = FutureUtil.unit
