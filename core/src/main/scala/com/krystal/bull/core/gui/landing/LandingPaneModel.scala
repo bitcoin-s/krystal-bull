@@ -24,11 +24,14 @@ class LandingPaneModel() {
           case Some(kb) =>
             GlobalData.krystalBullOpt = Some(kb)
             GlobalData.appConfig.initialize(kb)
-            GUI.changeToHomeScene()
           case None =>
             ()
         }
       }
     )
+
+    if (krystalBullOpt.isDefined) {
+      GUI.changeToHomeScene()
+    }
   }
 }

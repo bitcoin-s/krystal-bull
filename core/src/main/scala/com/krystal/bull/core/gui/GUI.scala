@@ -42,9 +42,9 @@ object GUI extends JFXApp {
 
   private val startingPane = {
     if (GlobalData.appConfig.exists())
-      new LandingPane(glassPane).view
-    else
       new HomePane(glassPane).view
+    else
+      new LandingPane(glassPane).view
   }
 
   private val borderPane = new BorderPane {

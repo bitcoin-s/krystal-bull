@@ -57,7 +57,7 @@ case class KrystalBullAppConfig(
   }
 
   def exists(): Boolean = {
-    SeedStorage.seedExists(seedPath) &&
+    seedExists() &&
     Files.exists(baseDatadir.resolve("oracle.sqlite"))
   }
 
