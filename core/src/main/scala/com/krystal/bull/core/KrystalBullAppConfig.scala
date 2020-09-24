@@ -2,13 +2,18 @@ package com.krystal.bull.core
 
 import java.nio.file.{Path, Paths}
 
-import com.krystal.bull.core.storage.SeedStorage
+import com.krystal.bull.core.storage.{
+  EventDAO,
+  EventOutcomeDAO,
+  RValueDAO,
+  SeedStorage
+}
 import com.typesafe.config.Config
 import org.bitcoins.core.config.NetworkParameters
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.core.util.{FutureUtil, TimeUtil}
 import org.bitcoins.crypto.AesPassword
-import org.bitcoins.db.AppConfig
+import org.bitcoins.db.{AppConfig, DbManagement, JdbcProfileComponent}
 import org.bitcoins.keymanager.DecryptedMnemonic
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,8 +22,15 @@ import scala.util.Properties
 case class KrystalBullAppConfig(
     private val directory: Path,
     private val conf: Config*)(implicit val ec: ExecutionContext)
-    extends AppConfig {
+    extends AppConfig
+    with DbManagement
+    with JdbcProfileComponent[KrystalBullAppConfig] {
+
+  import profile.api._
+
   override def start(): Future[Unit] = FutureUtil.unit
+
+  override def appConfig: KrystalBullAppConfig = this
 
   override type ConfigType = KrystalBullAppConfig
 
@@ -26,7 +38,7 @@ case class KrystalBullAppConfig(
       configOverrides: Seq[Config]): KrystalBullAppConfig =
     KrystalBullAppConfig(directory, configOverrides: _*)
 
-  override def moduleName: String = "config"
+  override def moduleName: String = "oracle"
 
   override def baseDatadir: Path = directory
 
@@ -42,9 +54,20 @@ case class KrystalBullAppConfig(
     SeedStorage.seedExists(seedPath)
   }
 
+  def initialize(krystalBull: KrystalBull): Future[KrystalBull] = {
+    val result =
+      FutureUtil.foldLeftAsync((), allTables)((_, table) => createTable(table))
+
+    result.failed.foreach { e =>
+      e.printStackTrace()
+    }
+
+    result.map(_ => krystalBull)
+  }
+
   def initialize(
       password: AesPassword,
-      bip39PasswordOpt: Option[String] = None): KrystalBull = {
+      bip39PasswordOpt: Option[String] = None): Future[KrystalBull] = {
     if (!seedExists()) {
       val entropy = MnemonicCode.getEntropy256Bits
       val mnemonicCode = MnemonicCode.fromEntropy(entropy)
@@ -55,8 +78,25 @@ case class KrystalBullAppConfig(
 
     val key =
       SeedStorage.getPrivateKeyFromDisk(seedPath, password, bip39PasswordOpt)
-    KrystalBull(key)(this)
+    val kb = KrystalBull(key)(this)
+    initialize(kb)
   }
+
+  private val rValueTable: TableQuery[Table[_]] = {
+    RValueDAO()(ec, appConfig).table
+  }
+
+  private val eventTable: TableQuery[Table[_]] = {
+    EventDAO()(ec, appConfig).table
+  }
+
+  private val eventOutcomeTable: TableQuery[Table[_]] = {
+    EventOutcomeDAO()(ec, appConfig).table
+  }
+
+  override def allTables: List[TableQuery[Table[_]]] =
+    List(rValueTable, eventTable, eventOutcomeTable)
+
 }
 
 object KrystalBullAppConfig {

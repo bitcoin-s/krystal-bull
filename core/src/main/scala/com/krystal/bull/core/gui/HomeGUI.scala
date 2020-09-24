@@ -1,5 +1,6 @@
 package com.krystal.bull.core.gui
 
+import com.krystal.bull.core.gui.landing.LandingPane
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -58,8 +59,10 @@ object HomeGUI extends JFXApp {
     bottom = statusLabel
   }
 
+  private val landingPane = new LandingPane(glassPane).view
+
   private val rootView = new StackPane {
-    children = Seq(borderPane, glassPane)
+    children = Seq(landingPane, glassPane)
   }
 
   val homeScene: Scene = new Scene(1000, 800) {

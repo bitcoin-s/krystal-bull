@@ -1,6 +1,6 @@
 package com.krystal.bull.core.storage
 
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, StandardOpenOption}
 import java.time.Instant
 import java.util.NoSuchElementException
 
@@ -60,7 +60,22 @@ object SeedStorage {
 
     val writtenJs = ujson.write(jsObject)
 
-    def writeJsToDisk() = {
+    println("=====================")
+    println("=====================")
+    println("=====================")
+    println(writtenJs)
+    println(ByteVector(writtenJs.getBytes()))
+    println("=====================")
+    println("=====================")
+    println("=====================")
+
+    def writeJsToDisk(): Path = {
+      val directory = seedPath.getParent
+
+      if (!Files.isDirectory(directory)) {
+        Files.createDirectory(directory)
+      }
+
       val writtenPath = Files.write(seedPath, writtenJs.getBytes())
       logger.trace(s"Wrote encrypted mnemonic to $seedPath")
 

@@ -1,8 +1,8 @@
 package com.krystal.bull.core.gui
 
 import akka.actor.ActorSystem
-import com.krystal.bull.core.KrystalBullAppConfig
 import com.krystal.bull.core.gui.settings.Themes
+import com.krystal.bull.core.{KrystalBull, KrystalBullAppConfig}
 import org.bitcoins.core.config._
 import scalafx.beans.property.StringProperty
 
@@ -13,7 +13,7 @@ object GlobalData {
   implicit val system: ActorSystem = ActorSystem("krystal-bull")
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
-  val appConfig: KrystalBullAppConfig =
+  implicit val appConfig: KrystalBullAppConfig =
     KrystalBullAppConfig.fromDefaultDatadir()
 
   val log: StringProperty = StringProperty("")
@@ -30,4 +30,6 @@ object GlobalData {
     }
 
   var network: BitcoinNetwork = MainNet
+
+  var krystalBullOpt: Option[KrystalBull] = None
 }

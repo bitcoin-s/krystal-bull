@@ -2,11 +2,13 @@ package com.krystal.bull.core
 
 import com.krystal.bull.core.SigningVersion._
 import com.krystal.bull.core.storage._
-import org.bitcoins.core.crypto.ExtPrivateKey
+import org.bitcoins.core.crypto.{ExtPrivateKey, MnemonicCode}
 import org.bitcoins.core.hd._
 import org.bitcoins.core.protocol.Bech32Address
 import org.bitcoins.core.protocol.script.P2WPKHWitnessSPKV0
+import org.bitcoins.core.util.TimeUtil
 import org.bitcoins.crypto._
+import org.bitcoins.keymanager.DecryptedMnemonic
 import scodec.bits.ByteVector
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -124,5 +126,24 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       updated = eventDb.copy(attestationOpt = Some(sig.sig))
       _ <- eventDAO.update(updated)
     } yield sig
+  }
+}
+
+object KrystalBull {
+
+  def fromMnemonicCode(
+      mnemonicCode: MnemonicCode,
+      password: AesPassword,
+      bip39PasswordOpt: Option[String] = None)(implicit
+      conf: KrystalBullAppConfig): KrystalBull = {
+    val decryptedMnemonic = DecryptedMnemonic(mnemonicCode, TimeUtil.now)
+    val encrypted = decryptedMnemonic.encrypt(password)
+    SeedStorage.writeMnemonicToDisk(conf.seedPath, encrypted)
+
+    val key =
+      SeedStorage.getPrivateKeyFromDisk(conf.seedPath,
+                                        password,
+                                        bip39PasswordOpt)
+    KrystalBull(key)
   }
 }
