@@ -38,7 +38,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
     .deriveChildPrivKey(SegWitHDPath(signingKeyHDAddress))
     .key
 
-  val publicKey: ECPublicKey = signingKey.publicKey
+  val publicKey: SchnorrPublicKey = signingKey.schnorrPublicKey
 
   val stakingAddress: Bech32Address =
     Bech32Address(P2WPKHWitnessSPKV0(signingKey.publicKey), conf.network)

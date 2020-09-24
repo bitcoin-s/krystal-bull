@@ -92,8 +92,7 @@ class KrystalBullTest extends BitcoinSFixture {
     } yield {
       assert(signedEvent.isDefined)
       assert(signedEvent.get.attestationOpt.contains(sig.sig))
-      assert(
-        krystalBull.publicKey.schnorrVerify(outcomeDb.hashedMessage.bytes, sig))
+      assert(krystalBull.publicKey.verify(outcomeDb.hashedMessage.bytes, sig))
       assert(
         SchnorrDigitalSignature(signedEvent.get.nonce,
                                 signedEvent.get.attestationOpt.get) == sig)
