@@ -20,7 +20,7 @@ class HomePane(glassPane: VBox) {
   }
 
   private val oracleInfoStr =
-    s"My Public Key: ${GlobalData.krystalBullOpt.get.publicKey}" +
+    s"My Public Key: ${GlobalData.krystalBullOpt.get.publicKey.hex}" +
       s"\nStaking Address: ${GlobalData.krystalBullOpt.get.stakingAddress}"
 
   private val oracleInfoText = new Label(oracleInfoStr)
