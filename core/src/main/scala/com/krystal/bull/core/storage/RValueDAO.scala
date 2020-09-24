@@ -1,6 +1,6 @@
 package com.krystal.bull.core.storage
 
-import org.bitcoins.core.hd.{HDChainType, HDCoinType, HDPurpose}
+import org.bitcoins.core.hd.{HDChainType, HDCoinType, HDPurpose, HDPurposes}
 import org.bitcoins.crypto.SchnorrNonce
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
 import slick.lifted.ProvenShape
@@ -17,7 +17,14 @@ case class RValueDAO()(implicit
 
   private val mappers = new DbCommonsColumnMappers(profile)
 
-  import mappers._
+  import mappers.{hdChainTypeMapper, hdCoinTypeMapper, schnorrNonceMapper}
+
+  implicit val hdPurposeMapper: BaseColumnType[HDPurpose] =
+    MappedColumnType
+      .base[HDPurpose, Int](
+        _.constant,
+        purpose =>
+          HDPurposes.fromConstant(purpose).getOrElse(HDPurpose(purpose)))
 
   override val table: TableQuery[RValueTable] = TableQuery[RValueTable]
 

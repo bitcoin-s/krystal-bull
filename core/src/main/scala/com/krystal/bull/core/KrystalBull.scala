@@ -14,6 +14,7 @@ import scodec.bits.ByteVector
 import scala.concurrent.{ExecutionContext, Future}
 
 case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
+    val
     conf: KrystalBullAppConfig) {
 
   implicit val ec: ExecutionContext = conf.ec
@@ -37,12 +38,14 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
     .deriveChildPrivKey(SegWitHDPath(signingKeyHDAddress))
     .key
 
+  val publicKey: ECPublicKey = signingKey.publicKey
+
   val stakingAddress: Bech32Address =
     Bech32Address(P2WPKHWitnessSPKV0(signingKey.publicKey), conf.network)
 
-  protected val rValueDAO: RValueDAO = RValueDAO()
-  protected val eventDAO: EventDAO = EventDAO()
-  protected val eventOutcomeDAO: EventOutcomeDAO = EventOutcomeDAO()
+  protected[core] val rValueDAO: RValueDAO = RValueDAO()
+  protected[core] val eventDAO: EventDAO = EventDAO()
+  protected[core] val eventOutcomeDAO: EventOutcomeDAO = EventOutcomeDAO()
 
   private def getAuxRand(keyIndex: Int): ECPrivateKey = {
     val coin = HDCoin(HDPurpose(PURPOSE), HDCoinType.fromNetwork(conf.network))

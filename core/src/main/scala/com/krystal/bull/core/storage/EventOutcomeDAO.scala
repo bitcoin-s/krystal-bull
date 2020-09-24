@@ -45,6 +45,12 @@ case class EventOutcomeDAO()(implicit
     findByPrimaryKeys(ids)
   }
 
+  def findByNonce(nonce: SchnorrNonce): Future[Vector[EventOutcomeDb]] = {
+    val query = table.filter(_.nonce === nonce)
+
+    safeDatabase.runVec(query.result.transactionally)
+  }
+
   class EventOutcomeTable(tag: Tag)
       extends Table[EventOutcomeDb](tag, schemaName, "event_outcomes") {
 

@@ -1,6 +1,7 @@
 package com.krystal.bull.core.storage
 
 import com.krystal.bull.core.SigningVersion
+import com.krystal.bull.core.SigningVersion.Mock
 import org.bitcoins.crypto.{FieldElement, SchnorrNonce}
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
 import slick.lifted.{ForeignKeyQuery, ProvenShape}
@@ -43,16 +44,14 @@ case class EventDAO()(implicit
     findByPrimaryKeys(ts.map(_.nonce))
 
   def getPendingEvents: Future[Vector[EventDb]] = {
-    val query = table.filter(_.attestationOpt.inSet(None))
-
-    safeDatabase.runVec(query.result.transactionally)
+    findAll().map(_.filter(_.attestationOpt.isEmpty))
   }
 
   class EventTable(tag: Tag) extends Table[EventDb](tag, schemaName, "events") {
 
     def nonce: Rep[SchnorrNonce] = column("nonce", O.PrimaryKey)
 
-    def label: Rep[String] = column("label")
+    def label: Rep[String] = column("label", O.Unique)
 
     def numOutcomes: Rep[Long] = column("num_outcomes")
 
