@@ -2,6 +2,7 @@ package com.krystal.bull.core
 
 import com.krystal.bull.core.SigningVersion._
 import com.krystal.bull.core.storage._
+import org.bitcoins.core.config.BitcoinNetwork
 import org.bitcoins.core.crypto.{ExtPrivateKey, MnemonicCode}
 import org.bitcoins.core.hd._
 import org.bitcoins.core.protocol.Bech32Address
@@ -40,8 +41,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
   val publicKey: SchnorrPublicKey = signingKey.schnorrPublicKey
 
-  val stakingAddress: Bech32Address =
-    Bech32Address(P2WPKHWitnessSPKV0(signingKey.publicKey), conf.network)
+  def stakingAddress(network: BitcoinNetwork): Bech32Address =
+    Bech32Address(P2WPKHWitnessSPKV0(signingKey.publicKey), network)
 
   protected[core] val rValueDAO: RValueDAO = RValueDAO()
   protected[core] val eventDAO: EventDAO = EventDAO()
