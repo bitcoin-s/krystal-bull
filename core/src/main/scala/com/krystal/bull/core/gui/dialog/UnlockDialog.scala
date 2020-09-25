@@ -5,6 +5,7 @@ import org.bitcoins.crypto.AesPassword
 import scalafx.Includes._
 import scalafx.geometry.Insets
 import scalafx.scene.control.{ButtonType, Dialog, Label, PasswordField}
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.HBox
 import scalafx.stage.Window
 
@@ -14,6 +15,11 @@ object UnlockDialog {
     val dialog = new Dialog[Option[AesPassword]]() {
       initOwner(parentWindow)
       title = "Unlock"
+      resizable = true
+      graphic = new ImageView(new Image("/icons/krystal_bull.png")) {
+        fitWidth = 100
+        fitHeight = 100
+      }
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
