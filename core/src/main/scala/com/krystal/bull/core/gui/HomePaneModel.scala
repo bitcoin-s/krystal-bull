@@ -1,6 +1,7 @@
 package com.krystal.bull.core.gui
 
 import com.krystal.bull.core.KrystalBull
+import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog.UnlockDialog
 import com.krystal.bull.core.storage.SeedStorage
 import scalafx.beans.property.ObjectProperty
@@ -16,7 +17,7 @@ class HomePaneModel() {
   }
 
   def setOracle(): Unit = {
-    GlobalData.krystalBullOpt match {
+    krystalBullOpt match {
       case None =>
         val passwordOpt = UnlockDialog.showAndWait(parentWindow.value)
 
@@ -25,13 +26,13 @@ class HomePaneModel() {
           op = {
             passwordOpt match {
               case Some(password) =>
-                val extKey = SeedStorage.getPrivateKeyFromDisk(
-                  GlobalData.appConfig.seedPath,
-                  password,
-                  None)
-                val kb = KrystalBull(extKey)(GlobalData.appConfig)
-                GlobalData.appConfig.initialize(kb)
-                GlobalData.krystalBullOpt = Some(kb)
+                val extKey =
+                  SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
+                                                    password,
+                                                    None)
+                val kb = KrystalBull(extKey)(appConfig)
+                appConfig.initialize(kb)
+                krystalBullOpt = Some(kb)
               case None =>
             }
           }
