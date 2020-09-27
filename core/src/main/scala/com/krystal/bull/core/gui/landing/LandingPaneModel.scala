@@ -2,6 +2,7 @@ package com.krystal.bull.core.gui.landing
 
 import com.krystal.bull.core.gui.dialog.InitOracleDialog
 import com.krystal.bull.core.gui.{GUI, GlobalData, TaskRunner}
+import org.bitcoins.core.util.FutureUtil
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
@@ -22,10 +23,13 @@ class LandingPaneModel() {
       op = {
         krystalBullOpt match {
           case Some(kb) =>
-            GlobalData.krystalBullOpt = Some(kb)
-            GlobalData.appConfig.initialize(kb)
+            GlobalData.appConfig
+              .initialize(kb)
+              .map { _ =>
+                GlobalData.krystalBullOpt = Some(kb)
+              }(GlobalData.ec)
           case None =>
-            ()
+            FutureUtil.unit
         }
       }
     )

@@ -40,12 +40,13 @@ object UnlockDialog {
     okButton.disable <== passTF.text.isEmpty
 
     // When the OK button is clicked, convert the result to a T.
-    dialog.resultConverter = dialogButton =>
+    dialog.resultConverter = dialogButton => {
       if (dialogButton == ButtonType.OK) {
         val str = passTF.text.value
 
         AesPassword.fromStringOpt(str)
       } else None
+    }
 
     dialog.showAndWait() match {
       case Some(Some(pass: AesPassword)) =>

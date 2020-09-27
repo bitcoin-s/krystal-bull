@@ -4,6 +4,7 @@ import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog.UnlockDialog
 import com.krystal.bull.core.storage.SeedStorage
+import org.bitcoins.core.util.FutureUtil
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
@@ -19,21 +20,28 @@ class HomePaneModel() {
   def setOracle(): Unit = {
     krystalBullOpt match {
       case None =>
-        val passwordOpt = UnlockDialog.showAndWait(parentWindow.value)
+        val aesPasswordOpt = UnlockDialog.showAndWait(parentWindow.value)
 
         taskRunner.run(
           caption = "Set Oracle",
           op = {
-            passwordOpt match {
-              case Some(password) =>
-                val extKey =
-                  SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
-                                                    password,
-                                                    None)
-                val kb = KrystalBull(extKey)(appConfig)
-                appConfig.initialize(kb)
-                krystalBullOpt = Some(kb)
+            krystalBullOpt match {
               case None =>
+                aesPasswordOpt match {
+                  case Some(password) =>
+                    val extKey =
+                      SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
+                                                        password,
+                                                        None)
+                    val kb = KrystalBull(extKey)(appConfig)
+                    appConfig.initialize(kb).map { _ =>
+                      krystalBullOpt = Some(kb)
+                    }
+                  case None =>
+                    FutureUtil.unit
+                }
+              case Some(_) =>
+                FutureUtil.unit
             }
           }
         )

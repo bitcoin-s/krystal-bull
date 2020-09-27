@@ -4,7 +4,7 @@ import java.nio.file.{Files, Path}
 import java.util.NoSuchElementException
 
 import com.krystal.bull.core.KrystalBullAppConfig
-import org.bitcoins.core.util.{FutureUtil, TimeUtil}
+import org.bitcoins.core.util.TimeUtil
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.keymanager.{DecryptedMnemonic, EncryptedMnemonicHelper}
 import org.bitcoins.testkit.Implicits._
@@ -31,7 +31,6 @@ class SeedStorageTest extends BitcoinSFixture {
     val destroy: KrystalBullAppConfig => Future[Unit] = conf => {
       FileUtil.deleteTmpDir(conf.datadir)
       conf.stop()
-      FutureUtil.unit
     }
     makeDependentFixture(builder, destroy = destroy)(test)
   }

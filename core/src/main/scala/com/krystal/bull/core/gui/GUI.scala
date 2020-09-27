@@ -1,6 +1,10 @@
 package com.krystal.bull.core.gui
 
+import com.krystal.bull.core.KrystalBull
+import com.krystal.bull.core.gui.GlobalData.{appConfig, krystalBullOpt}
 import com.krystal.bull.core.gui.landing.LandingPane
+import com.krystal.bull.core.storage.SeedStorage
+import org.bitcoins.crypto.AesPassword
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -8,6 +12,9 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.image.Image
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 object GUI extends JFXApp {
   // Catch unhandled exceptions on FX Application thread
@@ -41,9 +48,21 @@ object GUI extends JFXApp {
   private val model = new GUIModel()
 
   private val startingPane = {
-    if (GlobalData.appConfig.exists())
+    if (GlobalData.appConfig.exists()) {
+      val extKey =
+        SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
+                                          AesPassword.fromString("1"),
+                                          None)
+      val kb = KrystalBull(extKey)(appConfig)
+      val f = appConfig
+        .initialize(kb)
+        .map { _ =>
+          krystalBullOpt = Some(kb)
+        }(GlobalData.ec)
+      Await.result(f, 5.seconds)
+
       new HomePane(glassPane).view
-    else
+    } else
       new LandingPane(glassPane).view
   }
 
