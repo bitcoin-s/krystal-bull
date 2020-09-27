@@ -6,6 +6,8 @@ sealed abstract class SigningVersion
 
 object SigningVersion extends StringFactory[SigningVersion] {
 
+  val latest: SigningVersion = Mock
+
   /** Initial signing version that was created with krystal bull, not a part of any spec */
   final case object Mock extends SigningVersion
 

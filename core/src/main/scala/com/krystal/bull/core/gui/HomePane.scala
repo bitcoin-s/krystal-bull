@@ -4,7 +4,7 @@ import com.krystal.bull.core.{CompletedEvent, EventStatus, PendingEvent}
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Label, TableColumn, TableView}
+import scalafx.scene.control.{Button, Label, TableColumn, TableView}
 import scalafx.scene.layout.{BorderPane, VBox}
 
 import scala.concurrent.Await
@@ -24,7 +24,7 @@ class HomePane(glassPane: VBox) {
     alignmentInParent = Pos.BottomCenter
   }
 
-  private val eventStatuses: ObservableBuffer[EventStatus] = {
+  def eventStatuses: ObservableBuffer[EventStatus] = {
     GlobalData.krystalBullOpt match {
       case Some(krystalBull) =>
         val statusF = krystalBull.listEvents().map { eventDbs =>
@@ -101,11 +101,18 @@ class HomePane(glassPane: VBox) {
 
   private val oracleInfoText = new Label(oracleInfoStr)
 
+  private val createEventButton = new Button("Create Event") {
+    onAction = _ => {
+      model.createEvent()
+      tableView.items = eventStatuses
+    }
+  }
+
   private val centerView = new VBox() {
     alignmentInParent = Pos.TopCenter
     alignment = Pos.TopCenter
     spacing = 10
-    children = Vector(oracleInfoText, tableView)
+    children = Vector(oracleInfoText, tableView, createEventButton)
   }
 
   val view: BorderPane = new BorderPane {
