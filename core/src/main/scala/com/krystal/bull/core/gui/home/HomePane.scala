@@ -65,7 +65,7 @@ class HomePane(glassPane: VBox) {
       }
     }
     val signatureCol = new TableColumn[Event, String] {
-      text = "Signature"
+      text = "Attestation"
       prefWidth = 150
       cellValueFactory = { status =>
         val str = status.value match {
@@ -73,7 +73,7 @@ class HomePane(glassPane: VBox) {
             completedEvent.signature.hex
           case _: PendingEvent => ""
         }
-        new StringProperty(status, "Signature", str)
+        new StringProperty(status, "Attestation", str)
       }
     }
     new TableView[Event](eventStatuses) {

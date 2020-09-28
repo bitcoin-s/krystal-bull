@@ -60,7 +60,7 @@ object ViewEventDialog {
           columnIndex = 1,
           rowIndex = 3)
 
-      add(new Label("Signature:"), 0, 4)
+      add(new Label("Attestation:"), 0, 4)
       event match {
         case completed: CompletedEvent =>
           add(new TextField() {
