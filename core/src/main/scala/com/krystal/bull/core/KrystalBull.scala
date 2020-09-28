@@ -58,8 +58,16 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       s"m/${purpose.constant}'/${coin.coinType.toInt}'/$accountIndex'/$chainIndex'/$keyIndex'")
   }
 
-  private def getKValue(path: BIP32Path): ECPrivateKey = {
-    extPrivateKey.deriveChildPrivKey(path).key
+  private def getKValue(rValDb: RValueDb): ECPrivateKey =
+    getKValue(rValDb.label, rValDb.path)
+
+  private def getKValue(label: String, path: BIP32Path): ECPrivateKey = {
+    val priv = extPrivateKey.deriveChildPrivKey(path).key
+    val hash =
+      CryptoUtil.sha256(priv.schnorrNonce.bytes ++ ByteVector(label.getBytes))
+    val tweak = ECPrivateKey(hash.bytes)
+
+    priv.add(tweak)
   }
 
   def listEventDbs(): Future[Vector[EventDb]] = eventDAO.findAll()
@@ -77,7 +85,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
   }
 
   def createNewEvent(
-      name: String,
+      label: String,
       outcomes: Vector[String]): Future[EventDb] = {
     for {
       indexOpt <- rValueDAO.findMostRecent
@@ -87,10 +95,10 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       }
 
       path = getPath(index)
-      nonce = getKValue(path).schnorrNonce
+      nonce = getKValue(label, path).schnorrNonce
 
-      rValueDb = RValueDbHelper(nonce, rValueAccount, chainIndex, index)
-      eventDb = EventDb(nonce, name, outcomes.size, Mock, None)
+      rValueDb = RValueDbHelper(nonce, label, rValueAccount, chainIndex, index)
+      eventDb = EventDb(nonce, label, outcomes.size, Mock, None)
       eventOutcomeDbs = outcomes.map { outcome =>
         val hash = CryptoUtil.sha256(ByteVector(outcome.getBytes))
         EventOutcomeDb(nonce, outcome, hash)
@@ -136,7 +144,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
       sig = eventDb.signingVersion match {
         case Mock =>
-          val kVal = getKValue(rValDb.path)
+          val kVal = getKValue(rValDb)
+          kVal.add(ECPrivateKey.freshPrivateKey)
           signingKey.schnorrSignWithNonce(eventOutcomeDb.hashedMessage.bytes,
                                           kVal)
       }

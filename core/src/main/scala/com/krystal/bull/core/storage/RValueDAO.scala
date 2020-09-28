@@ -45,6 +45,8 @@ case class RValueDAO()(implicit
 
     def nonce: Rep[SchnorrNonce] = column("nonce", O.PrimaryKey)
 
+    def label: Rep[String] = column("label", O.Unique)
+
     def purpose: Rep[HDPurpose] = column("hd_purpose")
 
     def coinType: Rep[HDCoinType] = column("coin")
@@ -57,6 +59,7 @@ case class RValueDAO()(implicit
 
     def * : ProvenShape[RValueDb] =
       (nonce,
+       label,
        purpose,
        coinType,
        accountIndex,
