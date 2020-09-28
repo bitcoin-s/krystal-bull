@@ -2,7 +2,7 @@ package com.krystal.bull.core.gui.landing
 
 import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData._
-import com.krystal.bull.core.gui.dialog.InitOracleDialog
+import com.krystal.bull.core.gui.dialog._
 import com.krystal.bull.core.gui.{GUI, GlobalData, TaskRunner}
 import com.krystal.bull.core.storage.SeedStorage
 import org.bitcoins.core.util.FutureUtil
@@ -21,6 +21,27 @@ class LandingPaneModel() {
 
   def initOracle(): Unit = {
     val krystalBullOpt = InitOracleDialog.showAndWait(parentWindow.value)
+
+    taskRunner.run(
+      caption = "Initialize Oracle",
+      op = {
+        krystalBullOpt match {
+          case Some(kb) =>
+            GlobalData.krystalBullOpt = Some(kb)
+            appConfig.initialize(kb)
+          case None =>
+            FutureUtil.unit
+        }
+      }
+    )
+
+    if (krystalBullOpt.isDefined) {
+      GUI.changeToHomeScene()
+    }
+  }
+
+  def restoreOracle(): Unit = {
+    val krystalBullOpt = RestoreOracleDialog.showAndWait(parentWindow.value)
 
     taskRunner.run(
       caption = "Initialize Oracle",

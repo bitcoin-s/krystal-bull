@@ -26,21 +26,32 @@ class LandingPane(glassPane: VBox) {
     fitWidth = 300
   }
 
-  private val initializeButton = new Button("Create new oracle") {
+  private val initText = new Label(
+    "You do not currently have an oracle wallet!\nYou first need to " +
+      "initialize your oracle's wallet or restore a previous oracle.") {
+    textAlignment = TextAlignment.Center
+  }
+
+  private val initializeButton = new Button("Create New Oracle") {
     onAction = _ => model.initOracle()
   }
 
-  private val initText = new Label(
-    "You do not currently have an oracle wallet!\nYou first need to " +
-      "initialize your oracle's wallet by clicking the button bellow.") {
-    textAlignment = TextAlignment.Center
+  private val restoreButton = new Button("Restore Oracle") {
+    onAction = _ => model.restoreOracle()
+  }
+
+  private val buttonBar = new HBox() {
+    spacing = 10
+    alignmentInParent = Pos.Center
+    alignment = Pos.Center
+    children = Vector(initializeButton, restoreButton)
   }
 
   private val initBottom = new VBox() {
     alignmentInParent = Pos.TopCenter
     alignment = Pos.TopCenter
     spacing = 10
-    children = Vector(initText, initializeButton)
+    children = Vector(initText, buttonBar)
   }
 
   private val passwordField = new PasswordField() {
