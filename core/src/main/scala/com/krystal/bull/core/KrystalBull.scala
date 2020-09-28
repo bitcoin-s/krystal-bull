@@ -62,6 +62,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
     getKValue(rValDb.label, rValDb.path)
 
   private def getKValue(label: String, path: BIP32Path): ECPrivateKey = {
+    require(path.forall(_.hardened),
+            s"Cannot use a BIP32Path with unhardened nodes, got $path")
     val priv = extPrivateKey.deriveChildPrivKey(path).key
     val hash =
       CryptoUtil.sha256(priv.schnorrNonce.bytes ++ ByteVector(label.getBytes))
@@ -145,7 +147,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       sig = eventDb.signingVersion match {
         case Mock =>
           val kVal = getKValue(rValDb)
-          kVal.add(ECPrivateKey.freshPrivateKey)
+          require(kVal.schnorrNonce == rValDb.nonce,
+                  "The nonce from derived seed did not match database")
           signingKey.schnorrSignWithNonce(eventOutcomeDb.hashedMessage.bytes,
                                           kVal)
       }
