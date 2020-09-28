@@ -1,6 +1,6 @@
 package com.krystal.bull.core.storage
 
-import org.bitcoins.core.hd.{HDChainType, HDCoinType, HDPurpose}
+import org.bitcoins.core.hd.{HDCoinType, HDPurpose}
 import org.bitcoins.crypto.SchnorrNonce
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
 import slick.lifted.ProvenShape
@@ -32,12 +32,10 @@ case class RValueDAO()(implicit
       ts: Vector[RValueDb]): Query[RValueTable, RValueDb, Seq] =
     findByPrimaryKeys(ts.map(_.nonce))
 
-  def findMostRecent: Future[Option[RValueDb]] = {
-    val query = table
-      .sortBy(_.keyIndex.desc)
-      .take(1)
+  def maxKeyIndex: Future[Option[Int]] = {
+    val query = table.map(_.keyIndex).max
 
-    safeDatabase.run(query.result.headOption)
+    safeDatabase.run(query.result.transactionally)
   }
 
   class RValueTable(tag: Tag)

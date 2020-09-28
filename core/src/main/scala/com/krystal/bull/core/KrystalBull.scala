@@ -88,9 +88,9 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       label: String,
       outcomes: Vector[String]): Future[EventDb] = {
     for {
-      indexOpt <- rValueDAO.findMostRecent
+      indexOpt <- rValueDAO.maxKeyIndex
       index = indexOpt match {
-        case Some(value) => value.keyIndex + 1
+        case Some(value) => value + 1
         case None        => 0
       }
 
