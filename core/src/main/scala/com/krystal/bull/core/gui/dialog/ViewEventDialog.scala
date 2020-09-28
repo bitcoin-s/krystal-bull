@@ -3,6 +3,7 @@ package com.krystal.bull.core.gui.dialog
 import com.krystal.bull.core.gui.GlobalData
 import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.{CompletedEvent, Event, PendingEvent}
+import org.bitcoins.commons.jsonmodels.dlc.DLCMessage.OracleInfo
 import scalafx.Includes._
 import scalafx.event.ActionEvent
 import scalafx.geometry.Insets
@@ -27,31 +28,39 @@ object ViewEventDialog {
       vgap = 10
       padding = Insets(20, 100, 10, 10)
 
-      add(new Label("Nonce:"), 0, 0)
+      add(new Label("Oracle Info:"), 0, 0)
       add(new TextField() {
-            text = event.nonce.hex
+            text = OracleInfo(krystalBullOpt.get.publicKey, event.nonce).hex
             editable = false
           },
           columnIndex = 1,
           rowIndex = 0)
 
-      add(new Label("Num Outcomes:"), 0, 1)
+      add(new Label("Nonce:"), 0, 1)
       add(new TextField() {
-            text = event.numOutcomes.toString
+            text = event.nonce.hex
             editable = false
           },
           columnIndex = 1,
           rowIndex = 1)
 
-      add(new Label("Signing Version:"), 0, 2)
+      add(new Label("Num Outcomes:"), 0, 2)
       add(new TextField() {
-            text = event.signingVersion.toString
+            text = event.numOutcomes.toString
             editable = false
           },
           columnIndex = 1,
           rowIndex = 2)
 
-      add(new Label("Signature:"), 0, 3)
+      add(new Label("Signing Version:"), 0, 3)
+      add(new TextField() {
+            text = event.signingVersion.toString
+            editable = false
+          },
+          columnIndex = 1,
+          rowIndex = 3)
+
+      add(new Label("Signature:"), 0, 4)
       event match {
         case completed: CompletedEvent =>
           add(new TextField() {
@@ -59,7 +68,7 @@ object ViewEventDialog {
                 editable = false
               },
               columnIndex = 1,
-              rowIndex = 3)
+              rowIndex = 4)
         case _: PendingEvent =>
           var outcomeOpt: Option[String] = None
 
@@ -100,7 +109,7 @@ object ViewEventDialog {
             spacing = 10
           }
 
-          add(hBox, columnIndex = 1, rowIndex = 3)
+          add(hBox, columnIndex = 1, rowIndex = 4)
       }
     }
 
