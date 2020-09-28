@@ -99,7 +99,16 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       path = getPath(index)
       nonce = getKValue(label, path).schnorrNonce
 
-      rValueDb = RValueDbHelper(nonce, label, rValueAccount, chainIndex, index)
+      hash = CryptoUtil.sha256(nonce.bytes ++ ByteVector(label.getBytes))
+      commitmentSig = signingKey.schnorrSign(hash.bytes)
+
+      rValueDb = RValueDbHelper(nonce = nonce,
+                                label = label,
+                                account = rValueAccount,
+                                chainType = chainIndex,
+                                keyIndex = index,
+                                commitmentSignature = commitmentSig)
+
       eventDb = EventDb(nonce, label, outcomes.size, Mock, None)
       eventOutcomeDbs = outcomes.map { outcome =>
         val hash = CryptoUtil.sha256(ByteVector(outcome.getBytes))
