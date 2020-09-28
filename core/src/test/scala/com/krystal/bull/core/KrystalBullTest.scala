@@ -3,10 +3,11 @@ package com.krystal.bull.core
 import java.nio.file.{Files, Path}
 import java.sql.SQLException
 
-import org.bitcoins.crypto.{AesPassword, SchnorrDigitalSignature}
+import org.bitcoins.crypto.{AesPassword, CryptoUtil, SchnorrDigitalSignature}
 import org.bitcoins.testkit.fixtures.BitcoinSFixture
 import org.bitcoins.testkit.util.FileUtil
 import org.scalatest.FutureOutcome
+import scodec.bits.ByteVector
 
 import scala.concurrent.Future
 
@@ -60,6 +61,21 @@ class KrystalBullTest extends BitcoinSFixture {
       } yield {
         assert(pendingEvents.size == 1)
         assert(pendingEvents.contains(testEventDb))
+      }
+  }
+
+  it must "create a new event with a valid commitment signature" in {
+    krystalBull: KrystalBull =>
+      for {
+        testEventDb <- krystalBull.createNewEvent("test", testOutcomes)
+        rValDbOpt <- krystalBull.rValueDAO.read(testEventDb.nonce)
+      } yield {
+        assert(rValDbOpt.isDefined)
+        val rValDb = rValDbOpt.get
+        val hash = CryptoUtil.sha256(
+          rValDb.nonce.bytes ++ ByteVector(rValDb.label.getBytes))
+        assert(
+          krystalBull.publicKey.verify(hash.bytes, rValDb.commitmentSignature))
       }
   }
 
