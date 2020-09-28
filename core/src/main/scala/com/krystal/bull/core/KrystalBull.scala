@@ -15,8 +15,7 @@ import scodec.bits.ByteVector
 import scala.concurrent.{ExecutionContext, Future}
 
 case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
-    val
-    conf: KrystalBullAppConfig) {
+    val conf: KrystalBullAppConfig) {
 
   implicit val ec: ExecutionContext = conf.ec
 
