@@ -1,7 +1,7 @@
-package com.krystal.bull.core.gui
+package com.krystal.bull.core.gui.home
 
+import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
 import com.krystal.bull.core.{CompletedEvent, Event, PendingEvent}
-import javax.swing.GroupLayout.Alignment
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -18,10 +18,6 @@ class HomePane(glassPane: VBox) {
   import GlobalData.ec
 
   val model = new HomePaneModel()
-//  GlobalData.krystalBullOpt match {
-//    case None    => model.setOracle()
-//    case Some(_) => ()
-//  }
 
   private val imageView: ImageView = new ImageView(
     new Image("/icons/krystal_bull.png")) {

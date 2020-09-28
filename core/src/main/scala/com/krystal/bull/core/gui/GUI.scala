@@ -2,6 +2,7 @@ package com.krystal.bull.core.gui
 
 import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData.{appConfig, krystalBullOpt}
+import com.krystal.bull.core.gui.home.HomePane
 import com.krystal.bull.core.gui.landing.LandingPane
 import com.krystal.bull.core.storage.SeedStorage
 import org.bitcoins.crypto.AesPassword
@@ -47,24 +48,7 @@ object GUI extends JFXApp {
 
   private val model = new GUIModel()
 
-  private val startingPane = {
-    if (GlobalData.appConfig.exists()) {
-      val extKey =
-        SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
-                                          AesPassword.fromString("1"),
-                                          None)
-      val kb = KrystalBull(extKey)(appConfig)
-      val f = appConfig
-        .initialize(kb)
-        .map { _ =>
-          krystalBullOpt = Some(kb)
-        }(GlobalData.ec)
-      Await.result(f, 5.seconds)
-
-      new HomePane(glassPane).view
-    } else
-      new LandingPane(glassPane).view
-  }
+  private val startingPane = new LandingPane(glassPane).view
 
   private val borderPane = new BorderPane {
     top = AppMenuBar.menuBar(model)

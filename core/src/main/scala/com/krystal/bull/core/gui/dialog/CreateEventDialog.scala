@@ -1,6 +1,7 @@
 package com.krystal.bull.core.gui.dialog
 
-import com.krystal.bull.core.gui.{GlobalData, InitEventParams}
+import com.krystal.bull.core.gui.GlobalData
+import com.krystal.bull.core.gui.home.InitEventParams
 import scalafx.Includes._
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
