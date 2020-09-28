@@ -1,5 +1,6 @@
 package com.krystal.bull.core.gui.landing
 
+import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog.InitOracleDialog
 import com.krystal.bull.core.gui.{GUI, GlobalData, TaskRunner}
 import org.bitcoins.core.util.FutureUtil
@@ -23,11 +24,11 @@ class LandingPaneModel() {
       op = {
         krystalBullOpt match {
           case Some(kb) =>
-            GlobalData.appConfig
+            appConfig
               .initialize(kb)
               .map { _ =>
                 GlobalData.krystalBullOpt = Some(kb)
-              }(GlobalData.ec)
+              }
           case None =>
             FutureUtil.unit
         }
