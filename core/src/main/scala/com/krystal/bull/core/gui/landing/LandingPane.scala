@@ -5,6 +5,7 @@ import org.bitcoins.crypto.AesPassword
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Button, Label, PasswordField}
 import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.input.KeyCode
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 
 class LandingPane(glassPane: VBox) {
@@ -37,7 +38,13 @@ class LandingPane(glassPane: VBox) {
     children = Vector(initText, initializeButton)
   }
 
-  private val passwordField = new PasswordField()
+  private val passwordField = new PasswordField() {
+    onKeyReleased = keyEvent => {
+      if (keyEvent.getCode == KeyCode.Enter.delegate && text.value.nonEmpty) {
+        model.setOracle(AesPassword.fromString(text.value))
+      }
+    }
+  }
 
   private val unlockButton = new Button("Unlock") {
     onAction = _ =>
@@ -47,7 +54,7 @@ class LandingPane(glassPane: VBox) {
 
   private val unlockBottom = new HBox() {
     alignmentInParent = Pos.TopCenter
-    alignment = Pos.TopCenter
+    alignment = Pos.Center
     spacing = 10
     children = Vector(new Label("Password"), passwordField, unlockButton)
   }
