@@ -83,7 +83,6 @@ object ViewEventDialog {
                     case Some(ButtonType.OK) =>
                       GlobalData.krystalBullOpt.get
                         .signEvent(event.nonce, outcome)
-                        .map(_ => dialog.close())
                     case None | Some(_) =>
                       ()
                   }
