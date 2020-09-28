@@ -23,10 +23,6 @@ class HomePane(glassPane: VBox) {
 //    case Some(_) => ()
 //  }
 
-  private val label: Label = new Label("Krystal Bull") {
-    alignmentInParent = Pos.BottomCenter
-  }
-
   private val imageView: ImageView = new ImageView(
     new Image("/icons/krystal_bull.png")) {
     fitHeight = 100
@@ -85,8 +81,7 @@ class HomePane(glassPane: VBox) {
         val str = status.value match {
           case completedEvent: CompletedEvent =>
             completedEvent.signature.hex
-          case _: PendingEvent =>
-            ""
+          case _: PendingEvent => ""
         }
         new StringProperty(status, "Signature", str)
       }
@@ -103,7 +98,6 @@ class HomePane(glassPane: VBox) {
       val infoItem: MenuItem = new MenuItem("View Event") {
         onAction = _ => {
           val event = selectionModel.value.getSelectedItem
-          println("Selected item: " + event)
           model.viewEvent(event)
           updateTable()
         }
@@ -133,7 +127,7 @@ class HomePane(glassPane: VBox) {
     add(new TextField() {
           text = GlobalData.krystalBullOpt.get.publicKey.hex
           editable = false
-          minWidth = 300
+          minWidth = 500
         },
         columnIndex = 1,
         rowIndex = 0)
@@ -147,7 +141,7 @@ class HomePane(glassPane: VBox) {
             .stakingAddress(GlobalData.network)
             .toString()
           editable = false
-          minWidth = 300
+          minWidth = 500
         },
         columnIndex = 1,
         rowIndex = 1)
