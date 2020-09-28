@@ -57,9 +57,19 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
     extPrivateKey.deriveChildPrivKey(SegWitHDPath(hdAddress)).key
   }
 
-  def listEvents(): Future[Vector[EventDb]] = eventDAO.findAll()
+  def listEventDbs(): Future[Vector[EventDb]] = eventDAO.findAll()
 
-  def listPendingEvents(): Future[Vector[EventDb]] = eventDAO.getPendingEvents
+  def listPendingEventDbs(): Future[Vector[EventDb]] = eventDAO.getPendingEvents
+
+  def listEvents(): Future[Vector[Event]] = {
+    for {
+      eventDbs <- eventDAO.findAll()
+      outcomes <- eventOutcomeDAO.findAll()
+    } yield {
+      val outcomesByNonce = outcomes.groupBy(_.nonce)
+      eventDbs.map(db => Event(db, outcomesByNonce(db.nonce)))
+    }
+  }
 
   def createNewEvent(
       name: String,

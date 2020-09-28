@@ -1,11 +1,14 @@
 package com.krystal.bull.core.gui
 
-import com.krystal.bull.core.{CompletedEvent, EventStatus, PendingEvent}
+import com.krystal.bull.core.{CompletedEvent, Event, PendingEvent}
+import javax.swing.GroupLayout.Alignment
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Button, Label, TableColumn, TableView}
-import scalafx.scene.layout.{BorderPane, VBox}
+import scalafx.scene.control._
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.{BorderPane, GridPane, VBox}
+import scalafx.scene.text.TextAlignment
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -24,11 +27,16 @@ class HomePane(glassPane: VBox) {
     alignmentInParent = Pos.BottomCenter
   }
 
-  def eventStatuses: ObservableBuffer[EventStatus] = {
+  private val imageView: ImageView = new ImageView(
+    new Image("/icons/krystal_bull.png")) {
+    fitHeight = 100
+    fitWidth = 100
+  }
+
+  def eventStatuses: ObservableBuffer[Event] = {
     GlobalData.krystalBullOpt match {
       case Some(krystalBull) =>
-        val statusF = krystalBull.listEvents().map { eventDbs =>
-          val statuses = eventDbs.map(_.eventStatus)
+        val statusF = krystalBull.listEvents().map { statuses =>
           ObservableBuffer(statuses)
         }
         Await.result(statusF, 5.seconds)
@@ -37,22 +45,22 @@ class HomePane(glassPane: VBox) {
     }
   }
 
-  private val tableView = {
-    val labelCol = new TableColumn[EventStatus, String] {
+  private val tableView: TableView[Event] = {
+    val labelCol = new TableColumn[Event, String] {
       text = "Label"
       prefWidth = 150
       cellValueFactory = { status =>
         new StringProperty(status, "Label", status.value.label)
       }
     }
-    val nonceCol = new TableColumn[EventStatus, String] {
+    val nonceCol = new TableColumn[Event, String] {
       text = "Nonce"
       prefWidth = 150
       cellValueFactory = { status =>
         new StringProperty(status, "Nonce", status.value.nonce.hex)
       }
     }
-    val numberOutcomesCol = new TableColumn[EventStatus, String] {
+    val numberOutcomesCol = new TableColumn[Event, String] {
       text = "Num Outcomes"
       prefWidth = 150
       cellValueFactory = { status =>
@@ -61,7 +69,7 @@ class HomePane(glassPane: VBox) {
                            status.value.numOutcomes.toString)
       }
     }
-    val signingVersionCol = new TableColumn[EventStatus, String] {
+    val signingVersionCol = new TableColumn[Event, String] {
       text = "Signing Version"
       prefWidth = 150
       cellValueFactory = { status =>
@@ -70,7 +78,7 @@ class HomePane(glassPane: VBox) {
                            status.value.signingVersion.toString)
       }
     }
-    val signatureCol = new TableColumn[EventStatus, String] {
+    val signatureCol = new TableColumn[Event, String] {
       text = "Signature"
       prefWidth = 150
       cellValueFactory = { status =>
@@ -83,7 +91,7 @@ class HomePane(glassPane: VBox) {
         new StringProperty(status, "Signature", str)
       }
     }
-    new TableView[EventStatus](eventStatuses) {
+    new TableView[Event](eventStatuses) {
       alignmentInParent = Pos.Center
       columns ++= Seq(labelCol,
                       nonceCol,
@@ -91,34 +99,85 @@ class HomePane(glassPane: VBox) {
                       signingVersionCol,
                       signatureCol)
       margin = Insets(10, 0, 10, 0)
-//      selectionModel().selectionMode = SelectionMode.Multiple
+
+      val infoItem: MenuItem = new MenuItem("View Event") {
+        onAction = _ => {
+          val event = selectionModel.value.getSelectedItem
+          println("Selected item: " + event)
+          model.viewEvent(event)
+          updateTable()
+        }
+      }
+
+      contextMenu = new ContextMenu() {
+        items += infoItem
+      }
     }
   }
 
-  private val oracleInfoStr =
-    s"My Public Key: ${GlobalData.krystalBullOpt.get.publicKey.hex}" +
-      s"\nStaking Address: ${GlobalData.krystalBullOpt.get.stakingAddress(GlobalData.network)}"
+  def updateTable(): Unit = {
+    tableView.items = eventStatuses
+  }
 
-  private val oracleInfoText = new Label(oracleInfoStr)
+  private val oracleInfoText = new GridPane() {
+    alignmentInParent = Pos.TopCenter
+    alignment = Pos.Center
+    vgap = 10
+    hgap = 10
+
+    add(new Label("My Public Key:") {
+          textAlignment = TextAlignment.Right
+        },
+        columnIndex = 0,
+        rowIndex = 0)
+    add(new TextField() {
+          text = GlobalData.krystalBullOpt.get.publicKey.hex
+          editable = false
+          minWidth = 300
+        },
+        columnIndex = 1,
+        rowIndex = 0)
+    add(new Label("Staking Address:") {
+          textAlignment = TextAlignment.Right
+        },
+        columnIndex = 0,
+        rowIndex = 1)
+    add(new TextField() {
+          text = GlobalData.krystalBullOpt.get
+            .stakingAddress(GlobalData.network)
+            .toString()
+          editable = false
+          minWidth = 300
+        },
+        columnIndex = 1,
+        rowIndex = 1)
+  }
 
   private val createEventButton = new Button("Create Event") {
     onAction = _ => {
-      model.createEvent()
-      tableView.items = eventStatuses
+      model.createEvent() match {
+        case Some(params) =>
+          val kb = GlobalData.krystalBullOpt.get
+          kb.createNewEvent(params.label, params.outcomes).map { _ =>
+            updateTable()
+          }
+        case None =>
+          ()
+      }
     }
   }
 
   private val centerView = new VBox() {
     alignmentInParent = Pos.TopCenter
     alignment = Pos.TopCenter
-    spacing = 10
+    spacing = 100
     children = Vector(oracleInfoText, tableView, createEventButton)
   }
 
   val view: BorderPane = new BorderPane {
     padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
 
-    top = label
+    top = imageView
     center = centerView
   }
 

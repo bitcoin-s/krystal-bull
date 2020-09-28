@@ -2,7 +2,7 @@ package com.krystal.bull.core.storage
 
 import com.krystal.bull.core.{
   CompletedEvent,
-  EventStatus,
+  Event,
   PendingEvent,
   SigningVersion
 }
@@ -17,13 +17,4 @@ case class EventDb(
 
   lazy val sigOpt: Option[SchnorrDigitalSignature] =
     attestationOpt.map(SchnorrDigitalSignature(nonce, _))
-
-  lazy val eventStatus: EventStatus = {
-    attestationOpt match {
-      case Some(sig) =>
-        CompletedEvent(nonce, label, numOutcomes, signingVersion, sig)
-      case None =>
-        PendingEvent(nonce, label, numOutcomes, signingVersion)
-    }
-  }
 }

@@ -3,7 +3,7 @@ package com.krystal.bull.core.gui
 import com.krystal.bull.core.gui.settings.Themes
 import org.bitcoins.core.config.{BitcoinNetworks, MainNet, RegTest, TestNet3}
 import scalafx.scene.control._
-import scalafx.scene.input.{KeyCode, KeyCodeCombination}
+import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 
 object AppMenuBar {
 
@@ -51,10 +51,17 @@ private class FileMenu() {
     }
   }
 
+  private val quit: MenuItem = new MenuItem("_Quit") {
+    mnemonicParsing = true
+    accelerator =
+      new KeyCodeCombination(KeyCode.Q, KeyCombination.ControlDown) // CTRL + Q
+    onAction = _ => sys.exit()
+  }
+
   val fileMenu: Menu =
     new Menu("_File") {
       mnemonicParsing = true
-      items = List(network)
+      items = List(quit)
     }
 }
 

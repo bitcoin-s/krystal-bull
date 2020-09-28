@@ -13,7 +13,7 @@ object AboutDialog {
       title = "About"
     }
 
-    dialog.dialogPane().buttonTypes = Seq(ButtonType.OK)
+    dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)
     dialog.dialogPane().stylesheets = GlobalData.currentStyleSheets
 
     dialog.dialogPane().content = new TextArea {

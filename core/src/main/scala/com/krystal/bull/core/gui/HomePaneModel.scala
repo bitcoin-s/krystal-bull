@@ -1,9 +1,9 @@
 package com.krystal.bull.core.gui
 
-import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData._
-import com.krystal.bull.core.gui.dialog.{CreateEventDialog, UnlockDialog}
+import com.krystal.bull.core.gui.dialog._
 import com.krystal.bull.core.storage.SeedStorage
+import com.krystal.bull.core.{Event, KrystalBull}
 import org.bitcoins.core.util.FutureUtil
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
@@ -33,7 +33,7 @@ class HomePaneModel() {
                       SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
                                                         password,
                                                         None)
-                    val kb = KrystalBull(extKey)(appConfig)
+                    val kb = KrystalBull(extKey)
                     appConfig.initialize(kb).map { _ =>
                       krystalBullOpt = Some(kb)
                     }
@@ -50,20 +50,12 @@ class HomePaneModel() {
     }
   }
 
-  def createEvent(): Unit = {
-    val resultOpt =
-      CreateEventDialog.showAndWait(parentWindow.value)
+  def createEvent(): Option[InitEventParams] = {
+    CreateEventDialog.showAndWait(parentWindow.value)
+  }
 
-    taskRunner.run(
-      caption = "Create Event",
-      op = resultOpt match {
-        case Some(params) =>
-          val kb = GlobalData.krystalBullOpt.get
-          kb.createNewEvent(params.label, params.outcomes)
-        case None =>
-          ()
-      }
-    )
+  def viewEvent(event: Event): Unit = {
+    ViewEventDialog.showAndWait(parentWindow.value, event)
   }
 }
 

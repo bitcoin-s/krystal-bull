@@ -41,13 +41,13 @@ class KrystalBullTest extends BitcoinSFixture {
   }
 
   it must "start with no events" in { krystalBull: KrystalBull =>
-    krystalBull.listEvents().map { events =>
+    krystalBull.listEventDbs().map { events =>
       assert(events.isEmpty)
     }
   }
 
   it must "start with no pending events" in { krystalBull: KrystalBull =>
-    krystalBull.listPendingEvents().map { events =>
+    krystalBull.listPendingEventDbs().map { events =>
       assert(events.isEmpty)
     }
   }
@@ -56,7 +56,7 @@ class KrystalBullTest extends BitcoinSFixture {
     krystalBull: KrystalBull =>
       for {
         testEventDb <- krystalBull.createNewEvent("test", testOutcomes)
-        pendingEvents <- krystalBull.listPendingEvents()
+        pendingEvents <- krystalBull.listPendingEventDbs()
       } yield {
         assert(pendingEvents.size == 1)
         assert(pendingEvents.contains(testEventDb))
