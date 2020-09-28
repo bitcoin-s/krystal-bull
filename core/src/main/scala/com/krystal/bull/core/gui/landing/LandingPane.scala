@@ -7,6 +7,7 @@ import scalafx.scene.control.{Button, Label, PasswordField}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.KeyCode
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
+import scalafx.scene.text.{Font, TextAlignment}
 
 class LandingPane(glassPane: VBox) {
 
@@ -14,13 +15,15 @@ class LandingPane(glassPane: VBox) {
 
   private val label: Label = new Label("Welcome to Krystal Bull") {
     alignmentInParent = Pos.BottomCenter
+    textAlignment = TextAlignment.Center
+    font = new Font(30)
   }
 
   private val imageView: ImageView = new ImageView(
     new Image("/icons/krystal_bull.png")) {
     alignmentInParent = Pos.Center
-    fitHeight = 200
-    fitWidth = 200
+    fitHeight = 300
+    fitWidth = 300
   }
 
   private val initializeButton = new Button("Create new oracle") {
@@ -28,8 +31,10 @@ class LandingPane(glassPane: VBox) {
   }
 
   private val initText = new Label(
-    "You do not currently have an oracle wallet! You first need to " +
-      "initialize your oracle's wallet by clicking the button bellow.")
+    "You do not currently have an oracle wallet!\nYou first need to " +
+      "initialize your oracle's wallet by clicking the button bellow.") {
+    textAlignment = TextAlignment.Center
+  }
 
   private val initBottom = new VBox() {
     alignmentInParent = Pos.TopCenter
@@ -69,8 +74,10 @@ class LandingPane(glassPane: VBox) {
     padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
 
     top = label
-    center = imageView
-    bottom = bottomBox
+    center = new VBox() {
+      alignment = Pos.Center
+      children = Vector(imageView, bottomBox)
+    }
   }
 
   view.autosize()
