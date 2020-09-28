@@ -2,7 +2,7 @@ package com.krystal.bull.core
 
 import java.nio.file.{Files, Path, Paths}
 
-import com.krystal.bull.core.storage.{EventDAO, EventOutcomeDAO, RValueDAO, SeedStorage}
+import com.krystal.bull.core.storage._
 import com.typesafe.config.Config
 import org.bitcoins.core.config.NetworkParameters
 import org.bitcoins.core.crypto.MnemonicCode

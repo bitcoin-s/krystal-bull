@@ -31,5 +31,5 @@ object GlobalData {
 
   var network: BitcoinNetwork = MainNet
 
-  var krystalBullOpt: Option[KrystalBull] = None
+  var krystalBull: KrystalBull = _
 }

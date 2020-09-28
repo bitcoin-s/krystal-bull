@@ -30,7 +30,7 @@ object ViewEventDialog {
 
       add(new Label("Oracle Info:"), 0, 0)
       add(new TextField() {
-            text = OracleInfo(krystalBullOpt.get.publicKey, event.nonce).hex
+            text = OracleInfo(krystalBull.publicKey, event.nonce).hex
             editable = false
           },
           columnIndex = 1,
@@ -90,7 +90,7 @@ object ViewEventDialog {
                     dialogPane().stylesheets = GlobalData.currentStyleSheets
                   }.showAndWait() match {
                     case Some(ButtonType.OK) =>
-                      GlobalData.krystalBullOpt.get
+                      GlobalData.krystalBull
                         .signEvent(event.nonce, outcome)
                     case None | Some(_) =>
                       ()

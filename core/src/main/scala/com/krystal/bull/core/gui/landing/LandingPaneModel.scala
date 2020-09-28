@@ -27,7 +27,7 @@ class LandingPaneModel() {
       op = {
         krystalBullOpt match {
           case Some(kb) =>
-            GlobalData.krystalBullOpt = Some(kb)
+            GlobalData.krystalBull = kb
             appConfig.initialize(kb)
           case None =>
             FutureUtil.unit
@@ -44,11 +44,11 @@ class LandingPaneModel() {
     val krystalBullOpt = RestoreOracleDialog.showAndWait(parentWindow.value)
 
     taskRunner.run(
-      caption = "Initialize Oracle",
+      caption = "Restore Oracle",
       op = {
         krystalBullOpt match {
           case Some(kb) =>
-            GlobalData.krystalBullOpt = Some(kb)
+            GlobalData.krystalBull = kb
             appConfig.initialize(kb)
           case None =>
             FutureUtil.unit
@@ -62,32 +62,18 @@ class LandingPaneModel() {
   }
 
   def setOracle(password: AesPassword): Unit = {
-    krystalBullOpt match {
-      case None =>
-        taskRunner.run(
-          caption = "Set Oracle",
-          op = {
-            krystalBullOpt match {
-              case None =>
-                val extKey =
-                  SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath,
-                                                    password,
-                                                    None)
-                val kb = KrystalBull(extKey)
-                krystalBullOpt = Some(kb)
-                appConfig.initialize(kb)
-              case Some(_) =>
-                FutureUtil.unit
-            }
-          }
-        )
-      case Some(_) =>
-        ()
-    }
+    taskRunner.run(
+      caption = "Set Oracle",
+      op = {
+        val extKey =
+          SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath, password, None)
+        val kb = KrystalBull(extKey)
+        krystalBull = kb
+        appConfig.initialize(kb)
+      }
+    )
 
     Thread.sleep(1000)
-    if (krystalBullOpt.isDefined) {
-      GUI.changeToHomeScene()
-    }
+    GUI.changeToHomeScene()
   }
 }

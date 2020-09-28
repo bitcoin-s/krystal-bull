@@ -1,5 +1,6 @@
 package com.krystal.bull.core.gui.home
 
+import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
 import com.krystal.bull.core.{CompletedEvent, Event, PendingEvent}
 import scalafx.beans.property.StringProperty
@@ -15,8 +16,6 @@ import scala.concurrent.duration.DurationInt
 
 class HomePane(glassPane: VBox) {
 
-  import GlobalData.ec
-
   val model = new HomePaneModel()
 
   private val imageView: ImageView = new ImageView(
@@ -26,15 +25,10 @@ class HomePane(glassPane: VBox) {
   }
 
   def eventStatuses: ObservableBuffer[Event] = {
-    GlobalData.krystalBullOpt match {
-      case Some(krystalBull) =>
-        val statusF = krystalBull.listEvents().map { statuses =>
-          ObservableBuffer(statuses)
-        }
-        Await.result(statusF, 5.seconds)
-      case None =>
-        ObservableBuffer.empty
+    val statusF = krystalBull.listEvents().map { statuses =>
+      ObservableBuffer(statuses)
     }
+    Await.result(statusF, 5.seconds)
   }
 
   private val tableView: TableView[Event] = {
@@ -121,7 +115,7 @@ class HomePane(glassPane: VBox) {
         columnIndex = 0,
         rowIndex = 0)
     add(new TextField() {
-          text = GlobalData.krystalBullOpt.get.publicKey.hex
+          text = krystalBull.publicKey.hex
           editable = false
           minWidth = 500
         },
@@ -133,7 +127,7 @@ class HomePane(glassPane: VBox) {
         columnIndex = 0,
         rowIndex = 1)
     add(new TextField() {
-          text = GlobalData.krystalBullOpt.get
+          text = krystalBull
             .stakingAddress(GlobalData.network)
             .toString()
           editable = false
@@ -147,8 +141,7 @@ class HomePane(glassPane: VBox) {
     onAction = _ => {
       model.createEvent() match {
         case Some(params) =>
-          val kb = GlobalData.krystalBullOpt.get
-          kb.createNewEvent(params.label, params.outcomes).map { _ =>
+          krystalBull.createNewEvent(params.label, params.outcomes).map { _ =>
             updateTable()
           }
         case None =>
