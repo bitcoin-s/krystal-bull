@@ -8,15 +8,11 @@ case class RValueDb(
     purpose: HDPurpose,
     accountCoin: HDCoinType,
     accountIndex: Int,
-    chainType: HDChainType,
+    chainType: Int,
     keyIndex: Int) {
 
-  lazy val hdAddress: HDAddress = {
-    val hdCoin = HDCoin(purpose, accountCoin)
-    val hdAccount = HDAccount(hdCoin, accountIndex)
-    val hdChain = HDChain(chainType, hdAccount)
-    HDAddress(hdChain, keyIndex)
-  }
+  val path: BIP32Path = BIP32Path.fromString(
+    s"m/${purpose.constant}'/${accountCoin.toInt}'/$accountIndex'/$chainType'/$keyIndex'")
 }
 
 object RValueDbHelper {
@@ -24,7 +20,7 @@ object RValueDbHelper {
   def apply(
       nonce: SchnorrNonce,
       account: HDAccount,
-      chainType: HDChainType,
+      chainType: Int,
       keyIndex: Int): RValueDb = {
     RValueDb(nonce,
              account.purpose,

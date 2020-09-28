@@ -51,7 +51,7 @@ case class RValueDAO()(implicit
 
     def accountIndex: Rep[Int] = column("account_index")
 
-    def chainType: Rep[HDChainType] = column("chain_type")
+    def chainType: Rep[Int] = column("chain_type")
 
     def keyIndex: Rep[Int] = column("key_index")
 

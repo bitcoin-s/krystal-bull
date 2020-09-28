@@ -26,13 +26,15 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
     HDAddress(chain, 0)
   }
 
+  // 585 is a random one I picked, unclaimed in https://github.com/satoshilabs/slips/blob/master/slip-0044.md
   private val PURPOSE = 585
 
-  private val rValueAccount = {
-    // 585 is random one I picked, unclaimed in https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+  private val rValueAccount: HDAccount = {
     val coin = HDCoin(HDPurpose(PURPOSE), HDCoinType.fromNetwork(conf.network))
     HDAccount(coin, 0)
   }
+
+  private val chainIndex = 0
 
   private val signingKey: ECPrivateKey = extPrivateKey
     .deriveChildPrivKey(SegWitHDPath(signingKeyHDAddress))
@@ -47,13 +49,17 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
   protected[core] val eventDAO: EventDAO = EventDAO()
   protected[core] val eventOutcomeDAO: EventOutcomeDAO = EventOutcomeDAO()
 
-  private def getKValue(keyIndex: Int): ECPrivateKey = {
-    val coin = HDCoin(HDPurpose(PURPOSE), HDCoinType.fromNetwork(conf.network))
-    val account = HDAccount(coin, 0)
-    val chain = HDChain(HDChainType.External, account)
-    val hdAddress = HDAddress(chain, keyIndex)
+  private def getPath(keyIndex: Int): BIP32Path = {
+    val accountIndex = rValueAccount.index
+    val coin = rValueAccount.coin
+    val purpose = coin.purpose
 
-    extPrivateKey.deriveChildPrivKey(SegWitHDPath(hdAddress)).key
+    BIP32Path.fromString(
+      s"m/${purpose.constant}'/${coin.coinType.toInt}'/$accountIndex'/$chainIndex'/$keyIndex'")
+  }
+
+  private def getKValue(path: BIP32Path): ECPrivateKey = {
+    extPrivateKey.deriveChildPrivKey(path).key
   }
 
   def listEventDbs(): Future[Vector[EventDb]] = eventDAO.findAll()
@@ -80,10 +86,10 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
         case None        => 0
       }
 
-      nonce = getKValue(index).schnorrNonce
+      path = getPath(index)
+      nonce = getKValue(path).schnorrNonce
 
-      rValueDb =
-        RValueDbHelper(nonce, rValueAccount, HDChainType.fromInt(0), index)
+      rValueDb = RValueDbHelper(nonce, rValueAccount, chainIndex, index)
       eventDb = EventDb(nonce, name, outcomes.size, Mock, None)
       eventOutcomeDbs = outcomes.map { outcome =>
         val hash = CryptoUtil.sha256(ByteVector(outcome.getBytes))
@@ -130,7 +136,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
       sig = eventDb.signingVersion match {
         case Mock =>
-          val kVal = getKValue(rValDb.keyIndex)
+          val kVal = getKValue(rValDb.path)
           signingKey.schnorrSignWithNonce(eventOutcomeDb.hashedMessage.bytes,
                                           kVal)
       }
