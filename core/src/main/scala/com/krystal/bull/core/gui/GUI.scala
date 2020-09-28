@@ -1,11 +1,7 @@
 package com.krystal.bull.core.gui
 
-import com.krystal.bull.core.KrystalBull
-import com.krystal.bull.core.gui.GlobalData.{appConfig, krystalBullOpt}
 import com.krystal.bull.core.gui.home.HomePane
 import com.krystal.bull.core.gui.landing.LandingPane
-import com.krystal.bull.core.storage.SeedStorage
-import org.bitcoins.crypto.AesPassword
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -13,9 +9,6 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.image.Image
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 
 object GUI extends JFXApp {
   // Catch unhandled exceptions on FX Application thread

@@ -2,14 +2,14 @@ package com.krystal.bull.core.gui.dialog
 
 import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData
+import com.krystal.bull.core.gui.GlobalData.appConfig
+import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.crypto.AesPassword
 import scalafx.Includes._
 import scalafx.geometry.Insets
 import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, VBox}
 import scalafx.stage.Window
-import com.krystal.bull.core.gui.GlobalData.appConfig
-import org.bitcoins.core.crypto.MnemonicCode
 
 object InitOracleDialog {
 
