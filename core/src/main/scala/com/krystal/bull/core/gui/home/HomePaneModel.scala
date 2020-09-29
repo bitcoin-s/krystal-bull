@@ -1,13 +1,26 @@
 package com.krystal.bull.core.gui.home
 
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.client.RequestBuilding.Get
+import akka.util.ByteString
 import com.krystal.bull.core.Event
-import com.krystal.bull.core.gui.TaskRunner
+import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog._
+import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
+import org.bitcoins.commons.serializers.JsonSerializers._
+import org.bitcoins.core.config.{MainNet, RegTest, TestNet3}
+import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
+import org.bitcoins.core.protocol.BitcoinAddress
+import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
+import scala.concurrent.Future
+
 class HomePaneModel() {
   var taskRunner: TaskRunner = _
+
+  updateBalance()
 
   // Sadly, it is a Java "pattern" to pass null into
   // constructors to signal that you want some default
@@ -21,6 +34,68 @@ class HomePaneModel() {
 
   def viewEvent(event: Event): Unit = {
     ViewEventDialog.showAndWait(parentWindow.value, event)
+  }
+
+  case class AddressStats(
+      address: BitcoinAddress,
+      chain_stats: AddressChainStats,
+      mempool_stats: AddressChainStats)
+
+  case class AddressChainStats(
+      funded_txo_count: Int,
+      funded_txo_sum: Satoshis,
+      spent_txo_count: Int,
+      spent_txo_sum: Satoshis)
+
+  implicit val addressChainStatsReads: Reads[AddressChainStats] =
+    Json.reads[AddressChainStats]
+
+  implicit val addressStatsReads: Reads[AddressStats] =
+    Json.reads[AddressStats]
+
+  private def getBalanceCall(address: BitcoinAddress): Future[CurrencyUnit] = {
+
+    val prefix = GlobalData.network match {
+      case MainNet =>
+        s"https://blockstream.info/api"
+      case TestNet3 =>
+        s"https://blockstream.info/testnet/api"
+      case RegTest =>
+        throw new IllegalArgumentException(
+          "Unable make an api request on regtest")
+    }
+
+    val url = prefix ++ s"/address/$address"
+
+    Http()
+      .singleRequest(Get(url))
+      .flatMap(response =>
+        response.entity.dataBytes
+          .runFold(ByteString.empty)(_ ++ _)
+          .map(payload => payload.decodeString(ByteString.UTF_8)))
+      .flatMap { str =>
+        val json = Json.parse(str)
+        json.validate[AddressStats] match {
+          case JsSuccess(addressStats, _) =>
+            require(addressStats.address == address,
+                    "Must receiving same address requested")
+            val amt =
+              addressStats.chain_stats.funded_txo_sum + addressStats.mempool_stats.funded_txo_sum
+            Future.successful(amt)
+          case JsError(error) =>
+            Future.failed(
+              new RuntimeException(
+                s"Unexpected error when parsing response: $error"))
+        }
+      }
+  }
+
+  def updateBalance(): Unit = {
+    val stakingAddress = GlobalData.stakingAddress
+
+    getBalanceCall(stakingAddress).map { amt =>
+      GlobalData.stakedAmountText.value = s"${amt.satoshis}"
+    }
   }
 }
 

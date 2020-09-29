@@ -4,7 +4,9 @@ import akka.actor.ActorSystem
 import com.krystal.bull.core.gui.settings.Themes
 import com.krystal.bull.core.{KrystalBull, KrystalBullAppConfig}
 import org.bitcoins.core.config._
-import scalafx.beans.property.StringProperty
+import org.bitcoins.core.protocol.BitcoinAddress
+import scalafx.beans.property.{ObjectProperty, StringProperty}
+import javafx.scene.paint.Color
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -16,9 +18,9 @@ object GlobalData {
   implicit val appConfig: KrystalBullAppConfig =
     KrystalBullAppConfig.fromDefaultDatadir()
 
-  val log: StringProperty = StringProperty("")
-
   val statusText: StringProperty = StringProperty("")
+
+  val textColor: ObjectProperty[Color] = ObjectProperty(Color.WHITE)
 
   var darkThemeEnabled: Boolean = true
 
@@ -32,4 +34,8 @@ object GlobalData {
   var network: BitcoinNetwork = MainNet
 
   var krystalBull: KrystalBull = _
+
+  def stakingAddress: BitcoinAddress = krystalBull.stakingAddress(network)
+
+  val stakedAmountText: StringProperty = StringProperty("")
 }
