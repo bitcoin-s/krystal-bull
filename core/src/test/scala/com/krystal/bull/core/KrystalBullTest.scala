@@ -3,7 +3,7 @@ package com.krystal.bull.core
 import java.nio.file.{Files, Path}
 import java.sql.SQLException
 
-import org.bitcoins.crypto.{AesPassword, CryptoUtil, SchnorrDigitalSignature}
+import org.bitcoins.crypto._
 import org.bitcoins.testkit.fixtures.BitcoinSFixture
 import org.bitcoins.testkit.util.FileUtil
 import org.scalatest.FutureOutcome
@@ -113,5 +113,13 @@ class KrystalBullTest extends BitcoinSFixture {
         SchnorrDigitalSignature(signedEvent.get.nonce,
                                 signedEvent.get.attestationOpt.get) == sig)
     }
+  }
+
+  it must "fail to sign an event that doesn't exist" in {
+    krystalBull: KrystalBull =>
+      recoverToSucceededIf[RuntimeException](
+        krystalBull.signEvent(
+          SchnorrNonce(ECPublicKey.freshPublicKey.bytes.tail),
+          "testOutcomes"))
   }
 }
