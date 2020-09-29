@@ -78,7 +78,7 @@ class HomePaneModel() {
         json.validate[AddressStats] match {
           case JsSuccess(addressStats, _) =>
             require(addressStats.address == address,
-                    "Must receiving same address requested")
+                    "Must receive same address requested")
 
             val received =
               addressStats.chain_stats.funded_txo_sum + addressStats.mempool_stats.funded_txo_sum
