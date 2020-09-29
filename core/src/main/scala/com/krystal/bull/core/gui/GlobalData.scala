@@ -37,5 +37,5 @@ object GlobalData {
 
   def stakingAddress: BitcoinAddress = krystalBull.stakingAddress(network)
 
-  val stakedAmountText: StringProperty = StringProperty("")
+  val stakedAmountText: StringProperty = StringProperty("Fetching balance...")
 }
