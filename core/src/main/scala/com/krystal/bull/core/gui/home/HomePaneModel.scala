@@ -79,9 +79,13 @@ class HomePaneModel() {
           case JsSuccess(addressStats, _) =>
             require(addressStats.address == address,
                     "Must receiving same address requested")
-            val amt =
+
+            val received =
               addressStats.chain_stats.funded_txo_sum + addressStats.mempool_stats.funded_txo_sum
-            Future.successful(amt)
+            val spent =
+              addressStats.chain_stats.spent_txo_sum + addressStats.mempool_stats.spent_txo_sum
+
+            Future.successful(received - spent)
           case JsError(error) =>
             Future.failed(
               new RuntimeException(
