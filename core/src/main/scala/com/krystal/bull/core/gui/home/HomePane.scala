@@ -9,7 +9,7 @@ import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control._
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, GridPane, VBox}
-import scalafx.scene.text.TextAlignment
+import scalafx.scene.text._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -135,6 +135,17 @@ class HomePane(glassPane: VBox) {
         },
         columnIndex = 1,
         rowIndex = 1)
+    add(new Label("Staked Amount:") {
+          textAlignment = TextAlignment.Right
+        },
+        columnIndex = 0,
+        rowIndex = 2)
+    add(new Text() {
+          text <== GlobalData.stakedAmountText
+          fill <== GlobalData.textColor
+        },
+        columnIndex = 1,
+        rowIndex = 2)
   }
 
   private val createEventButton = new Button("Create Event") {
