@@ -39,7 +39,16 @@ class HomePaneModel() {
   case class AddressStats(
       address: BitcoinAddress,
       chain_stats: AddressChainStats,
-      mempool_stats: AddressChainStats)
+      mempool_stats: AddressChainStats) {
+
+    val totalReceived: CurrencyUnit =
+      chain_stats.funded_txo_sum + mempool_stats.funded_txo_sum
+
+    val totalSpent: CurrencyUnit =
+      chain_stats.spent_txo_sum + mempool_stats.spent_txo_sum
+
+    val balance: CurrencyUnit = totalReceived - totalSpent
+  }
 
   case class AddressChainStats(
       funded_txo_count: Int,
@@ -80,12 +89,7 @@ class HomePaneModel() {
             require(addressStats.address == address,
                     "Must receive same address requested")
 
-            val received =
-              addressStats.chain_stats.funded_txo_sum + addressStats.mempool_stats.funded_txo_sum
-            val spent =
-              addressStats.chain_stats.spent_txo_sum + addressStats.mempool_stats.spent_txo_sum
-
-            Future.successful(received - spent)
+            Future.successful(addressStats.balance)
           case JsError(error) =>
             Future.failed(
               new RuntimeException(
