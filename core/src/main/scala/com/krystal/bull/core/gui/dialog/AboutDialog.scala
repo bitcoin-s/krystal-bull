@@ -3,6 +3,7 @@ package com.krystal.bull.core.gui.dialog
 import com.krystal.bull.core.gui.GlobalData
 import scalafx.Includes._
 import scalafx.scene.control.{ButtonType, Dialog, TextArea}
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.stage.Window
 
 object AboutDialog {
@@ -11,6 +12,10 @@ object AboutDialog {
     val dialog = new Dialog[Unit]() {
       initOwner(parentWindow)
       title = "About"
+      graphic = new ImageView(new Image("/icons/krystal_bull.png")) {
+        fitHeight = 100
+        fitWidth = 100
+      }
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)
@@ -18,7 +23,7 @@ object AboutDialog {
 
     dialog.dialogPane().content = new TextArea {
       text =
-        "Krystal Bull v0.1\n\nCreated by: benthecarman\n\nRepo is: https://github.com/benthecarman/krystal-bull"
+        "Krystal Bull v0.1\n\nCreated by: benthecarman\n\nRepo: https://github.com/benthecarman/krystal-bull"
       editable = false
     }
 
