@@ -1,6 +1,6 @@
 package com.krystal.bull.core.storage
 
-import com.krystal.bull.core.SigningVersion
+import org.bitcoins.commons.jsonmodels.dlc.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrNonce}
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
 import slick.lifted.{ForeignKeyQuery, ProvenShape}
@@ -18,13 +18,6 @@ case class EventDAO()(implicit
   private val mappers = new DbCommonsColumnMappers(profile)
 
   import mappers._
-
-  implicit val fieldElementMapper: BaseColumnType[FieldElement] =
-    MappedColumnType.base[FieldElement, String](_.hex, FieldElement.fromHex)
-
-  implicit val signingVersionMapper: BaseColumnType[SigningVersion] =
-    MappedColumnType.base[SigningVersion, String](_.toString,
-                                                  SigningVersion.fromString)
 
   override val table: TableQuery[EventTable] = TableQuery[EventTable]
 
@@ -54,7 +47,8 @@ case class EventDAO()(implicit
 
     def numOutcomes: Rep[Long] = column("num_outcomes")
 
-    def signingVersion: Rep[SigningVersion] = column("signing_version")
+    def signingVersion: Rep[SigningVersion] =
+      column("signing_version")
 
     def attestationOpt: Rep[Option[FieldElement]] = column("attestation")
 

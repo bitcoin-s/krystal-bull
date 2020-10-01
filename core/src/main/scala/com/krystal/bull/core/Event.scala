@@ -1,6 +1,7 @@
 package com.krystal.bull.core
 
 import com.krystal.bull.core.storage.{EventDb, EventOutcomeDb}
+import org.bitcoins.commons.jsonmodels.dlc.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrDigitalSignature, SchnorrNonce}
 
 trait Event {

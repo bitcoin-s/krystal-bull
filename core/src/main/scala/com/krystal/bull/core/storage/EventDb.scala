@@ -1,6 +1,6 @@
 package com.krystal.bull.core.storage
 
-import com.krystal.bull.core.SigningVersion
+import org.bitcoins.commons.jsonmodels.dlc.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrDigitalSignature, SchnorrNonce}
 
 case class EventDb(

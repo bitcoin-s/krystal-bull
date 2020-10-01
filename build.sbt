@@ -6,6 +6,9 @@ scalaVersion := "2.13.3"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+resolvers +=
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
 enablePlugins(JavaAppPackaging, GraalVMNativeImagePlugin)
 
 lazy val `krystal-bull` = project
@@ -22,6 +25,6 @@ lazy val core = project
   )
 
 assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", _ @ _*) => MergeStrategy.discard
-  case _ => MergeStrategy.first
+  case PathList("META-INF", _ @_*) => MergeStrategy.discard
+  case _                           => MergeStrategy.first
 }

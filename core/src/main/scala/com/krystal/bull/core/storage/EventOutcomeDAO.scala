@@ -18,9 +18,6 @@ case class EventOutcomeDAO()(implicit
 
   import mappers._
 
-  implicit val sha256Mapper: BaseColumnType[Sha256Digest] =
-    MappedColumnType.base[Sha256Digest, String](_.hex, Sha256Digest.fromHex)
-
   override val table: TableQuery[EventOutcomeTable] =
     TableQuery[EventOutcomeTable]
 

@@ -8,7 +8,7 @@ import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog._
 import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
 import org.bitcoins.commons.serializers.JsonSerializers._
-import org.bitcoins.core.config.{MainNet, RegTest, TestNet3}
+import org.bitcoins.core.config._
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
 import org.bitcoins.core.protocol.BitcoinAddress
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
@@ -69,9 +69,9 @@ class HomePaneModel() {
         s"https://blockstream.info/api"
       case TestNet3 =>
         s"https://blockstream.info/testnet/api"
-      case RegTest =>
+      case net @ (RegTest | SigNet) =>
         throw new IllegalArgumentException(
-          "Unable make an api request on regtest")
+          s"Unable make an api request on $net")
     }
 
     val url = prefix ++ s"/address/$address"

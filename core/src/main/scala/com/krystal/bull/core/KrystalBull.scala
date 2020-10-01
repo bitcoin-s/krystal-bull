@@ -1,7 +1,7 @@
 package com.krystal.bull.core
 
-import com.krystal.bull.core.SigningVersion._
 import com.krystal.bull.core.storage._
+import org.bitcoins.commons.jsonmodels.dlc.SigningVersion._
 import org.bitcoins.core.config.BitcoinNetwork
 import org.bitcoins.core.crypto.{ExtPrivateKey, MnemonicCode}
 import org.bitcoins.core.hd._
@@ -66,7 +66,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
             s"Cannot use a BIP32Path with unhardened nodes, got $path")
     val priv = extPrivateKey.deriveChildPrivKey(path).key
     val hash =
-      CryptoUtil.sha256(priv.schnorrNonce.bytes ++ ByteVector(label.getBytes))
+      CryptoUtil.sha256(
+        priv.schnorrNonce.bytes ++ CryptoUtil.serializeForHash(label))
     val tweak = ECPrivateKey(hash.bytes)
 
     priv.add(tweak)
@@ -99,7 +100,8 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
       path = getPath(index)
       nonce = getKValue(label, path).schnorrNonce
 
-      hash = CryptoUtil.sha256(nonce.bytes ++ ByteVector(label.getBytes))
+      hash =
+        CryptoUtil.sha256(nonce.bytes ++ CryptoUtil.serializeForHash(label))
       commitmentSig = signingKey.schnorrSign(hash.bytes)
 
       rValueDb = RValueDbHelper(nonce = nonce,
@@ -111,7 +113,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
       eventDb = EventDb(nonce, label, outcomes.size, Mock, None)
       eventOutcomeDbs = outcomes.map { outcome =>
-        val hash = CryptoUtil.sha256(ByteVector(outcome.getBytes))
+        val hash = CryptoUtil.sha256(outcome)
         EventOutcomeDb(nonce, outcome, hash)
       }
 
