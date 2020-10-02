@@ -60,7 +60,15 @@ object ViewEventDialog {
           columnIndex = 1,
           rowIndex = 3)
 
-      add(new Label("Attestation:"), 0, 4)
+      add(new Label("Commitment Signature:"), 0, 4)
+      add(new TextField() {
+            text = event.commitmentSignature.hex
+            editable = false
+          },
+          columnIndex = 1,
+          rowIndex = 4)
+
+      add(new Label("Attestation:"), 0, 5)
       event match {
         case completed: CompletedEvent =>
           add(new TextField() {
@@ -68,7 +76,7 @@ object ViewEventDialog {
                 editable = false
               },
               columnIndex = 1,
-              rowIndex = 4)
+              rowIndex = 5)
         case _: PendingEvent =>
           var outcomeOpt: Option[String] = None
 
@@ -109,7 +117,7 @@ object ViewEventDialog {
             spacing = 10
           }
 
-          add(hBox, columnIndex = 1, rowIndex = 4)
+          add(hBox, columnIndex = 1, rowIndex = 5)
       }
     }
 
