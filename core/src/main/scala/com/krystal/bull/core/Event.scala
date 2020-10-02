@@ -1,5 +1,7 @@
 package com.krystal.bull.core
 
+import java.time.Instant
+
 import com.krystal.bull.core.storage.{EventDb, EventOutcomeDb, RValueDb}
 import org.bitcoins.commons.jsonmodels.dlc.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrDigitalSignature, SchnorrNonce}
@@ -9,6 +11,7 @@ sealed trait Event {
   def label: String
   def numOutcomes: Long
   def signingVersion: SigningVersion
+  def maturationTime: Instant
   def commitmentSignature: SchnorrDigitalSignature
   def outcomes: Vector[String]
 }
@@ -18,6 +21,7 @@ case class PendingEvent(
     label: String,
     numOutcomes: Long,
     signingVersion: SigningVersion,
+    maturationTime: Instant,
     commitmentSignature: SchnorrDigitalSignature,
     outcomes: Vector[String])
     extends Event
@@ -27,6 +31,7 @@ case class CompletedEvent(
     label: String,
     numOutcomes: Long,
     signingVersion: SigningVersion,
+    maturationTime: Instant,
     commitmentSignature: SchnorrDigitalSignature,
     outcomes: Vector[String],
     attestation: FieldElement)
@@ -50,6 +55,7 @@ object Event {
                        eventDb.label,
                        eventDb.numOutcomes,
                        eventDb.signingVersion,
+                       eventDb.maturationTime,
                        rValueDb.commitmentSignature,
                        outcomes,
                        sig)
@@ -58,6 +64,7 @@ object Event {
                      eventDb.label,
                      eventDb.numOutcomes,
                      eventDb.signingVersion,
+                     eventDb.maturationTime,
                      rValueDb.commitmentSignature,
                      outcomes)
     }

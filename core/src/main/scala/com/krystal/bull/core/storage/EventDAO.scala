@@ -1,5 +1,7 @@
 package com.krystal.bull.core.storage
 
+import java.time.Instant
+
 import org.bitcoins.commons.jsonmodels.dlc.SigningVersion
 import org.bitcoins.crypto.{FieldElement, SchnorrNonce}
 import org.bitcoins.db.{AppConfig, CRUD, DbCommonsColumnMappers, SlickUtil}
@@ -50,6 +52,8 @@ case class EventDAO()(implicit
     def signingVersion: Rep[SigningVersion] =
       column("signing_version")
 
+    def maturationTime: Rep[Instant] = column("maturation_time")
+
     def attestationOpt: Rep[Option[FieldElement]] = column("attestation")
 
     def * : ProvenShape[EventDb] =
@@ -57,6 +61,7 @@ case class EventDAO()(implicit
        label,
        numOutcomes,
        signingVersion,
+       maturationTime,
        attestationOpt) <> (EventDb.tupled, EventDb.unapply)
 
     def fk: ForeignKeyQuery[_, RValueDb] = {

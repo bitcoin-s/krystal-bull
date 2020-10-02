@@ -2,6 +2,7 @@ package com.krystal.bull.core.gui.dialog
 
 import com.krystal.bull.core.gui.GlobalData
 import com.krystal.bull.core.gui.home.InitEventParams
+import org.bitcoins.core.util.TimeUtil
 import scalafx.Includes._
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
@@ -98,7 +99,7 @@ object CreateEventDialog {
           }
         }
 
-        val params = InitEventParams(label, outcomes)
+        val params = InitEventParams(label, TimeUtil.now, outcomes)
 
         Some(params)
       } else None

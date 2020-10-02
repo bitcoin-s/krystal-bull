@@ -1,5 +1,7 @@
 package com.krystal.bull.core.gui.home
 
+import java.time.Instant
+
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding.Get
 import akka.util.ByteString
@@ -107,4 +109,7 @@ class HomePaneModel() {
   }
 }
 
-case class InitEventParams(label: String, outcomes: Vector[String])
+case class InitEventParams(
+    label: String,
+    maturationTime: Instant,
+    outcomes: Vector[String])

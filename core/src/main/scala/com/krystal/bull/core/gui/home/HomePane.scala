@@ -152,9 +152,13 @@ class HomePane(glassPane: VBox) {
     onAction = _ => {
       model.createEvent() match {
         case Some(params) =>
-          krystalBull.createNewEvent(params.label, params.outcomes).map { _ =>
-            updateTable()
-          }
+          krystalBull
+            .createNewEvent(params.label,
+                            params.maturationTime,
+                            params.outcomes)
+            .map { _ =>
+              updateTable()
+            }
         case None =>
           ()
       }

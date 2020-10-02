@@ -1,5 +1,7 @@
 package com.krystal.bull.core
 
+import java.time.Instant
+
 import com.krystal.bull.core.storage._
 import org.bitcoins.commons.jsonmodels.dlc.SigningVersion._
 import org.bitcoins.core.config.BitcoinNetwork
@@ -106,6 +108,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
   def createNewEvent(
       label: String,
+      maturationTime: Instant,
       outcomes: Vector[String]): Future[EventDb] = {
     for {
       indexOpt <- rValueDAO.maxKeyIndex
@@ -128,7 +131,7 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
                                 keyIndex = index,
                                 commitmentSignature = commitmentSig)
 
-      eventDb = EventDb(nonce, label, outcomes.size, Mock, None)
+      eventDb = EventDb(nonce, label, outcomes.size, Mock, maturationTime, None)
       eventOutcomeDbs = outcomes.map { outcome =>
         val hash = CryptoUtil.sha256(outcome)
         EventOutcomeDb(nonce, outcome, hash)

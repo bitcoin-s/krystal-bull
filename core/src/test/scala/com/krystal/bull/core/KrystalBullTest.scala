@@ -3,11 +3,11 @@ package com.krystal.bull.core
 import java.nio.file.{Files, Path}
 import java.sql.SQLException
 
+import org.bitcoins.core.util.TimeUtil
 import org.bitcoins.crypto._
 import org.bitcoins.testkit.fixtures.BitcoinSFixture
 import org.bitcoins.testkit.util.FileUtil
 import org.scalatest.FutureOutcome
-import scodec.bits.ByteVector
 
 import scala.concurrent.Future
 
@@ -55,19 +55,24 @@ class KrystalBullTest extends BitcoinSFixture {
 
   it must "create a new event and list it with pending" in {
     krystalBull: KrystalBull =>
+      val time = TimeUtil.now
       for {
-        testEventDb <- krystalBull.createNewEvent("test", testOutcomes)
+        testEventDb <- krystalBull.createNewEvent("test", time, testOutcomes)
         pendingEvents <- krystalBull.listPendingEventDbs()
       } yield {
         assert(pendingEvents.size == 1)
-        assert(pendingEvents.contains(testEventDb))
+        // encoding of the time can make them unequal
+        val comparable =
+          pendingEvents.head.copy(maturationTime = testEventDb.maturationTime)
+        assert(comparable == testEventDb)
       }
   }
 
   it must "create a new event with a valid commitment signature" in {
     krystalBull: KrystalBull =>
       for {
-        testEventDb <- krystalBull.createNewEvent("test", testOutcomes)
+        testEventDb <-
+          krystalBull.createNewEvent("test", TimeUtil.now, testOutcomes)
         rValDbOpt <- krystalBull.rValueDAO.read(testEventDb.nonce)
       } yield {
         assert(rValDbOpt.isDefined)
@@ -82,8 +87,8 @@ class KrystalBullTest extends BitcoinSFixture {
   it must "create multiple events with different names" in {
     krystalBull: KrystalBull =>
       for {
-        _ <- krystalBull.createNewEvent("test", testOutcomes)
-        _ <- krystalBull.createNewEvent("test1", testOutcomes)
+        _ <- krystalBull.createNewEvent("test", TimeUtil.now, testOutcomes)
+        _ <- krystalBull.createNewEvent("test1", TimeUtil.now, testOutcomes)
       } yield succeed
   }
 
@@ -91,8 +96,8 @@ class KrystalBullTest extends BitcoinSFixture {
     krystalBull: KrystalBull =>
       recoverToSucceededIf[SQLException] {
         for {
-          _ <- krystalBull.createNewEvent("test", testOutcomes)
-          _ <- krystalBull.createNewEvent("test", testOutcomes)
+          _ <- krystalBull.createNewEvent("test", TimeUtil.now, testOutcomes)
+          _ <- krystalBull.createNewEvent("test", TimeUtil.now, testOutcomes)
         } yield ()
       }
   }
@@ -100,7 +105,7 @@ class KrystalBullTest extends BitcoinSFixture {
   it must "create and sign a event" in { krystalBull: KrystalBull =>
     val outcome = testOutcomes.head
     for {
-      eventDb <- krystalBull.createNewEvent("test", testOutcomes)
+      eventDb <- krystalBull.createNewEvent("test", TimeUtil.now, testOutcomes)
       sig <- krystalBull.signEvent(eventDb.nonce, outcome)
       outcomeDbs <- krystalBull.eventOutcomeDAO.findByNonce(eventDb.nonce)
       outcomeDb = outcomeDbs.find(_.message == outcome).get
