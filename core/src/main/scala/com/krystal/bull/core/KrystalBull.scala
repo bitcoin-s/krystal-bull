@@ -10,7 +10,6 @@ import org.bitcoins.core.protocol.script.P2WPKHWitnessSPKV0
 import org.bitcoins.core.util.TimeUtil
 import org.bitcoins.crypto._
 import org.bitcoins.keymanager.DecryptedMnemonic
-import scodec.bits.ByteVector
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -79,11 +78,29 @@ case class KrystalBull(extPrivateKey: ExtPrivateKey)(implicit
 
   def listEvents(): Future[Vector[Event]] = {
     for {
+      rValDbs <- rValueDAO.findAll()
       eventDbs <- eventDAO.findAll()
       outcomes <- eventOutcomeDAO.findAll()
     } yield {
+      val rValDbsByNonce = rValDbs.groupBy(_.nonce)
       val outcomesByNonce = outcomes.groupBy(_.nonce)
-      eventDbs.map(db => Event(db, outcomesByNonce(db.nonce)))
+      eventDbs.map(db =>
+        Event(rValDbsByNonce(db.nonce).head, db, outcomesByNonce(db.nonce)))
+    }
+  }
+
+  def getEvent(nonce: SchnorrNonce): Future[Option[Event]] = {
+    for {
+      rValDbOpt <- rValueDAO.read(nonce)
+      eventDbOpt <- eventDAO.read(nonce)
+      outcomes <- eventOutcomeDAO.findByNonce(nonce)
+    } yield {
+      (rValDbOpt, eventDbOpt) match {
+        case (Some(rValDb), Some(eventDb)) =>
+          Some(Event(rValDb, eventDb, outcomes))
+        case (None, None) | (Some(_), None) | (None, Some(_)) =>
+          None
+      }
     }
   }
 
