@@ -1,9 +1,9 @@
-package com.krystal.bull.core.gui
+package com.krystal.bull.gui
 
 import java.nio.file.{Path, Paths}
 
 import akka.actor.ActorSystem
-import com.krystal.bull.core.gui.settings.Themes
+import com.krystal.bull.gui.settings.Themes
 import javafx.scene.paint.Color
 import org.bitcoins.core.config._
 import org.bitcoins.core.protocol.BitcoinAddress

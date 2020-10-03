@@ -1,4 +1,4 @@
-package com.krystal.bull.core.gui
+package com.krystal.bull.gui
 
 import scalafx.Includes._
 import scalafx.application.Platform

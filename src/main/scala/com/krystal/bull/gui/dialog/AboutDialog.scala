@@ -1,6 +1,6 @@
-package com.krystal.bull.core.gui.dialog
+package com.krystal.bull.gui.dialog
 
-import com.krystal.bull.core.gui.GlobalData
+import com.krystal.bull.gui.GlobalData
 import scalafx.Includes._
 import scalafx.scene.control.{ButtonType, Dialog, TextArea}
 import scalafx.scene.image.{Image, ImageView}

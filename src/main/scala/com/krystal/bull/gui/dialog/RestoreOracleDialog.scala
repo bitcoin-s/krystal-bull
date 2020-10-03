@@ -1,7 +1,7 @@
-package com.krystal.bull.core.gui.dialog
+package com.krystal.bull.gui.dialog
 
-import com.krystal.bull.core.gui.GlobalData
-import com.krystal.bull.core.gui.GlobalData._
+import com.krystal.bull.gui.GlobalData
+import com.krystal.bull.gui.GlobalData._
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle

@@ -1,7 +1,7 @@
-package com.krystal.bull.core.gui.settings
+package com.krystal.bull.gui.settings
 
-import com.krystal.bull.core.gui.GUI.stage
-import com.krystal.bull.core.gui.GlobalData
+import com.krystal.bull.gui.GUI.stage
+import com.krystal.bull.gui.GlobalData
 import javafx.scene.paint.Color
 
 sealed abstract class Theme {

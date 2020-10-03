@@ -1,13 +1,13 @@
-package com.krystal.bull.core.gui.home
+package com.krystal.bull.gui.home
 
 import java.time.Instant
 
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding.Get
 import akka.util.ByteString
-import com.krystal.bull.core.gui.GlobalData._
-import com.krystal.bull.core.gui.dialog._
-import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.gui.GlobalData._
+import com.krystal.bull.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.gui.dialog._
 import org.bitcoins.commons.serializers.JsonSerializers._
 import org.bitcoins.core.config._
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
