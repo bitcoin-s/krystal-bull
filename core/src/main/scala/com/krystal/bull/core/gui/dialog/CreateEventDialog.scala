@@ -22,7 +22,7 @@ object CreateEventDialog {
     dialog.dialogPane().stylesheets = GlobalData.currentStyleSheets
     dialog.resizable = true
 
-    val eventLabelTF = new TextField()
+    val eventNameTF = new TextField()
 
     val outcomeMap: scala.collection.mutable.Map[Int, TextField] =
       scala.collection.mutable.Map.empty
@@ -63,7 +63,7 @@ object CreateEventDialog {
       val baseData: Node = new HBox() {
         spacing = 10
         alignment = Pos.Center
-        children = Vector(new Label("Event Label"), eventLabelTF)
+        children = Vector(new Label("Event Name"), eventNameTF)
       }
 
       val outcomes: Node = new VBox {
@@ -83,12 +83,12 @@ object CreateEventDialog {
     // Enable/Disable OK button depending on whether all data was entered.
     val okButton = dialog.dialogPane().lookupButton(ButtonType.OK)
     // Simple validation that sufficient data was entered
-    okButton.disable <== eventLabelTF.text.isEmpty
+    okButton.disable <== eventNameTF.text.isEmpty
 
     // When the OK button is clicked, convert the result to a T.
     dialog.resultConverter = dialogButton =>
       if (dialogButton == ButtonType.OK) {
-        val label = eventLabelTF.text.value
+        val eventName = eventNameTF.text.value
 
         val outcomeStrs = outcomeMap.values.toVector.distinct
         val outcomes = outcomeStrs.flatMap { keyStr =>
@@ -99,7 +99,7 @@ object CreateEventDialog {
           }
         }
 
-        val params = InitEventParams(label, TimeUtil.now, outcomes)
+        val params = InitEventParams(eventName, TimeUtil.now, outcomes)
 
         Some(params)
       } else None

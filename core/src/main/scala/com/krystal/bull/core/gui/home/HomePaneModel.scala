@@ -5,7 +5,6 @@ import java.time.Instant
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding.Get
 import akka.util.ByteString
-import com.krystal.bull.core.Event
 import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog._
 import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
@@ -13,6 +12,7 @@ import org.bitcoins.commons.serializers.JsonSerializers._
 import org.bitcoins.core.config._
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
 import org.bitcoins.core.protocol.BitcoinAddress
+import org.bitcoins.dlc.oracle._
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
@@ -110,6 +110,6 @@ class HomePaneModel() {
 }
 
 case class InitEventParams(
-    label: String,
+    eventName: String,
     maturationTime: Instant,
     outcomes: Vector[String])

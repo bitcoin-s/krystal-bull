@@ -1,22 +1,28 @@
 package com.krystal.bull.core.gui
 
+import java.nio.file.{Path, Paths}
+
 import akka.actor.ActorSystem
 import com.krystal.bull.core.gui.settings.Themes
-import com.krystal.bull.core.{KrystalBull, KrystalBullAppConfig}
+import javafx.scene.paint.Color
 import org.bitcoins.core.config._
 import org.bitcoins.core.protocol.BitcoinAddress
+import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
-import javafx.scene.paint.Color
 
 import scala.concurrent.ExecutionContextExecutor
+import scala.util.Properties
 
 object GlobalData {
 
   implicit val system: ActorSystem = ActorSystem("krystal-bull")
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
-  implicit val appConfig: KrystalBullAppConfig =
-    KrystalBullAppConfig.fromDefaultDatadir()
+  private val DEFAULT_DATADIR: Path =
+    Paths.get(Properties.userHome, ".krystal-bull")
+
+  implicit val appConfig: DLCOracleAppConfig = DLCOracleAppConfig(
+    DEFAULT_DATADIR)
 
   val statusText: StringProperty = StringProperty("")
 
@@ -33,9 +39,9 @@ object GlobalData {
 
   var network: BitcoinNetwork = MainNet
 
-  var krystalBull: KrystalBull = _
+  var oracle: DLCOracle = _
 
-  def stakingAddress: BitcoinAddress = krystalBull.stakingAddress(network)
+  def stakingAddress: BitcoinAddress = oracle.stakingAddress(network)
 
   val stakedAmountText: StringProperty = StringProperty("Fetching balance...")
 }

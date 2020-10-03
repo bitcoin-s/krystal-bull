@@ -1,10 +1,10 @@
 package com.krystal.bull.core.gui.dialog
 
-import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData
 import com.krystal.bull.core.gui.GlobalData.appConfig
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.crypto.AesPassword
+import org.bitcoins.dlc.oracle.DLCOracle
 import scalafx.Includes._
 import scalafx.geometry.Insets
 import scalafx.scene.control._
@@ -13,8 +13,8 @@ import scalafx.stage.Window
 
 object InitOracleDialog {
 
-  def showAndWait(parentWindow: Window): Option[KrystalBull] = {
-    val dialog = new Dialog[Option[KrystalBull]]() {
+  def showAndWait(parentWindow: Window): Option[DLCOracle] = {
+    val dialog = new Dialog[Option[DLCOracle]]() {
       initOwner(parentWindow)
       title = "Initialize Oracle"
     }
@@ -77,13 +77,13 @@ object InitOracleDialog {
         val aesPass = AesPassword.fromString(password)
 
         val krystalBull =
-          KrystalBull.fromMnemonicCode(mnemonicCode, aesPass, None)
+          DLCOracle(mnemonicCode, aesPass, None)
         Some(krystalBull)
       } else None
 
     dialog.showAndWait() match {
-      case Some(Some(kb: KrystalBull)) =>
-        Some(kb)
+      case Some(Some(oracle: DLCOracle)) =>
+        Some(oracle)
       case Some(_) | None => None
     }
   }

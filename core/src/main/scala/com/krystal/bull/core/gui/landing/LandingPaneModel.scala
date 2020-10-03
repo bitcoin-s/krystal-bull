@@ -1,12 +1,13 @@
 package com.krystal.bull.core.gui.landing
 
-import com.krystal.bull.core.KrystalBull
 import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.dialog._
 import com.krystal.bull.core.gui.{GUI, GlobalData, TaskRunner}
-import com.krystal.bull.core.storage.SeedStorage
+import org.bitcoins.core.crypto.ExtKeyVersion.SegWitMainNetPriv
 import org.bitcoins.core.util.FutureUtil
 import org.bitcoins.crypto.AesPassword
+import org.bitcoins.dlc.oracle.DLCOracle
+import org.bitcoins.keymanager.WalletStorage
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
@@ -27,7 +28,7 @@ class LandingPaneModel() {
       op = {
         krystalBullOpt match {
           case Some(kb) =>
-            GlobalData.krystalBull = kb
+            GlobalData.oracle = kb
             appConfig.initialize(kb)
           case None =>
             FutureUtil.unit
@@ -41,22 +42,22 @@ class LandingPaneModel() {
   }
 
   def restoreOracle(): Unit = {
-    val krystalBullOpt = RestoreOracleDialog.showAndWait(parentWindow.value)
+    val oracleOpt = RestoreOracleDialog.showAndWait(parentWindow.value)
 
     taskRunner.run(
       caption = "Restore Oracle",
       op = {
-        krystalBullOpt match {
-          case Some(kb) =>
-            GlobalData.krystalBull = kb
-            appConfig.initialize(kb)
+        oracleOpt match {
+          case Some(oracle) =>
+            GlobalData.oracle = oracle
+            appConfig.initialize(oracle)
           case None =>
             FutureUtil.unit
         }
       }
     )
 
-    if (krystalBullOpt.isDefined) {
+    if (oracleOpt.isDefined) {
       GUI.changeToHomeScene()
     }
   }
@@ -66,10 +67,13 @@ class LandingPaneModel() {
       caption = "Set Oracle",
       op = {
         val extKey =
-          SeedStorage.getPrivateKeyFromDisk(appConfig.seedPath, password, None)
-        val kb = KrystalBull(extKey)
-        krystalBull = kb
-        appConfig.initialize(kb)
+          WalletStorage.getPrivateKeyFromDisk(appConfig.seedPath,
+                                              SegWitMainNetPriv,
+                                              password,
+                                              None)
+        val oracle = DLCOracle(extKey)
+        GlobalData.oracle = oracle
+        appConfig.initialize(oracle)
       }
     )
 

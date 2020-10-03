@@ -2,8 +2,8 @@ package com.krystal.bull.core.gui.dialog
 
 import com.krystal.bull.core.gui.GlobalData
 import com.krystal.bull.core.gui.GlobalData._
-import com.krystal.bull.core.{CompletedEvent, Event, PendingEvent}
 import org.bitcoins.commons.jsonmodels.dlc.DLCMessage.OracleInfo
+import org.bitcoins.dlc.oracle._
 import scalafx.Includes._
 import scalafx.event.ActionEvent
 import scalafx.geometry.Insets
@@ -17,7 +17,7 @@ object ViewEventDialog {
   def showAndWait(parentWindow: Window, event: Event): Unit = {
     val dialog = new Dialog[Unit]() {
       initOwner(parentWindow)
-      title = event.label
+      title = event.eventName
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)
@@ -30,7 +30,7 @@ object ViewEventDialog {
 
       add(new Label("Oracle Info:"), 0, 0)
       add(new TextField() {
-            text = OracleInfo(krystalBull.publicKey, event.nonce).hex
+            text = OracleInfo(oracle.publicKey, event.nonce).hex
             editable = false
           },
           columnIndex = 1,
@@ -98,7 +98,7 @@ object ViewEventDialog {
                     dialogPane().stylesheets = GlobalData.currentStyleSheets
                   }.showAndWait() match {
                     case Some(ButtonType.OK) =>
-                      GlobalData.krystalBull
+                      GlobalData.oracle
                         .signEvent(event.nonce, outcome)
                     case None | Some(_) =>
                       ()

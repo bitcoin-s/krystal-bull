@@ -2,7 +2,7 @@ package com.krystal.bull.core.gui.home
 
 import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
-import com.krystal.bull.core.{CompletedEvent, Event, PendingEvent}
+import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -25,7 +25,7 @@ class HomePane(glassPane: VBox) {
   }
 
   def eventStatuses: ObservableBuffer[Event] = {
-    val statusF = krystalBull.listEvents().map { statuses =>
+    val statusF = oracle.listEvents().map { statuses =>
       ObservableBuffer(statuses)
     }
     Await.result(statusF, 5.seconds)
@@ -33,10 +33,10 @@ class HomePane(glassPane: VBox) {
 
   private val tableView: TableView[Event] = {
     val labelCol = new TableColumn[Event, String] {
-      text = "Label"
+      text = "Event Name"
       prefWidth = 150
       cellValueFactory = { status =>
-        new StringProperty(status, "Label", status.value.label)
+        new StringProperty(status, "Event Name", status.value.eventName)
       }
     }
     val nonceCol = new TableColumn[Event, String] {
@@ -115,7 +115,7 @@ class HomePane(glassPane: VBox) {
         columnIndex = 0,
         rowIndex = 0)
     add(new TextField() {
-          text = krystalBull.publicKey.hex
+          text = oracle.publicKey.hex
           editable = false
           minWidth = 500
         },
@@ -127,7 +127,7 @@ class HomePane(glassPane: VBox) {
         columnIndex = 0,
         rowIndex = 1)
     add(new TextField() {
-          text = krystalBull
+          text = oracle
             .stakingAddress(GlobalData.network)
             .toString()
           editable = false
@@ -152,8 +152,8 @@ class HomePane(glassPane: VBox) {
     onAction = _ => {
       model.createEvent() match {
         case Some(params) =>
-          krystalBull
-            .createNewEvent(params.label,
+          oracle
+            .createNewEvent(params.eventName,
                             params.maturationTime,
                             params.outcomes)
             .map { _ =>
