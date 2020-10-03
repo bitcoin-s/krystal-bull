@@ -1,6 +1,6 @@
-package com.krystal.bull.core.gui
+package com.krystal.bull.gui
 
-import com.krystal.bull.core.gui.dialog.AboutDialog
+import com.krystal.bull.gui.dialog.AboutDialog
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 

@@ -1,9 +1,9 @@
-package com.krystal.bull.core.gui.dialog
+package com.krystal.bull.gui.dialog
 
 import java.time.{Instant, LocalTime, ZoneOffset}
 
-import com.krystal.bull.core.gui.GlobalData
-import com.krystal.bull.core.gui.home.InitEventParams
+import com.krystal.bull.gui.GlobalData
+import com.krystal.bull.gui.home.InitEventParams
 import scalafx.Includes._
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node

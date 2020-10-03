@@ -1,6 +1,6 @@
-package com.krystal.bull.core.gui.landing
+package com.krystal.bull.gui.landing
 
-import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.gui.{GlobalData, TaskRunner}
 import org.bitcoins.crypto.AesPassword
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Button, Label, PasswordField}

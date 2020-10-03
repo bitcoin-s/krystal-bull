@@ -1,6 +1,6 @@
-package com.krystal.bull.core.gui
+package com.krystal.bull.gui
 
-import com.krystal.bull.core.gui.settings.Themes
+import com.krystal.bull.gui.settings.Themes
 import org.bitcoins.core.config.{BitcoinNetworks, MainNet, RegTest, TestNet3}
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}

@@ -1,11 +1,12 @@
-package com.krystal.bull.core.gui.home
+package com.krystal.bull.gui.home
 
 import java.time.ZoneId
 import java.time.format.{DateTimeFormatter, FormatStyle}
 import java.util.Locale
 
-import com.krystal.bull.core.gui.GlobalData._
-import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.gui.GlobalData._
+import com.krystal.bull.gui.home.HomePaneModel
+import com.krystal.bull.gui.{GlobalData, TaskRunner}
 import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer

@@ -1,7 +1,7 @@
-package com.krystal.bull.core.gui
+package com.krystal.bull.gui
 
-import com.krystal.bull.core.gui.home.HomePane
-import com.krystal.bull.core.gui.landing.LandingPane
+import com.krystal.bull.gui.home.HomePane
+import com.krystal.bull.gui.landing.LandingPane
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene

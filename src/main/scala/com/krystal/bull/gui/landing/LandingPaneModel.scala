@@ -1,8 +1,8 @@
-package com.krystal.bull.core.gui.landing
+package com.krystal.bull.gui.landing
 
-import com.krystal.bull.core.gui.GlobalData._
-import com.krystal.bull.core.gui.dialog._
-import com.krystal.bull.core.gui.{GUI, GlobalData, TaskRunner}
+import com.krystal.bull.gui.GlobalData._
+import com.krystal.bull.gui.dialog._
+import com.krystal.bull.gui.{GUI, GlobalData, TaskRunner}
 import org.bitcoins.core.crypto.ExtKeyVersion.SegWitMainNetPriv
 import org.bitcoins.core.util.FutureUtil
 import org.bitcoins.crypto.AesPassword
