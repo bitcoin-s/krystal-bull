@@ -8,5 +8,4 @@ libraryDependencies ++= Deps.core
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
-
 mainClass := Some("com.krystal.bull.core.gui.GUI")
