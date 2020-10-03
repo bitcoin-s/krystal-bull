@@ -1,8 +1,9 @@
 package com.krystal.bull.core.gui.dialog
 
+import java.time.{Instant, LocalTime, ZoneOffset}
+
 import com.krystal.bull.core.gui.GlobalData
 import com.krystal.bull.core.gui.home.InitEventParams
-import org.bitcoins.core.util.TimeUtil
 import scalafx.Includes._
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
@@ -23,12 +24,13 @@ object CreateEventDialog {
     dialog.resizable = true
 
     val eventNameTF = new TextField()
+    val datePicker = new DatePicker()
 
     val outcomeMap: scala.collection.mutable.Map[Int, TextField] =
       scala.collection.mutable.Map.empty
 
     var nextOutcomeRow: Int = 2
-    val keyGrid: GridPane = new GridPane {
+    val outcomeGrid: GridPane = new GridPane {
       alignment = Pos.Center
       padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
       hgap = 5
@@ -41,8 +43,8 @@ object CreateEventDialog {
       val row = nextOutcomeRow
       outcomeMap.addOne((row, outcomeTF))
 
-      keyGrid.add(new Label("Potential Outcome"), 0, row)
-      keyGrid.add(outcomeTF, 1, row)
+      outcomeGrid.add(new Label("Potential Outcome"), 0, row)
+      outcomeGrid.add(outcomeTF, 1, row)
 
       nextOutcomeRow += 1
       dialog.dialogPane().getScene.getWindow.sizeToScene()
@@ -60,10 +62,15 @@ object CreateEventDialog {
       spacing = 10
       alignment = Pos.Center
 
-      val baseData: Node = new HBox() {
-        spacing = 10
-        alignment = Pos.Center
-        children = Vector(new Label("Event Name"), eventNameTF)
+      val eventDataGrid: GridPane = new GridPane {
+        padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
+        hgap = 5
+        vgap = 5
+
+        add(new Label("Event Name"), 0, 0)
+        add(eventNameTF, 1, 0)
+        add(new Label("Maturity Date"), 0, 1)
+        add(datePicker, 1, 1)
       }
 
       val outcomes: Node = new VBox {
@@ -74,10 +81,10 @@ object CreateEventDialog {
           spacing = 10
           children = Vector(new Label("Potential Outcomes"), addOutcomeButton)
         }
-        children = Vector(label, keyGrid)
+        children = Vector(label, outcomeGrid)
       }
 
-      children = Vector(baseData, new Separator(), outcomes)
+      children = Vector(eventDataGrid, new Separator(), outcomes)
     }
 
     // Enable/Disable OK button depending on whether all data was entered.
@@ -90,6 +97,11 @@ object CreateEventDialog {
       if (dialogButton == ButtonType.OK) {
         val eventName = eventNameTF.text.value
 
+        val maturityDateEpoch =
+          datePicker.value.value.toEpochSecond(LocalTime.MIN, ZoneOffset.UTC)
+
+        val maturityDate = Instant.ofEpochSecond(maturityDateEpoch)
+
         val outcomeStrs = outcomeMap.values.toVector.distinct
         val outcomes = outcomeStrs.flatMap { keyStr =>
           if (keyStr.text.value.nonEmpty) {
@@ -99,7 +111,7 @@ object CreateEventDialog {
           }
         }
 
-        val params = InitEventParams(eventName, TimeUtil.now, outcomes)
+        val params = InitEventParams(eventName, maturityDate, outcomes)
 
         Some(params)
       } else None

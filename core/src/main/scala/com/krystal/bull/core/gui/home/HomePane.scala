@@ -1,5 +1,9 @@
 package com.krystal.bull.core.gui.home
 
+import java.time.ZoneId
+import java.time.format.{DateTimeFormatter, FormatStyle}
+import java.util.Locale
+
 import com.krystal.bull.core.gui.GlobalData._
 import com.krystal.bull.core.gui.{GlobalData, TaskRunner}
 import org.bitcoins.dlc.oracle._
@@ -46,6 +50,20 @@ class HomePane(glassPane: VBox) {
         new StringProperty(status, "Nonce", status.value.nonce.hex)
       }
     }
+    val maturityDateCol = new TableColumn[Event, String] {
+      text = "Maturity Date"
+      prefWidth = 150
+      cellValueFactory = { status =>
+        val formatter =
+          DateTimeFormatter
+            .ofLocalizedDate(FormatStyle.MEDIUM)
+            .withLocale(Locale.US)
+            .withZone(ZoneId.systemDefault())
+        new StringProperty(status,
+                           "Maturity Date",
+                           formatter.format(status.value.maturationTime))
+      }
+    }
     val numberOutcomesCol = new TableColumn[Event, String] {
       text = "Num Outcomes"
       prefWidth = 150
@@ -80,6 +98,7 @@ class HomePane(glassPane: VBox) {
       alignmentInParent = Pos.Center
       columns ++= Seq(labelCol,
                       nonceCol,
+                      maturityDateCol,
                       numberOutcomesCol,
                       signingVersionCol,
                       signatureCol)
