@@ -1,4 +1,5 @@
 # Krystal Bull
+[![Build Status](https://travis-ci.com/benthecarman/krystal-bull.svg?branch=master)](https://travis-ci.com/benthecarman/krystal-bull)
 
 ## Building from source
 
