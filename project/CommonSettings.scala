@@ -8,7 +8,7 @@ object CommonSettings {
 
   lazy val settings: Seq[Setting[_]] = List(
 //    organization := "",
-//    homepage := Some(url("")),
+    homepage := Some(url("https://github.com/benthecarman/krystal-bull")),
     developers := List(
       Developer(
         "benthecarman",
