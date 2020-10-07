@@ -14,12 +14,9 @@ object Deps {
     val akkaStreamv = "2.6.6"
     val akkaActorV: String = akkaStreamv
 
-    val ujsonV = "0.8.0"
-
-    val scodecV = "1.1.17"
     val scalaFxV = "14-R19"
-    val bitcoinsV = "0.4.0+39-bc3c0af1-SNAPSHOT"
     val javaFxV = "14.0.1"
+    val bitcoinsV = "0.4.0+39-bc3c0af1-SNAPSHOT"
   }
 
   object Compile {
@@ -33,16 +30,8 @@ object Deps {
     val akkaActor =
       "com.typesafe.akka" %% "akka-actor" % V.akkaStreamv withSources () withJavadoc ()
 
-    val bitcoins =
-      "org.bitcoin-s" %% "bitcoin-s-core" % V.bitcoinsV withSources () withJavadoc ()
-
     val bitcoinsOracle =
       "org.bitcoin-s" %% "bitcoin-s-dlc-oracle" % V.bitcoinsV withSources () withJavadoc ()
-
-    val bitcoinsTestKit =
-      "org.bitcoin-s" %% "bitcoin-s-testkit" % V.bitcoinsV withSources () withJavadoc ()
-
-    val ujson = "com.lihaoyi" %% "ujson" % V.ujsonV
 
     val scalaFx =
       "org.scalafx" %% "scalafx" % Deps.V.scalaFxV withSources () withJavadoc ()
@@ -75,18 +64,12 @@ object Deps {
                                javaFxMedia,
                                javaFxSwing,
                                javaFxWeb)
-
-    val scodec =
-      "org.scodec" %% "scodec-bits" % V.scodecV withSources () withJavadoc ()
   }
 
-  val core: List[ModuleID] = List(Compile.bitcoins,
-                                  Compile.bitcoinsOracle,
-                                  Compile.bitcoinsTestKit,
+  val core: List[ModuleID] = List(Compile.bitcoinsOracle,
                                   Compile.akkaActor,
                                   Compile.akkaHttp,
                                   Compile.akkaStream,
-                                  Compile.ujson,
                                   Compile.scalaFx) ++ Compile.javaFxDeps
 
 }
