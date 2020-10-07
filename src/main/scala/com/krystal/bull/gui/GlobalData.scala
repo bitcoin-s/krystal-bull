@@ -9,6 +9,7 @@ import org.bitcoins.core.config._
 import org.bitcoins.core.protocol.BitcoinAddress
 import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
+import scalafx.scene.image.{Image, ImageView}
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.util.Properties
@@ -44,4 +45,11 @@ object GlobalData {
   def stakingAddress: BitcoinAddress = oracle.stakingAddress(network)
 
   val stakedAmountText: StringProperty = StringProperty("Fetching balance...")
+
+  def logo: ImageView =
+    new ImageView(new Image("/icons/krystal_bull.png")) {
+      fitHeight = 100
+      fitWidth = 100
+    }
+
 }

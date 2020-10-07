@@ -11,7 +11,6 @@ import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control._
-import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{BorderPane, GridPane, VBox}
 import scalafx.scene.text._
 
@@ -21,12 +20,6 @@ import scala.concurrent.duration.DurationInt
 class HomePane(glassPane: VBox) {
 
   val model = new HomePaneModel()
-
-  private val imageView: ImageView = new ImageView(
-    new Image("/icons/krystal_bull.png")) {
-    fitHeight = 100
-    fitWidth = 100
-  }
 
   def eventStatuses: ObservableBuffer[Event] = {
     val statusF = oracle.listEvents().map { statuses =>
@@ -198,7 +191,7 @@ class HomePane(glassPane: VBox) {
   val view: BorderPane = new BorderPane {
     padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
 
-    top = imageView
+    top = GlobalData.logo
     center = centerView
   }
 

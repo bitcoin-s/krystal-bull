@@ -3,7 +3,6 @@ package com.krystal.bull.gui.dialog
 import com.krystal.bull.gui.GlobalData
 import scalafx.Includes._
 import scalafx.scene.control.{ButtonType, Dialog, TextArea}
-import scalafx.scene.image.{Image, ImageView}
 import scalafx.stage.Window
 
 object AboutDialog {
@@ -12,10 +11,7 @@ object AboutDialog {
     val dialog = new Dialog[Unit]() {
       initOwner(parentWindow)
       title = "About"
-      graphic = new ImageView(new Image("/icons/krystal_bull.png")) {
-        fitHeight = 100
-        fitWidth = 100
-      }
+      graphic = GlobalData.logo
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)
