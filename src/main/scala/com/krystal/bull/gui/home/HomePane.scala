@@ -30,7 +30,11 @@ class HomePane(glassPane: VBox) {
 
   def eventStatuses: ObservableBuffer[Event] = {
     val statusF = oracle.listEvents().map { statuses =>
-      ObservableBuffer(statuses)
+      val sorted = statuses.sortBy {
+        case _: PendingEvent   => -1
+        case _: CompletedEvent => 1
+      }
+      ObservableBuffer(sorted)
     }
     Await.result(statusF, 5.seconds)
   }
