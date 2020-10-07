@@ -60,9 +60,9 @@ object ViewEventDialog {
           columnIndex = 1,
           rowIndex = 3)
 
-      add(new Label("Commitment Signature:"), 0, 4)
+      add(new Label("Announcement Signature:"), 0, 4)
       add(new TextField() {
-            text = event.commitmentSignature.hex
+            text = event.announcementSignature.hex
             editable = false
           },
           columnIndex = 1,

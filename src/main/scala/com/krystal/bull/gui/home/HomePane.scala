@@ -5,7 +5,6 @@ import java.time.format.{DateTimeFormatter, FormatStyle}
 import java.util.Locale
 
 import com.krystal.bull.gui.GlobalData._
-import com.krystal.bull.gui.home.HomePaneModel
 import com.krystal.bull.gui.{GlobalData, TaskRunner}
 import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.StringProperty
