@@ -2,6 +2,8 @@ package com.krystal.bull.gui
 
 import com.krystal.bull.gui.home.HomePane
 import com.krystal.bull.gui.landing.LandingPane
+import javafx.application.Platform
+import javafx.stage.WindowEvent
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -67,6 +69,10 @@ object GUI extends JFXApp {
   }
 
   stage.sizeToScene()
+
+  stage.setOnCloseRequest((_: WindowEvent) => {
+    Platform.exit()
+  })
 
   def changeToHomeScene(): Unit = {
     borderPane.center = new HomePane(glassPane).view
