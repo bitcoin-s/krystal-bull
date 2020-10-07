@@ -32,10 +32,6 @@ before_script:
 
 stages:
   - name: compile
-    if:
-      commit_message !~ /(?i)^docs:/ AND
-      commit_message !~ /(?i)^trivial:/ AND NOT
-      ((branch = master AND type = push) OR (tag IS present))
 
 script:
   # Modify PATH to include binaries we are about to download
