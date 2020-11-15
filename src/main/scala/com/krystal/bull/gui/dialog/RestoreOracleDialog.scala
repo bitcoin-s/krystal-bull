@@ -57,16 +57,11 @@ object RestoreOracleDialog {
       children = Vector(helpText, seedGrid, passFields)
     }
 
-    // Enable/Disable OK button depending on whether all data was entered.
-    val okButton = dialog.dialogPane().lookupButton(ButtonType.OK)
-    // Simple validation that sufficient data was entered
-    okButton.disable <== passwordTF.text.isEmpty
-
     // When the OK button is clicked, convert the result to a T.
     dialog.resultConverter = dialogButton =>
       if (dialogButton == ButtonType.OK) {
         val password = passwordTF.text.value
-        val aesPass = AesPassword.fromString(password)
+        val aesPass = AesPassword.fromStringOpt(password)
 
         val words = wordTFs.map(_.text.value)
         val mnemonicCode = MnemonicCode.fromWords(words.toVector)

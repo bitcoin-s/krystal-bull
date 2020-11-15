@@ -8,6 +8,7 @@ import javafx.scene.paint.Color
 import org.bitcoins.core.config._
 import org.bitcoins.core.protocol.BitcoinAddress
 import org.bitcoins.dlc.oracle._
+import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.scene.image.{Image, ImageView}
 

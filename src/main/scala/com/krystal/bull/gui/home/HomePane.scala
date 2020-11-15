@@ -11,7 +11,7 @@ import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control._
-import scalafx.scene.layout.{BorderPane, GridPane, VBox}
+import scalafx.scene.layout.{BorderPane, GridPane, HBox, VBox}
 import scalafx.scene.text._
 
 import scala.concurrent.Await
@@ -21,33 +21,35 @@ class HomePane(glassPane: VBox) {
 
   val model = new HomePaneModel()
 
-  def eventStatuses: ObservableBuffer[Event] = {
+  def eventStatuses: ObservableBuffer[OracleEvent] = {
     val statusF = oracle.listEvents().map { statuses =>
       val sorted = statuses.sortBy {
-        case _: PendingEvent   => -1
-        case _: CompletedEvent => 1
+        case _: PendingOracleEvent   => -1
+        case _: CompletedOracleEvent => 1
       }
       ObservableBuffer(sorted)
     }
     Await.result(statusF, 5.seconds)
   }
 
-  private val tableView: TableView[Event] = {
-    val labelCol = new TableColumn[Event, String] {
+  private val tableView: TableView[OracleEvent] = {
+    val labelCol = new TableColumn[OracleEvent, String] {
       text = "Event Name"
       prefWidth = 150
       cellValueFactory = { status =>
         new StringProperty(status, "Event Name", status.value.eventName)
       }
     }
-    val nonceCol = new TableColumn[Event, String] {
-      text = "Nonce"
+    val nonceCol = new TableColumn[OracleEvent, String] {
+      text = "Announcement"
       prefWidth = 150
       cellValueFactory = { status =>
-        new StringProperty(status, "Nonce", status.value.nonce.hex)
+        new StringProperty(status,
+                           "Announcement",
+                           status.value.announcementTLV.hex)
       }
     }
-    val maturityDateCol = new TableColumn[Event, String] {
+    val maturityDateCol = new TableColumn[OracleEvent, String] {
       text = "Maturity Date"
       prefWidth = 150
       cellValueFactory = { status =>
@@ -61,16 +63,7 @@ class HomePane(glassPane: VBox) {
                            formatter.format(status.value.maturationTime))
       }
     }
-    val numberOutcomesCol = new TableColumn[Event, String] {
-      text = "Num Outcomes"
-      prefWidth = 150
-      cellValueFactory = { status =>
-        new StringProperty(status,
-                           "Num Outcomes",
-                           status.value.numOutcomes.toString)
-      }
-    }
-    val signingVersionCol = new TableColumn[Event, String] {
+    val signingVersionCol = new TableColumn[OracleEvent, String] {
       text = "Signing Version"
       prefWidth = 150
       cellValueFactory = { status =>
@@ -79,24 +72,23 @@ class HomePane(glassPane: VBox) {
                            status.value.signingVersion.toString)
       }
     }
-    val signatureCol = new TableColumn[Event, String] {
-      text = "Attestation"
+    val signatureCol = new TableColumn[OracleEvent, String] {
+      text = "Attestations"
       prefWidth = 150
       cellValueFactory = { status =>
         val str = status.value match {
-          case completedEvent: CompletedEvent =>
-            completedEvent.signature.hex
-          case _: PendingEvent => ""
+          case completedEvent: CompletedOracleEvent =>
+            completedEvent.signatures.map(_.hex).mkString(", ")
+          case _: PendingOracleEvent => ""
         }
-        new StringProperty(status, "Attestation", str)
+        new StringProperty(status, "Attestations", str)
       }
     }
-    new TableView[Event](eventStatuses) {
+    new TableView[OracleEvent](eventStatuses) {
       alignmentInParent = Pos.Center
       columns ++= Seq(labelCol,
                       nonceCol,
                       maturityDateCol,
-                      numberOutcomesCol,
                       signingVersionCol,
                       signatureCol)
       margin = Insets(10, 0, 10, 0)
@@ -164,14 +156,14 @@ class HomePane(glassPane: VBox) {
         rowIndex = 2)
   }
 
-  private val createEventButton = new Button("Create Event") {
+  private val createEnumEventButton = new Button("Create Enum Event") {
     onAction = _ => {
-      model.createEvent() match {
+      model.createEnumEvent() match {
         case Some(params) =>
           oracle
             .createNewEvent(params.eventName,
                             params.maturationTime,
-                            params.outcomes)
+                            params.descriptorTLV)
             .map { _ =>
               updateTable()
             }
@@ -181,11 +173,55 @@ class HomePane(glassPane: VBox) {
     }
   }
 
+  private val createRangedEventButton = new Button("Create Ranged Event") {
+    onAction = _ => {
+      model.createRangedEvent() match {
+        case Some(params) =>
+          oracle
+            .createNewEvent(params.eventName,
+                            params.maturationTime,
+                            params.descriptorTLV)
+            .map { _ =>
+              updateTable()
+            }
+        case None =>
+          ()
+      }
+    }
+  }
+
+  private val createDigitDecompEventButton = new Button(
+    "Create Digit Decomposition Event") {
+    onAction = _ => {
+      model.createDigitDecompEvent() match {
+        case Some(params) =>
+          oracle
+            .createNewEvent(params.eventName,
+                            params.maturationTime,
+                            params.descriptorTLV)
+            .map { _ =>
+              updateTable()
+            }
+        case None =>
+          ()
+      }
+    }
+  }
+
+  private val createButtons = new HBox() {
+    spacing = 10
+    alignmentInParent = Pos.TopCenter
+    alignment = Pos.TopCenter
+    children = Vector(createEnumEventButton,
+                      createRangedEventButton,
+                      createDigitDecompEventButton)
+  }
+
   private val centerView = new VBox() {
     alignmentInParent = Pos.TopCenter
     alignment = Pos.TopCenter
     spacing = 100
-    children = Vector(oracleInfoText, tableView, createEventButton)
+    children = Vector(oracleInfoText, tableView, createButtons)
   }
 
   val view: BorderPane = new BorderPane {

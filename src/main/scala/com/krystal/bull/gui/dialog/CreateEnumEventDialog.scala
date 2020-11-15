@@ -4,6 +4,7 @@ import java.time.{Instant, LocalTime, ZoneOffset}
 
 import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.home.InitEventParams
+import org.bitcoins.core.protocol.tlv.EnumEventDescriptorV0TLV
 import scalafx.Includes._
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
@@ -11,12 +12,12 @@ import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 import scalafx.stage.Window
 
-object CreateEventDialog {
+object CreateEnumEventDialog {
 
   def showAndWait(parentWindow: Window): Option[InitEventParams] = {
     val dialog = new Dialog[Option[InitEventParams]]() {
       initOwner(parentWindow)
-      title = "Create Event"
+      title = "Create Enum Event"
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
@@ -111,7 +112,9 @@ object CreateEventDialog {
           }
         }
 
-        val params = InitEventParams(eventName, maturityDate, outcomes)
+        val descriptor = EnumEventDescriptorV0TLV(outcomes)
+
+        val params = InitEventParams(eventName, maturityDate, descriptor)
 
         Some(params)
       } else None

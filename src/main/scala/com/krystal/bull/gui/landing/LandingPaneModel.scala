@@ -27,9 +27,9 @@ class LandingPaneModel() {
       caption = "Initialize Oracle",
       op = {
         krystalBullOpt match {
-          case Some(kb) =>
-            GlobalData.oracle = kb
-            appConfig.initialize(kb)
+          case Some(oracle) =>
+            GlobalData.oracle = oracle
+            appConfig.initialize()
           case None =>
             FutureUtil.unit
         }
@@ -50,7 +50,7 @@ class LandingPaneModel() {
         oracleOpt match {
           case Some(oracle) =>
             GlobalData.oracle = oracle
-            appConfig.initialize(oracle)
+            appConfig.initialize()
           case None =>
             FutureUtil.unit
         }
@@ -62,18 +62,18 @@ class LandingPaneModel() {
     }
   }
 
-  def setOracle(password: AesPassword): Unit = {
+  def setOracle(passwordOpt: Option[AesPassword]): Unit = {
     taskRunner.run(
       caption = "Set Oracle",
       op = {
         val extKey =
           WalletStorage.getPrivateKeyFromDisk(appConfig.seedPath,
                                               SegWitMainNetPriv,
-                                              password,
+                                              passwordOpt,
                                               None)
         val oracle = DLCOracle(extKey)
         GlobalData.oracle = oracle
-        appConfig.initialize(oracle)
+        appConfig.initialize()
       }
     )
 
