@@ -88,15 +88,6 @@ object ViewEventDialog {
           rowIndex = row)
 
       row += 1
-      add(new Label("Announcement Signature:"), 0, row)
-      add(new TextField() {
-            text = event.announcementSignature.hex
-            editable = false
-          },
-          columnIndex = 1,
-          rowIndex = row)
-
-      row += 1
       add(new Label("Attestations:"), 0, row)
       def addSignButton(nodes: Vector[Node]): Unit = {
         val hBox = new HBox() {
