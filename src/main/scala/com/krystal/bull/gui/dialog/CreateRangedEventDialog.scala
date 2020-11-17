@@ -2,8 +2,8 @@ package com.krystal.bull.gui.dialog
 
 import java.time.{Instant, LocalTime, ZoneOffset}
 
-import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.home.InitEventParams
+import com.krystal.bull.gui.{GUIUtil, GlobalData}
 import org.bitcoins.core.number._
 import org.bitcoins.core.protocol.tlv.RangeEventDescriptorV0TLV
 import scalafx.Includes._
@@ -26,46 +26,19 @@ object CreateRangedEventDialog {
 
     val eventNameTF = new TextField()
     val datePicker = new DatePicker()
+
     val startTF = new TextField()
-    startTF.text.addListener {
-      (
-          _: javafx.beans.value.ObservableValue[_ <: String],
-          _: String,
-          newVal: String) =>
-        if (!newVal.matches("\\d*"))
-          startTF.setText(newVal.replaceAll("[^\\d]", ""))
-    }
+    GUIUtil.setNumericInput(startTF)
 
     val stepTF = new TextField()
-    stepTF.text.addListener {
-      (
-          _: javafx.beans.value.ObservableValue[_ <: String],
-          _: String,
-          newVal: String) =>
-        if (!newVal.matches("\\d*"))
-          stepTF.setText(newVal.replaceAll("[^\\d]", ""))
-    }
+    GUIUtil.setNumericInput(stepTF)
 
     val countTF = new TextField()
-    countTF.text.addListener {
-      (
-          _: javafx.beans.value.ObservableValue[_ <: String],
-          _: String,
-          newVal: String) =>
-        if (!newVal.matches("\\d*"))
-          countTF.setText(newVal.replaceAll("[^\\d]", ""))
-    }
+    GUIUtil.setNumericInput(countTF)
 
     val unitTF = new TextField()
     val precisionTF = new TextField()
-    precisionTF.text.addListener {
-      (
-          _: javafx.beans.value.ObservableValue[_ <: String],
-          _: String,
-          newVal: String) =>
-        if (!newVal.matches("\\d*"))
-          precisionTF.setText(newVal.replaceAll("[^\\d]", ""))
-    }
+    GUIUtil.setNumericInput(precisionTF)
 
     dialog.dialogPane().content = new GridPane {
       padding = Insets(top = 10, right = 10, bottom = 10, left = 10)

@@ -2,7 +2,7 @@ package com.krystal.bull.gui.dialog
 
 import java.time.{Instant, LocalTime, ZoneOffset}
 
-import com.krystal.bull.gui.GlobalData
+import com.krystal.bull.gui.{GUIUtil, GlobalData}
 import com.krystal.bull.gui.home.InitEventParams
 import org.bitcoins.core.number._
 import org.bitcoins.core.protocol.tlv.DigitDecompositionEventDescriptorV0TLV
@@ -27,14 +27,7 @@ object CreateDigitDecompEventDialog {
     val eventNameTF = new TextField()
     val datePicker = new DatePicker()
     val maxTF = new TextField()
-    maxTF.text.addListener {
-      (
-          _: javafx.beans.value.ObservableValue[_ <: String],
-          _: String,
-          newVal: String) =>
-        if (!newVal.matches("\\d*"))
-          maxTF.setText(newVal.replaceAll("[^\\d]", ""))
-    }
+    GUIUtil.setNumericInput(maxTF)
 
     val isSignedCheckBox = new CheckBox() {
       alignmentInParent = Pos.Center
@@ -44,14 +37,7 @@ object CreateDigitDecompEventDialog {
     val precisionTF = new TextField() {
       text = "0"
     }
-    precisionTF.text.addListener {
-      (
-          _: javafx.beans.value.ObservableValue[_ <: String],
-          _: String,
-          newVal: String) =>
-        if (!newVal.matches("\\d*"))
-          precisionTF.setText(newVal.replaceAll("[^\\d]", ""))
-    }
+    GUIUtil.setNumericInput(precisionTF)
 
     dialog.dialogPane().content = new GridPane {
       padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
