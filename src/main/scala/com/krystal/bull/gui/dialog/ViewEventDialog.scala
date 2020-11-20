@@ -2,7 +2,6 @@ package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.GlobalData._
-import org.bitcoins.commons.jsonmodels.dlc.DLCMessage.OracleInfo
 import org.bitcoins.dlc.oracle._
 import scalafx.Includes._
 import scalafx.event.ActionEvent
@@ -12,6 +11,7 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, HBox}
 import scalafx.stage.Window
+import scodec.bits.ByteVector
 
 import scala.concurrent.Future
 
@@ -58,22 +58,29 @@ object ViewEventDialog {
       vgap = 10
       padding = Insets(20, 100, 10, 10)
 
+      // TODO use MultiNonceOracleInfo when available
+      val oracleInfo: ByteVector =
+        oracle.publicKey.bytes ++ event.nonces.foldLeft(ByteVector.empty)(
+          _ ++ _.bytes)
+
       var row = 0
       add(new Label("Oracle Info:"), 0, row)
-      add(new TextField() {
-            text =
-              OracleInfo(oracle.publicKey,
-                         event.nonces.head).hex // FIXME change to TLV
-            editable = false
-          },
-          columnIndex = 1,
-          rowIndex = row)
+      add(
+        new TextArea() {
+          text = oracleInfo.toHex // FIXME change to TLV
+          editable = false
+          wrapText = true
+        },
+        columnIndex = 1,
+        rowIndex = row
+      )
 
       row += 1
       add(new Label("Announcement:"), 0, row)
-      add(new TextField() {
+      add(new TextArea() {
             text = event.announcementTLV.hex
             editable = false
+            wrapText = true
           },
           columnIndex = 1,
           rowIndex = row)
@@ -99,9 +106,10 @@ object ViewEventDialog {
       }
       event match {
         case completed: CompletedOracleEvent =>
-          add(new TextField() {
+          add(new TextArea() {
                 text = completed.signatures.map(_.hex).mkString(", ")
                 editable = false
+                wrapText = true
               },
               columnIndex = 1,
               rowIndex = row)
