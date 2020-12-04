@@ -32,12 +32,15 @@ object GlobalData {
 
   var darkThemeEnabled: Boolean = true
 
-  def currentStyleSheets: Seq[String] =
-    if (GlobalData.darkThemeEnabled) {
+  def currentStyleSheets: Seq[String] = {
+    val loaded = if (GlobalData.darkThemeEnabled) {
       Seq(Themes.DarkTheme.fileLocation)
     } else {
       Seq.empty
     }
+
+    "/themes/base.css" +: loaded
+  }
 
   var network: BitcoinNetwork = MainNet
 

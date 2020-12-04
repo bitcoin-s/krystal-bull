@@ -62,9 +62,9 @@ class LandingPaneModel() {
     }
   }
 
-  def setOracle(passwordOpt: Option[AesPassword]): Unit = {
+  def loadOracle(passwordOpt: Option[AesPassword]): Unit = {
     taskRunner.run(
-      caption = "Set Oracle",
+      caption = "Load Oracle",
       op = {
         val extKey =
           WalletStorage.getPrivateKeyFromDisk(appConfig.seedPath,

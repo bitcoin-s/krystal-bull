@@ -57,14 +57,14 @@ class LandingPane(glassPane: VBox) {
   private val passwordField = new PasswordField() {
     onKeyReleased = keyEvent => {
       if (keyEvent.getCode == KeyCode.Enter.delegate) {
-        model.setOracle(AesPassword.fromStringOpt(text.value))
+        model.loadOracle(AesPassword.fromStringOpt(text.value))
       }
     }
   }
 
   private val unlockButton = new Button("Unlock") {
     onAction = _ =>
-      model.setOracle(AesPassword.fromStringOpt(passwordField.text.value))
+      model.loadOracle(AesPassword.fromStringOpt(passwordField.text.value))
   }
 
   private val unlockBottom = new HBox() {

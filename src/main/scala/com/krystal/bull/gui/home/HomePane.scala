@@ -29,7 +29,7 @@ class HomePane(glassPane: VBox) {
       }
       ObservableBuffer(sorted)
     }
-    Await.result(statusF, 5.seconds)
+    Await.result(statusF, 60.seconds)
   }
 
   private val tableView: TableView[OracleEvent] = {
@@ -40,7 +40,7 @@ class HomePane(glassPane: VBox) {
         new StringProperty(status, "Event Name", status.value.eventName)
       }
     }
-    val nonceCol = new TableColumn[OracleEvent, String] {
+    val announcementCol = new TableColumn[OracleEvent, String] {
       text = "Announcement"
       prefWidth = 150
       cellValueFactory = { status =>
@@ -57,19 +57,10 @@ class HomePane(glassPane: VBox) {
           DateTimeFormatter
             .ofLocalizedDate(FormatStyle.MEDIUM)
             .withLocale(Locale.US)
-            .withZone(ZoneId.systemDefault())
+            .withZone(ZoneId.of("UTC"))
         new StringProperty(status,
                            "Maturity Date",
                            formatter.format(status.value.maturationTime))
-      }
-    }
-    val signingVersionCol = new TableColumn[OracleEvent, String] {
-      text = "Signing Version"
-      prefWidth = 150
-      cellValueFactory = { status =>
-        new StringProperty(status,
-                           "Signing Version",
-                           status.value.signingVersion.toString)
       }
     }
     val signatureCol = new TableColumn[OracleEvent, String] {
@@ -86,11 +77,7 @@ class HomePane(glassPane: VBox) {
     }
     new TableView[OracleEvent](eventStatuses) {
       alignmentInParent = Pos.Center
-      columns ++= Seq(labelCol,
-                      nonceCol,
-                      maturityDateCol,
-                      signingVersionCol,
-                      signatureCol)
+      columns ++= Seq(labelCol, announcementCol, maturityDateCol, signatureCol)
       margin = Insets(10, 0, 10, 0)
 
       val infoItem: MenuItem = new MenuItem("View Event") {
@@ -100,6 +87,8 @@ class HomePane(glassPane: VBox) {
           updateTable()
         }
       }
+
+      columnResizePolicy = TableView.ConstrainedResizePolicy
 
       contextMenu = new ContextMenu() {
         items += infoItem
@@ -117,23 +106,26 @@ class HomePane(glassPane: VBox) {
     vgap = 10
     hgap = 10
 
+    var row = 0
     add(new Label("My Public Key:") {
           textAlignment = TextAlignment.Right
         },
         columnIndex = 0,
-        rowIndex = 0)
+        rowIndex = row)
     add(new TextField() {
           text = oracle.publicKey.hex
           editable = false
           minWidth = 500
         },
         columnIndex = 1,
-        rowIndex = 0)
+        rowIndex = row)
+
+    row += 1
     add(new Label("Staking Address:") {
           textAlignment = TextAlignment.Right
         },
         columnIndex = 0,
-        rowIndex = 1)
+        rowIndex = row)
     add(new TextField() {
           text = oracle
             .stakingAddress(GlobalData.network)
@@ -142,18 +134,20 @@ class HomePane(glassPane: VBox) {
           minWidth = 500
         },
         columnIndex = 1,
-        rowIndex = 1)
+        rowIndex = row)
+
+    row += 1
     add(new Label("Staked Amount:") {
           textAlignment = TextAlignment.Right
         },
         columnIndex = 0,
-        rowIndex = 2)
+        rowIndex = row)
     add(new Text() {
           text <== GlobalData.stakedAmountText
           fill <== GlobalData.textColor
         },
         columnIndex = 1,
-        rowIndex = 2)
+        rowIndex = row)
   }
 
   private val createEnumEventButton = new Button("Create Enum Event") {

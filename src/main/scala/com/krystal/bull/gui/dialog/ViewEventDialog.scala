@@ -11,7 +11,6 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, HBox}
 import scalafx.stage.Window
-import scodec.bits.ByteVector
 
 import scala.concurrent.Future
 
@@ -58,38 +57,12 @@ object ViewEventDialog {
       vgap = 10
       padding = Insets(20, 100, 10, 10)
 
-      // TODO use MultiNonceOracleInfo when available
-      val oracleInfo: ByteVector =
-        oracle.publicKey.bytes ++ event.nonces.foldLeft(ByteVector.empty)(
-          _ ++ _.bytes)
-
       var row = 0
-      add(new Label("Oracle Info:"), 0, row)
-      add(
-        new TextArea() {
-          text = oracleInfo.toHex // FIXME change to TLV
-          editable = false
-          wrapText = true
-        },
-        columnIndex = 1,
-        rowIndex = row
-      )
-
-      row += 1
       add(new Label("Announcement:"), 0, row)
       add(new TextArea() {
             text = event.announcementTLV.hex
             editable = false
             wrapText = true
-          },
-          columnIndex = 1,
-          rowIndex = row)
-
-      row += 1
-      add(new Label("Signing Version:"), 0, row)
-      add(new TextField() {
-            text = event.signingVersion.toString
-            editable = false
           },
           columnIndex = 1,
           rowIndex = row)
@@ -117,7 +90,7 @@ object ViewEventDialog {
           var outcomeOpt: Option[String] = None
 
           val outcomeSelector: ComboBox[String] = new ComboBox(
-            pendingEnum.eventDescriptorTLV.outcomes) {
+            pendingEnum.eventDescriptorTLV.outcomes.map(_.normStr)) {
             onAction = (_: ActionEvent) => {
               outcomeOpt = Some(value.value)
             }
