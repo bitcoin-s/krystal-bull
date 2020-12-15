@@ -1,5 +1,5 @@
 # Krystal Bull
-![Build Status](https://github.com/benthecarman/krystal-bull/workflows/compile.yml/badge.svg)
+[![Build Status](https://github.com/benthecarman/krystal-bull/workflows/Compile%20Check/badge.svg)](https://github.com/benthecarman/krystal-bull/actions)
 
 ## Building from source
 
