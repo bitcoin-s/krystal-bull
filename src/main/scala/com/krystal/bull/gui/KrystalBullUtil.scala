@@ -2,7 +2,7 @@ package com.krystal.bull.gui
 
 import scalafx.scene.control.DatePicker
 
-import java.time.Instant
+import java.time.{Instant, ZoneId}
 
 object KrystalBullUtil {
 
@@ -10,7 +10,8 @@ object KrystalBullUtil {
     * since the epoch
     */
   def toInstant(datePicker: DatePicker): Instant = {
+    //https://stackoverflow.com/a/23886207/967713
     val date: java.time.LocalDate = datePicker.delegate.getValue
-    Instant.from(date)
+    date.atStartOfDay(ZoneId.systemDefault()).toInstant()
   }
 }
