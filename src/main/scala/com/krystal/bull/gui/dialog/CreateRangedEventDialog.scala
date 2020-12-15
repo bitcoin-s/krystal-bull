@@ -1,9 +1,8 @@
 package com.krystal.bull.gui.dialog
 
 import java.time.{Instant, LocalTime, ZoneOffset}
-
 import com.krystal.bull.gui.home.InitEventParams
-import com.krystal.bull.gui.{GUIUtil, GlobalData}
+import com.krystal.bull.gui.{GUIUtil, GlobalData, KrystalBullUtil}
 import org.bitcoins.core.number._
 import org.bitcoins.core.protocol.tlv.RangeEventDescriptorV0TLV
 import scalafx.Includes._
@@ -84,10 +83,7 @@ object CreateRangedEventDialog {
       if (dialogButton == ButtonType.OK) {
         val eventName = eventNameTF.text.value
 
-        val maturityDateEpoch =
-          datePicker.value.value.toEpochSecond(LocalTime.MIN, ZoneOffset.UTC)
-
-        val maturityDate = Instant.ofEpochSecond(maturityDateEpoch)
+        val maturityDate = KrystalBullUtil.toInstant(datePicker)
 
         val start = startTF.text.value.toLong
         val step = stepTF.text.value.toLong

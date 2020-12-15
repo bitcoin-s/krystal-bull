@@ -1,8 +1,7 @@
 package com.krystal.bull.gui.dialog
 
 import java.time.{Instant, LocalTime, ZoneOffset}
-
-import com.krystal.bull.gui.GlobalData
+import com.krystal.bull.gui.{GlobalData, KrystalBullUtil}
 import com.krystal.bull.gui.home.InitEventParams
 import org.bitcoins.core.protocol.tlv.EnumEventDescriptorV0TLV
 import scalafx.Includes._
@@ -25,7 +24,7 @@ object CreateEnumEventDialog {
     dialog.resizable = true
 
     val eventNameTF = new TextField()
-    val datePicker = new DatePicker()
+    val datePicker: DatePicker = new DatePicker()
 
     val outcomeMap: scala.collection.mutable.Map[Int, TextField] =
       scala.collection.mutable.Map.empty
@@ -98,10 +97,7 @@ object CreateEnumEventDialog {
       if (dialogButton == ButtonType.OK) {
         val eventName = eventNameTF.text.value
 
-        val maturityDateEpoch =
-          datePicker.value.value.toEpochSecond(LocalTime.MIN, ZoneOffset.UTC)
-
-        val maturityDate = Instant.ofEpochSecond(maturityDateEpoch)
+        val maturityDate = KrystalBullUtil.toInstant(datePicker)
 
         val outcomeStrs = outcomeMap.values.toVector.distinct
         val outcomes = outcomeStrs.flatMap { keyStr =>
