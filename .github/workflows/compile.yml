@@ -20,10 +20,9 @@ jobs:
           path: |
             ~/.ivy2/cache
             ~/.sbt
-            ~/.bitcoin-s/binaries
           key: ${{ runner.os }}-cache
       - name: Compile and Check Formatting
-        run: sbt ++2.12.12 test:compile scalafmtCheckAll
+        run: sbt test:compile scalafmtCheckAll
 
   mac:
     runs-on: macos-latest
@@ -38,10 +37,9 @@ jobs:
           path: |
             ~/.ivy2/cache
             ~/.sbt
-            ~/.bitcoin-s/binaries
           key: ${{ runner.os }}-cache
       - name: Compile
-        run: sbt ++2.13.4 test:compile
+        run: sbt test:compile
 
 # FIXME Need new secp256k1 bindings on windows
 #  windows:
@@ -60,7 +58,6 @@ jobs:
 #          path: |
 #            ~/.ivy2/cache
 #            ~/.sbt
-#            ~/.bitcoin-s/binaries
 #          key: ${{ runner.os }}-cache
 #      - name: Compile
-#        run: sbt ++2.13.4 test:compile
+#        run: sbt test:compile
