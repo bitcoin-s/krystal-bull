@@ -1,8 +1,7 @@
 package com.krystal.bull.gui.dialog
 
 import java.time.{Instant, LocalTime, ZoneOffset}
-
-import com.krystal.bull.gui.{GUIUtil, GlobalData}
+import com.krystal.bull.gui.{GUIUtil, GlobalData, KrystalBullUtil}
 import com.krystal.bull.gui.home.InitEventParams
 import org.bitcoins.core.number._
 import org.bitcoins.core.protocol.tlv.DigitDecompositionEventDescriptorV0TLV
@@ -25,7 +24,7 @@ object CreateDigitDecompEventDialog {
     dialog.resizable = true
 
     val eventNameTF = new TextField()
-    val datePicker = new DatePicker()
+    val datePicker: DatePicker = new DatePicker()
     val maxTF = new TextField()
     GUIUtil.setNumericInput(maxTF)
 
@@ -79,10 +78,7 @@ object CreateDigitDecompEventDialog {
       if (dialogButton == ButtonType.OK) {
         val eventName = eventNameTF.text.value
 
-        val maturityDateEpoch =
-          datePicker.value.value.toEpochSecond(LocalTime.MIN, ZoneOffset.UTC)
-
-        val maturityDate = Instant.ofEpochSecond(maturityDateEpoch)
+        val maturityDate = KrystalBullUtil.toInstant(datePicker)
 
         val maxNumber = maxTF.text.value.toLong
 
