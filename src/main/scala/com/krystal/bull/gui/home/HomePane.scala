@@ -167,25 +167,8 @@ class HomePane(glassPane: VBox) {
     }
   }
 
-  private val createRangedEventButton = new Button("Create Ranged Event") {
-    onAction = _ => {
-      model.createRangedEvent() match {
-        case Some(params) =>
-          oracle
-            .createNewEvent(params.eventName,
-                            params.maturationTime,
-                            params.descriptorTLV)
-            .map { _ =>
-              updateTable()
-            }
-        case None =>
-          ()
-      }
-    }
-  }
-
   private val createDigitDecompEventButton = new Button(
-    "Create Digit Decomposition Event") {
+    "Create Numeric Event") {
     onAction = _ => {
       model.createDigitDecompEvent() match {
         case Some(params) =>
@@ -206,9 +189,7 @@ class HomePane(glassPane: VBox) {
     spacing = 10
     alignmentInParent = Pos.TopCenter
     alignment = Pos.TopCenter
-    children = Vector(createEnumEventButton,
-                      createRangedEventButton,
-                      createDigitDecompEventButton)
+    children = Vector(createEnumEventButton, createDigitDecompEventButton)
   }
 
   private val centerView = new VBox() {

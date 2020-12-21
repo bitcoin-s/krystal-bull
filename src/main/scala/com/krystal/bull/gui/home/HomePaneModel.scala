@@ -40,10 +40,6 @@ class HomePaneModel() {
     CreateEnumEventDialog.showAndWait(parentWindow.value)
   }
 
-  def createRangedEvent(): Option[InitEventParams] = {
-    CreateRangedEventDialog.showAndWait(parentWindow.value)
-  }
-
   def createDigitDecompEvent(): Option[InitEventParams] = {
     CreateDigitDecompEventDialog.showAndWait(parentWindow.value)
   }
