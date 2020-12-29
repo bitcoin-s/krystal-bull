@@ -6,17 +6,19 @@ import akka.util.ByteString
 import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GlobalData, TaskRunner}
+import org.bitcoins.commons.serializers.SerializerUtil
 import org.bitcoins.core.config._
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
 import org.bitcoins.core.protocol.BitcoinAddress
 import org.bitcoins.core.protocol.tlv.EventDescriptorTLV
 import org.bitcoins.dlc.oracle._
-import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
+import play.api.libs.json._
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
 import java.time.Instant
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 case class InitEventParams(
     eventName: String,
@@ -65,6 +67,30 @@ class HomePaneModel() {
       funded_txo_sum: Satoshis,
       spent_txo_count: Int,
       spent_txo_sum: Satoshis)
+
+  implicit object SatoshisReads extends Reads[Satoshis] {
+
+    override def reads(json: JsValue): JsResult[Satoshis] =
+      SerializerUtil.processJsNumber[Satoshis](num => Satoshis(num.toBigInt))(
+        json)
+  }
+
+  implicit object BitcoinAddressReads extends Reads[BitcoinAddress] {
+
+    override def reads(json: JsValue): JsResult[BitcoinAddress] =
+      json match {
+        case JsString(s) =>
+          BitcoinAddress.fromStringT(s) match {
+            case Success(address) =>
+              JsSuccess(address)
+            case Failure(err) =>
+              SerializerUtil.buildErrorMsg("address", err)
+          }
+        case err @ (JsNull | _: JsBoolean | _: JsNumber | _: JsArray |
+            _: JsObject) =>
+          SerializerUtil.buildJsErrorMsg("jsstring", err)
+      }
+  }
 
   implicit val addressChainStatsReads: Reads[AddressChainStats] =
     Json.reads[AddressChainStats]
