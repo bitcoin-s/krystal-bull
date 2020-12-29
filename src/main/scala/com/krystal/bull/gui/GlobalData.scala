@@ -1,7 +1,5 @@
 package com.krystal.bull.gui
 
-import java.nio.file.{Path, Paths}
-
 import akka.actor.ActorSystem
 import com.krystal.bull.gui.settings.Themes
 import javafx.scene.paint.Color
@@ -12,6 +10,7 @@ import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.scene.image.{Image, ImageView}
 
+import java.nio.file.{Path, Paths}
 import scala.concurrent.ExecutionContextExecutor
 import scala.util.Properties
 

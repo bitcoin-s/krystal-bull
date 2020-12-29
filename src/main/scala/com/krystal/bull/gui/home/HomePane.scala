@@ -1,9 +1,5 @@
 package com.krystal.bull.gui.home
 
-import java.time.ZoneId
-import java.time.format.{DateTimeFormatter, FormatStyle}
-import java.util.Locale
-
 import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.{GlobalData, TaskRunner}
 import org.bitcoins.dlc.oracle._
@@ -14,6 +10,9 @@ import scalafx.scene.control._
 import scalafx.scene.layout.{BorderPane, GridPane, HBox, VBox}
 import scalafx.scene.text._
 
+import java.time.ZoneId
+import java.time.format.{DateTimeFormatter, FormatStyle}
+import java.util.Locale
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 

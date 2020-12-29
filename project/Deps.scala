@@ -16,7 +16,7 @@ object Deps {
 
     val scalaFxV = "14-R19"
     val javaFxV = "14.0.1"
-    val bitcoinsV = "0.0.0+50-92b7944e-SNAPSHOT"
+    val bitcoinsV = "0.4.0+200-19c68b77-SNAPSHOT"
   }
 
   object Compile {
@@ -32,6 +32,9 @@ object Deps {
 
     val bitcoinsOracle =
       "org.bitcoin-s" %% "bitcoin-s-dlc-oracle" % V.bitcoinsV withSources () withJavadoc ()
+
+    val bitcoinsRpc =
+      "org.bitcoin-s" %% "bitcoin-s-bitcoind-rpc" % V.bitcoinsV withSources () withJavadoc ()
 
     val scalaFx =
       "org.scalafx" %% "scalafx" % Deps.V.scalaFxV withSources () withJavadoc ()
