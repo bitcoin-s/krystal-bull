@@ -41,23 +41,22 @@ jobs:
       - name: Compile
         run: sbt test:compile
 
-# FIXME Need new secp256k1 bindings on windows
-#  windows:
-#    runs-on: windows-latest
-#    steps:
-#      - name: Configure git
-#        run: "git config --global core.autocrlf false"
-#        shell: bash
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Setup Scala
-#        uses: olafurpg/setup-scala@v10
-#      - name: Cache
-#        uses: actions/cache@v2
-#        with:
-#          path: |
-#            ~/.ivy2/cache
-#            ~/.sbt
-#          key: ${{ runner.os }}-cache
-#      - name: Compile
-#        run: sbt test:compile
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Configure git
+        run: "git config --global core.autocrlf false"
+        shell: bash
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Scala
+        uses: olafurpg/setup-scala@v10
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-cache
+      - name: Compile
+        run: sbt test:compile
