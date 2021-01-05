@@ -19,11 +19,26 @@ object GlobalData {
   implicit val system: ActorSystem = ActorSystem("krystal-bull")
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
-  private val DEFAULT_DATADIR: Path =
-    Paths.get(Properties.userHome, ".krystal-bull")
+  private val DEFAULT_DATADIR: Path = {
+    if (Properties.isMac) {
+      Paths.get(Properties.userHome,
+                "Library",
+                "Application Support",
+                "Krystal Bull")
+    } else if (Properties.isWin) {
+      Paths.get("C:",
+                "Users",
+                Properties.userName,
+                "Appdata",
+                "Roaming",
+                "KrystalBull")
+    } else {
+      Paths.get(Properties.userHome, ".krystal-bull")
+    }
+  }
 
-  implicit val appConfig: DLCOracleAppConfig = DLCOracleAppConfig(
-    DEFAULT_DATADIR)
+  implicit val appConfig: DLCOracleAppConfig =
+    DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
 
   val statusText: StringProperty = StringProperty("")
 
