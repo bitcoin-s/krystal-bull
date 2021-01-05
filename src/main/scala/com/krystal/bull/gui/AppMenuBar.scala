@@ -17,40 +17,6 @@ object AppMenuBar {
 
 private class FileMenu() {
 
-  private val network: Menu = new Menu("_Network") {
-    mnemonicParsing = true
-
-    private val networkToggle: ToggleGroup = new ToggleGroup()
-
-    private val mainnetToggle: RadioMenuItem = new RadioMenuItem("Mainnet") {
-      toggleGroup = networkToggle
-      selected = GlobalData.network == MainNet
-      id = MainNet.toString
-    }
-
-    private val testnetToggle: RadioMenuItem = new RadioMenuItem("Testnet") {
-      toggleGroup = networkToggle
-      selected = GlobalData.network == TestNet3
-      id = TestNet3.toString
-    }
-
-    private val regtestToggle: RadioMenuItem = new RadioMenuItem("Regtest") {
-      toggleGroup = networkToggle
-      selected = GlobalData.network == RegTest
-      id = RegTest.toString
-    }
-
-    items = List(mainnetToggle, testnetToggle, regtestToggle)
-
-    onAction = _ => {
-      val selectedId = networkToggle.selectedToggle.value
-        .asInstanceOf[javafx.scene.control.RadioMenuItem]
-        .getId
-
-      GlobalData.network = BitcoinNetworks.fromString(selectedId.toLowerCase)
-    }
-  }
-
   private val quit: MenuItem = new MenuItem("_Quit") {
     mnemonicParsing = true
     accelerator =

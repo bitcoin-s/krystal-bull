@@ -6,14 +6,14 @@ import akka.util.ByteString
 import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GlobalData, TaskRunner}
+import grizzled.slf4j.Logging
 import org.bitcoins.commons.serializers.SerializerUtil
-import org.bitcoins.core.config._
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
 import org.bitcoins.core.protocol.BitcoinAddress
 import org.bitcoins.core.protocol.tlv.EventDescriptorTLV
 import org.bitcoins.dlc.oracle._
 import play.api.libs.json._
-import scalafx.beans.property.ObjectProperty
+import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.stage.Window
 
 import java.time.Instant
@@ -25,10 +25,8 @@ case class InitEventParams(
     maturationTime: Instant,
     descriptorTLV: EventDescriptorTLV)
 
-class HomePaneModel() {
+class HomePaneModel() extends Logging {
   var taskRunner: TaskRunner = _
-
-  updateBalance()
 
   // Sadly, it is a Java "pattern" to pass null into
   // constructors to signal that you want some default
@@ -100,17 +98,7 @@ class HomePaneModel() {
 
   private def getBalanceCall(address: BitcoinAddress): Future[CurrencyUnit] = {
 
-    val prefix = GlobalData.network match {
-      case MainNet =>
-        s"https://blockstream.info/api"
-      case TestNet3 =>
-        s"https://blockstream.info/testnet/api"
-      case net @ (RegTest | SigNet) =>
-        throw new IllegalArgumentException(
-          s"Unable make an api request on $net")
-    }
-
-    val url = prefix ++ s"/address/$address"
+    val url = s"https://blockstream.info/api/address/$address"
 
     Http()
       .singleRequest(Get(url))
@@ -134,11 +122,15 @@ class HomePaneModel() {
       }
   }
 
-  def updateBalance(): Unit = {
+  def updateBalance(): Future[Unit] = {
+    GlobalData.stakedAmountTextOpt = Some(StringProperty("Fetching balance..."))
+
     val stakingAddress = GlobalData.stakingAddress
+    logger.info(s"Fetching balance for $stakingAddress")
 
     getBalanceCall(stakingAddress).map { amt =>
-      GlobalData.stakedAmountText.value = s"${amt.satoshis}"
+      logger.info(s"Balance for $stakingAddress is ${amt.satoshis}")
+      GlobalData.stakedAmountTextOpt.foreach(_.value = s"${amt.satoshis}")
     }
   }
 }
