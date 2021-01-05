@@ -6,6 +6,7 @@ import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.Node
 import scalafx.scene.control._
 import scalafx.scene.layout.{BorderPane, GridPane, HBox, VBox}
 import scalafx.scene.text._
@@ -99,7 +100,7 @@ class HomePane(glassPane: VBox) {
     tableView.items = eventStatuses
   }
 
-  private val oracleInfoText = new GridPane() {
+  private val oracleInfoText: GridPane = new GridPane() {
     alignmentInParent = Pos.TopCenter
     alignment = Pos.Center
     vgap = 10
@@ -126,9 +127,7 @@ class HomePane(glassPane: VBox) {
         columnIndex = 0,
         rowIndex = row)
     add(new TextField() {
-          text = oracle
-            .stakingAddress(GlobalData.network)
-            .toString()
+          text = GlobalData.stakingAddress.toString()
           editable = false
           minWidth = 500
         },
@@ -141,13 +140,27 @@ class HomePane(glassPane: VBox) {
         },
         columnIndex = 0,
         rowIndex = row)
-    add(new Text() {
-          text <== GlobalData.stakedAmountText
-          fill <== GlobalData.textColor
-        },
-        columnIndex = 1,
-        rowIndex = row)
+
+    add(stakedAmtNode, columnIndex = 1, rowIndex = row)
   }
+
+  private def stakedAmtNode: Node =
+    GlobalData.stakedAmountTextOpt match {
+      case Some(stakedAmountText) =>
+        new Text() {
+          text <== stakedAmountText
+          fill <== GlobalData.textColor
+        }
+      case None =>
+        new Button("Fetch Balance") {
+          onAction = _ => {
+            model.updateBalance()
+            oracleInfoText.children.remove(5)
+            oracleInfoText.add(stakedAmtNode, 1, 2)
+
+          }
+        }
+    }
 
   private val createEnumEventButton = new Button("Create Enum Event") {
     onAction = _ => {

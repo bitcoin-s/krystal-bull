@@ -41,18 +41,15 @@ object GlobalData {
     "/themes/base.css" +: loaded
   }
 
-  var network: BitcoinNetwork = MainNet
-
   var oracle: DLCOracle = _
 
-  def stakingAddress: BitcoinAddress = oracle.stakingAddress(network)
+  lazy val stakingAddress: BitcoinAddress = oracle.stakingAddress(MainNet)
 
-  val stakedAmountText: StringProperty = StringProperty("Fetching balance...")
+  var stakedAmountTextOpt: Option[StringProperty] = None
 
   def logo: ImageView =
     new ImageView(new Image("/icons/krystal_bull.png")) {
       fitHeight = 100
       fitWidth = 100
     }
-
 }
