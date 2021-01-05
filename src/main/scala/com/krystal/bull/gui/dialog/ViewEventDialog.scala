@@ -2,6 +2,7 @@ package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.GlobalData._
+import org.bitcoins.core.protocol.tlv._
 import org.bitcoins.dlc.oracle._
 import scalafx.Includes._
 import scalafx.event.ActionEvent
@@ -26,6 +27,18 @@ object ViewEventDialog {
     ()
   }
 
+  private def showBelowZeroOutcomeAlert(
+      descriptor: DigitDecompositionEventDescriptorV0TLV): Unit = {
+    new Alert(AlertType.Error) {
+      initOwner(owner)
+      title = "Error!"
+      contentText = "Cannot sign a negative number for this event.\n" +
+        s"Bounds for this event: ${descriptor.minNum} - ${descriptor.maxNum}"
+      dialogPane().stylesheets = GlobalData.currentStyleSheets
+    }.showAndWait()
+    ()
+  }
+
   private def showConfirmSignAlert(
       outcomeStr: String,
       signFunc: => Future[OracleEvent]): Unit = {
@@ -36,10 +49,27 @@ object ViewEventDialog {
         s"Are you sure you would like sign to the outcome $outcomeStr?"
       dialogPane().stylesheets = GlobalData.currentStyleSheets
     }.showAndWait() match {
-      case Some(ButtonType.OK) =>
-        signFunc
-      case None | Some(_) =>
-        ()
+      case Some(ButtonType.OK) => signFunc
+      case None | Some(_)      => ()
+    }
+  }
+
+  private def showOutOfBoundsConfirmSignAlert(
+      outcome: Long,
+      bound: BigInt,
+      isUpperBound: Boolean,
+      signFunc: => Future[OracleEvent]): Unit = {
+    val boundStr = if (isUpperBound) "upper" else "lower"
+    new Alert(AlertType.Confirmation) {
+      initOwner(owner)
+      title = "Confirm Signing"
+      contentText =
+        s"Cannot sign $outcome, it is out of bounds for this event.\n" +
+          s"Will instead sign $bound, the $boundStr bound.\n\nPlease confirm."
+      dialogPane().stylesheets = GlobalData.currentStyleSheets
+    }.showAndWait() match {
+      case Some(ButtonType.OK) => signFunc
+      case None | Some(_)      => ()
     }
   }
 
@@ -150,10 +180,26 @@ object ViewEventDialog {
             onAction = _ =>
               digitsOpt match {
                 case Some(outcome) =>
-                  showConfirmSignAlert(
-                    outcome.toString,
-                    GlobalData.oracle
-                      .signDigits(pendingDecomp.eventTLV, outcome))
+                  lazy val signFunc = GlobalData.oracle
+                    .signDigits(pendingDecomp.eventTLV, outcome)
+                  val desc = pendingDecomp.eventDescriptorTLV
+
+                  if (outcome < desc.minNum && desc.isSigned) {
+                    showOutOfBoundsConfirmSignAlert(outcome = outcome,
+                                                    bound = desc.minNum,
+                                                    isUpperBound = false,
+                                                    signFunc = signFunc)
+                  } else if (outcome < desc.minNum && !desc.isSigned) {
+                    showBelowZeroOutcomeAlert(desc)
+                  } else if (outcome > desc.maxNum) {
+                    showOutOfBoundsConfirmSignAlert(outcome = outcome,
+                                                    bound = desc.maxNum,
+                                                    isUpperBound = true,
+                                                    signFunc = signFunc)
+                  } else {
+                    showConfirmSignAlert(outcomeStr = outcome.toString,
+                                         signFunc = signFunc)
+                  }
                 case None =>
                   showNoOutcomeAlert()
               }
