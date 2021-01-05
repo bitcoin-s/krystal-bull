@@ -30,6 +30,9 @@ object Deps {
     val akkaActor =
       "com.typesafe.akka" %% "akka-actor" % V.akkaStreamv withSources () withJavadoc ()
 
+    val akkaSlf4j =
+      "com.typesafe.akka" %% "akka-slf4j" % V.akkaStreamv withSources () withJavadoc ()
+
     val bitcoinsOracle =
       "org.bitcoin-s" %% "bitcoin-s-dlc-oracle" % V.bitcoinsV withSources () withJavadoc ()
 
@@ -73,6 +76,7 @@ object Deps {
                                   Compile.akkaActor,
                                   Compile.akkaHttp,
                                   Compile.akkaStream,
+                                  Compile.akkaSlf4j,
                                   Compile.scalaFx) ++ Compile.javaFxDeps
 
 }

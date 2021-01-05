@@ -21,5 +21,6 @@ enablePlugins(ReproducibleBuildsPlugin, JavaAppPackaging, GraalVMNativeImagePlug
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", _ @ _*) => MergeStrategy.discard
+  case PathList("reference.conf", _ @ _*) => MergeStrategy.concat
   case _ => MergeStrategy.first
 }
