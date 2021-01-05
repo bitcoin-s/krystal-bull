@@ -18,3 +18,8 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 enablePlugins(ReproducibleBuildsPlugin, JavaAppPackaging, GraalVMNativeImagePlugin)
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", _ @ _*) => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
