@@ -17,9 +17,11 @@ object AboutDialog {
     dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)
     dialog.dialogPane().stylesheets = GlobalData.currentStyleSheets
 
+    val version: String = getClass.getPackage.getImplementationVersion
+
     dialog.dialogPane().content = new TextArea {
       text =
-        "Krystal Bull v0.1\n\nCreated by: benthecarman\n\nRepo: https://github.com/benthecarman/krystal-bull"
+        s"Krystal Bull v$version\n\nCreated by: benthecarman\n\nRepo: https://github.com/benthecarman/krystal-bull"
       editable = false
     }
 
