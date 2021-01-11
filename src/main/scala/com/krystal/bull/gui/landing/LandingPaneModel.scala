@@ -37,6 +37,7 @@ class LandingPaneModel() {
     )
 
     if (krystalBullOpt.isDefined) {
+      Thread.sleep(1000)
       GUI.changeToHomeScene()
     }
   }
@@ -58,6 +59,7 @@ class LandingPaneModel() {
     )
 
     if (oracleOpt.isDefined) {
+      Thread.sleep(1000)
       GUI.changeToHomeScene()
     }
   }
