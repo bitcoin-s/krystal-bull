@@ -10,6 +10,7 @@ object AppMenuBar {
   def menuBar(model: GUIModel): MenuBar =
     new MenuBar {
       menus = List(new FileMenu().fileMenu,
+                   new SettingsMenu().settingsMenu,
                    new ViewMenu().viewMenu,
                    new HelpMenu(model).helpMenu)
     }
@@ -28,6 +29,20 @@ private class FileMenu() {
     new Menu("_File") {
       mnemonicParsing = true
       items = List(quit)
+    }
+}
+
+private class SettingsMenu() {
+
+  private val advancedMode: MenuItem = new CheckMenuItem("Advanced Mode") {
+    selected = GlobalData.advancedMode
+    onAction = _ => GlobalData.advancedMode = !GlobalData.advancedMode
+  }
+
+  val settingsMenu: Menu =
+    new Menu("_Settings") {
+      mnemonicParsing = true
+      items = List(advancedMode)
     }
 }
 

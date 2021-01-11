@@ -58,6 +58,8 @@ object GlobalData {
 
   var oracle: DLCOracle = _
 
+  var advancedMode: Boolean = false
+
   lazy val stakingAddress: BitcoinAddress = oracle.stakingAddress(MainNet)
 
   var stakedAmountTextOpt: Option[StringProperty] = None
