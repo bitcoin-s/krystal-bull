@@ -70,6 +70,7 @@ object InitOracleDialog {
       if (dialogButton == ButtonType.OK) {
         val password = passwordTF.text.value
         val aesPass = AesPassword.fromStringOpt(password)
+        GlobalData.setPassword(aesPass)
 
         val krystalBull =
           DLCOracle(mnemonicCode, aesPass, None)

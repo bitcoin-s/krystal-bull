@@ -62,6 +62,7 @@ object RestoreOracleDialog {
       if (dialogButton == ButtonType.OK) {
         val password = passwordTF.text.value
         val aesPass = AesPassword.fromStringOpt(password)
+        GlobalData.setPassword(aesPass)
 
         val words = wordTFs.map(_.text.value)
         val mnemonicCode = MnemonicCode.fromWords(words.toVector)

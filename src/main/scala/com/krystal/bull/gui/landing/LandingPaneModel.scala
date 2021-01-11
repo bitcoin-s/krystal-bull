@@ -29,7 +29,7 @@ class LandingPaneModel() {
         krystalBullOpt match {
           case Some(oracle) =>
             GlobalData.oracle = oracle
-            appConfig.initialize()
+            oracle.conf.initialize()
           case None =>
             FutureUtil.unit
         }
@@ -50,7 +50,7 @@ class LandingPaneModel() {
         oracleOpt match {
           case Some(oracle) =>
             GlobalData.oracle = oracle
-            appConfig.initialize()
+            oracle.conf.initialize()
           case None =>
             FutureUtil.unit
         }
@@ -66,6 +66,7 @@ class LandingPaneModel() {
     taskRunner.run(
       caption = "Load Oracle",
       op = {
+        GlobalData.setPassword(passwordOpt)
         val extKey =
           WalletStorage.getPrivateKeyFromDisk(appConfig.seedPath,
                                               SegWitMainNetPriv,
