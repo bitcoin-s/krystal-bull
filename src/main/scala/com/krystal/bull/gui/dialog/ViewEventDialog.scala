@@ -110,7 +110,7 @@ object ViewEventDialog {
       event match {
         case completed: CompletedOracleEvent =>
           add(new TextArea() {
-                text = completed.signatures.map(_.hex).mkString(", ")
+                text = completed.oracleAttestmentV0TLV.hex
                 editable = false
                 wrapText = true
               },
@@ -184,12 +184,18 @@ object ViewEventDialog {
                     .signDigits(pendingDecomp.eventTLV, outcome)
                   val desc = pendingDecomp.eventDescriptorTLV
 
-                  if (outcome < desc.minNum && desc.isSigned) {
+                  if (
+                    outcome < desc.minNum && desc
+                      .isInstanceOf[SignedDigitDecompositionEventDescriptor]
+                  ) {
                     showOutOfBoundsConfirmSignAlert(outcome = outcome,
                                                     bound = desc.minNum,
                                                     isUpperBound = false,
                                                     signFunc = signFunc)
-                  } else if (outcome < desc.minNum && !desc.isSigned) {
+                  } else if (
+                    outcome < desc.minNum && desc
+                      .isInstanceOf[UnsignedDigitDecompositionEventDescriptor]
+                  ) {
                     showBelowZeroOutcomeAlert(desc)
                   } else if (outcome > desc.maxNum) {
                     showOutOfBoundsConfirmSignAlert(outcome = outcome,
