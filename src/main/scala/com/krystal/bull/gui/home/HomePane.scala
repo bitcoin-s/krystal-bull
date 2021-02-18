@@ -182,7 +182,7 @@ class HomePane(glassPane: VBox) {
   private val createDigitDecompEventButton = new Button(
     "Create Numeric Event") {
     onAction = _ => {
-      model.createDigitDecompEvent() match {
+      model.createNumericEvent() match {
         case Some(params) =>
           oracle
             .createNewEvent(params.eventName,

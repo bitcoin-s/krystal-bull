@@ -1,5 +1,6 @@
 package com.krystal.bull.gui.dialog
 
+import com.krystal.bull.gui.GUIUtil.numberFormatter
 import com.krystal.bull.gui.home.InitEventParams
 import com.krystal.bull.gui.{GUIUtil, GlobalData, KrystalBullUtil}
 import org.bitcoins.core.number._
@@ -10,12 +11,12 @@ import scalafx.scene.control._
 import scalafx.scene.layout.GridPane
 import scalafx.stage.Window
 
-object CreateDigitDecompEventDialog {
+object CreateNumericEventDialog {
 
   def showAndWait(parentWindow: Window): Option[InitEventParams] = {
     val dialog = new Dialog[Option[InitEventParams]]() {
       initOwner(parentWindow)
-      title = "Create Digit Decomposition Event"
+      title = "Create Numeric Event"
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
@@ -79,15 +80,16 @@ object CreateDigitDecompEventDialog {
 
         val maturityDate = KrystalBullUtil.toInstant(datePicker)
 
-        val maxNumber = maxTF.text.value.toLong
+        val maxNumber = numberFormatter.parse(maxTF.text.value).longValue()
 
         // log 2 of maxNumber gives us how many base 2 digits are needed
         val digitsNeeded =
-          Math.ceil(Math.log10(maxNumber) / Math.log10(2)).toInt
+          Math.ceil(Math.log(maxNumber) / Math.log(2)).toInt
 
         val isSigned = isSignedCheckBox.selected.value
         val unit = unitTF.text.value
-        val precision = precisionTF.text.value.toLong
+        val precision =
+          numberFormatter.parse(precisionTF.text.value).longValue()
 
         val descriptor = DigitDecompositionEventDescriptorV0TLV(
           base = UInt16(2),

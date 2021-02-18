@@ -38,8 +38,8 @@ class HomePaneModel() extends Logging {
     CreateEnumEventDialog.showAndWait(parentWindow.value)
   }
 
-  def createDigitDecompEvent(): Option[InitEventParams] = {
-    CreateDigitDecompEventDialog.showAndWait(parentWindow.value)
+  def createNumericEvent(): Option[InitEventParams] = {
+    CreateNumericEventDialog.showAndWait(parentWindow.value)
   }
 
   def viewEvent(event: OracleEvent): Unit = {
