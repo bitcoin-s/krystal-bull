@@ -11,6 +11,8 @@ import org.bitcoins.keymanager.WalletStorage
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
+import scala.concurrent.Future
+
 class LandingPaneModel() {
   var taskRunner: TaskRunner = _
 
@@ -31,7 +33,7 @@ class LandingPaneModel() {
             GlobalData.oracle = oracle
             oracle.conf.initialize()
           case None =>
-            FutureUtil.unit
+            Future.unit
         }
       }
     )
@@ -53,7 +55,7 @@ class LandingPaneModel() {
             GlobalData.oracle = oracle
             oracle.conf.initialize()
           case None =>
-            FutureUtil.unit
+            Future.unit
         }
       }
     )
