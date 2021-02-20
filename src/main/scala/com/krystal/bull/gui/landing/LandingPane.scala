@@ -1,10 +1,9 @@
 package com.krystal.bull.gui.landing
 
-import com.krystal.bull.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.gui.{GlobalData, KrystalBullUtil, TaskRunner}
 import org.bitcoins.crypto.AesPassword
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Button, Label, PasswordField}
-import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.KeyCode
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.{Font, TextAlignment}
@@ -19,12 +18,7 @@ class LandingPane(glassPane: VBox) {
     font = new Font(30)
   }
 
-  private val imageView: ImageView = new ImageView(
-    new Image("/icons/krystal_bull.png")) {
-    alignmentInParent = Pos.Center
-    fitHeight = 300
-    fitWidth = 300
-  }
+  private val logo = KrystalBullUtil.logo(300, Pos.Center)
 
   private val initText = new Label(
     "You do not currently have an oracle wallet!\nYou first need to " +
@@ -86,7 +80,7 @@ class LandingPane(glassPane: VBox) {
     top = label
     center = new VBox() {
       alignment = Pos.Center
-      children = Vector(imageView, bottomBox)
+      children = Vector(logo, bottomBox)
     }
   }
 

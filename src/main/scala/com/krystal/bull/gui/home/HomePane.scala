@@ -1,7 +1,7 @@
 package com.krystal.bull.gui.home
 
 import com.krystal.bull.gui.GlobalData._
-import com.krystal.bull.gui.{GlobalData, TaskRunner}
+import com.krystal.bull.gui.{GlobalData, KrystalBullUtil, TaskRunner}
 import org.bitcoins.dlc.oracle._
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
@@ -214,7 +214,7 @@ class HomePane(glassPane: VBox) {
   val view: BorderPane = new BorderPane {
     padding = Insets(top = 10, right = 10, bottom = 10, left = 10)
 
-    top = GlobalData.logo
+    top = KrystalBullUtil.logo()
     center = centerView
   }
 

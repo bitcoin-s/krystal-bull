@@ -1,6 +1,6 @@
 package com.krystal.bull.gui.dialog
 
-import com.krystal.bull.gui.GlobalData
+import com.krystal.bull.gui.{GlobalData, KrystalBullUtil}
 import scalafx.Includes._
 import scalafx.scene.control.{ButtonType, Dialog, TextArea}
 import scalafx.stage.Window
@@ -11,7 +11,7 @@ object AboutDialog {
     val dialog = new Dialog[Unit]() {
       initOwner(parentWindow)
       title = "About"
-      graphic = GlobalData.logo
+      graphic = KrystalBullUtil.logo()
     }
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)

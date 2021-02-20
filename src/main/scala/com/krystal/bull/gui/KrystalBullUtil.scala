@@ -1,7 +1,10 @@
 package com.krystal.bull.gui
 
 import org.bitcoins.core.util.TimeUtil
+import scalafx.geometry.Pos
 import scalafx.scene.control.DatePicker
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.StackPane
 
 import java.time.{Instant, ZoneOffset}
 
@@ -29,5 +32,24 @@ object KrystalBullUtil {
     }
 
     res
+  }
+
+  def logo(size: Int = 100, pos: Pos = Pos.CenterLeft): StackPane = {
+    val laserEye = new ImageView(
+      new Image("/icons/krystal_bull_laser_eyes.png")) {
+      fitHeight = size
+      fitWidth = size
+      visible = false
+      onMouseClicked = _ => visible = !visible.value
+    }
+    val standard = new ImageView(new Image("/icons/krystal_bull.png")) {
+      fitHeight = size
+      fitWidth = size
+      onMouseClicked = _ => laserEye.visible = !laserEye.visible.value
+    }
+    new StackPane() {
+      alignment = pos
+      children = Vector(standard, laserEye)
+    }
   }
 }

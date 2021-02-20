@@ -4,7 +4,6 @@ import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GUI, GlobalData, TaskRunner}
 import org.bitcoins.core.crypto.ExtKeyVersion.SegWitMainNetPriv
-import org.bitcoins.core.util.FutureUtil
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle
 import org.bitcoins.keymanager.WalletStorage

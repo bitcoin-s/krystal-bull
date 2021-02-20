@@ -10,7 +10,6 @@ import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle._
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import scalafx.beans.property.{ObjectProperty, StringProperty}
-import scalafx.scene.image.{Image, ImageView}
 
 import java.nio.file.{Path, Paths}
 import scala.concurrent.ExecutionContextExecutor
@@ -77,10 +76,4 @@ object GlobalData {
   lazy val stakingAddress: BitcoinAddress = oracle.stakingAddress(MainNet)
 
   var stakedAmountTextOpt: Option[StringProperty] = None
-
-  def logo: ImageView =
-    new ImageView(new Image("/icons/krystal_bull.png")) {
-      fitHeight = 100
-      fitWidth = 100
-    }
 }
