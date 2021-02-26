@@ -4,6 +4,8 @@
 Krystal Bull is a full featured DLC Oracle.
 This project is built on top of the [Bitcoin-S](https://github.com/bitcoin-s/bitcoin-s) DLC Oracle module.
 
+![](https://i.imgur.com/sWgQ7QH.png)
+
 ## Building from source
 
 To get started you will need Java, Scala, and some other nice tools installed, luckily the Scala team has an easy setup process!
