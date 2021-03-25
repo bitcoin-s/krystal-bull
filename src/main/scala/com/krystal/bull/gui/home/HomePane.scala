@@ -2,7 +2,7 @@ package com.krystal.bull.gui.home
 
 import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.{GlobalData, KrystalBullUtil, TaskRunner}
-import org.bitcoins.dlc.oracle._
+import org.bitcoins.core.api.dlcoracle._
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}

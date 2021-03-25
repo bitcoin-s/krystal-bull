@@ -11,6 +11,7 @@ import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
 import scala.concurrent.Future
+import scala.util.Try
 
 class LandingPaneModel() {
   var taskRunner: TaskRunner = _
@@ -75,13 +76,17 @@ class LandingPaneModel() {
                                               SegWitMainNetPriv,
                                               passwordOpt,
                                               None)
-        val oracle = DLCOracle(extKey)
+
+        val oracle = new DLCOracle(extKey)
         GlobalData.oracle = oracle
         appConfig.initialize()
       }
     )
 
-    Thread.sleep(1000)
-    GUI.changeToHomeScene()
+    Try {
+      Thread.sleep(1000)
+      GUI.changeToHomeScene()
+    }
+    ()
   }
 }

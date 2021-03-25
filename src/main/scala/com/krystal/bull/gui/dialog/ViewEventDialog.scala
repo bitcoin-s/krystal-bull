@@ -2,8 +2,8 @@ package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.GlobalData._
+import org.bitcoins.core.api.dlcoracle._
 import org.bitcoins.core.protocol.tlv._
-import org.bitcoins.dlc.oracle._
 import scalafx.Includes._
 import scalafx.event.ActionEvent
 import scalafx.geometry.Insets
@@ -141,31 +141,6 @@ object ViewEventDialog {
           }
 
           addSignButton(Vector(outcomeSelector, button))
-        case pendingRange: PendingRangeV0OracleEvent =>
-          val outcomeTF = new TextField() {
-            promptText = "Outcome"
-          }
-
-          def attestationTypeOpt: Option[RangeAttestation] = {
-            val str = outcomeTF.text.value
-            str.toLongOption.map(RangeAttestation)
-          }
-
-          val button = new Button("Sign") {
-            onAction = _ =>
-              attestationTypeOpt match {
-                case Some(outcome) =>
-                  showConfirmSignAlert(
-                    outcome.outcomeString,
-                    GlobalData.oracle
-                      .signEvent(pendingRange.eventTLV, outcome)
-                      .map(_.toOracleEvent))
-                case None =>
-                  showNoOutcomeAlert()
-              }
-          }
-
-          addSignButton(Vector(outcomeTF, button))
         case pendingDecomp: DigitDecompositionV0OracleEvent =>
           val outcomeTF = new TextField() {
             promptText = "Outcome"
