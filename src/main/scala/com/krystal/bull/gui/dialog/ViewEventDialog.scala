@@ -13,9 +13,22 @@ import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, HBox}
 import scalafx.stage.Window
 
+import java.awt.Toolkit.getDefaultToolkit
+import java.awt.datatransfer.StringSelection
 import scala.concurrent.Future
 
 object ViewEventDialog {
+
+  private def copyButton(str: String): Button = {
+    new Button() {
+      styleClass += "copy-button"
+      onAction = _ => {
+        val clipboard = getDefaultToolkit.getSystemClipboard
+        val sel = new StringSelection(str)
+        clipboard.setContents(sel, sel)
+      }
+    }
+  }
 
   private def showNoOutcomeAlert(): Unit = {
     new Alert(AlertType.Error) {
@@ -89,12 +102,14 @@ object ViewEventDialog {
 
       var row = 0
       add(new Label("Announcement:"), 0, row)
-      add(new TextArea() {
+      add(new TextField() {
             text = event.announcementTLV.hex
             editable = false
-            wrapText = true
           },
           columnIndex = 1,
+          rowIndex = row)
+      add(copyButton(event.announcementTLV.hex),
+          columnIndex = 2,
           rowIndex = row)
 
       row += 1
@@ -109,12 +124,14 @@ object ViewEventDialog {
       }
       event match {
         case completed: CompletedOracleEvent =>
-          add(new TextArea() {
+          add(new TextField() {
                 text = completed.oracleAttestmentV0TLV.hex
                 editable = false
-                wrapText = true
               },
               columnIndex = 1,
+              rowIndex = row)
+          add(copyButton(completed.oracleAttestmentV0TLV.hex),
+              columnIndex = 2,
               rowIndex = row)
         case pendingEnum: PendingEnumV0OracleEvent =>
           var outcomeOpt: Option[String] = None

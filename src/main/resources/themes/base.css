@@ -1,3 +1,10 @@
 .table-column {
     -fx-alignment: CENTER;
 }
+
+.copy-button {
+    -fx-background-image: url("../icons/copy.png");
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5 10 5 10;
+    -fx-background-position: center;
+}
