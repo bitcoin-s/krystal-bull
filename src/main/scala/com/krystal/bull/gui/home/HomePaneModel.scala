@@ -8,6 +8,7 @@ import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GlobalData, TaskRunner}
 import grizzled.slf4j.Logging
 import org.bitcoins.commons.serializers.SerializerUtil
+import org.bitcoins.core.api.dlcoracle.OracleEvent
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
 import org.bitcoins.core.protocol.BitcoinAddress
 import org.bitcoins.core.protocol.tlv.EventDescriptorTLV
