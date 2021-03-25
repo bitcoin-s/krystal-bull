@@ -1,21 +1,34 @@
 package com.krystal.bull.gui.dialog
 
-import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.GlobalData._
+import com.krystal.bull.gui.{GUIUtil, GlobalData}
 import org.bitcoins.core.api.dlcoracle._
 import org.bitcoins.core.protocol.tlv._
 import scalafx.Includes._
 import scalafx.event.ActionEvent
-import scalafx.geometry.Insets
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, HBox}
 import scalafx.stage.Window
 
+import java.awt.Toolkit.getDefaultToolkit
+import java.awt.datatransfer.StringSelection
 import scala.concurrent.Future
 
 object ViewEventDialog {
+
+  private def copyButton(str: String): Button = {
+    new Button() {
+      styleClass += "copy-button"
+      onAction = _ => {
+        val clipboard = getDefaultToolkit.getSystemClipboard
+        val sel = new StringSelection(str)
+        clipboard.setContents(sel, sel)
+      }
+    }
+  }
 
   private def showNoOutcomeAlert(): Unit = {
     new Alert(AlertType.Error) {
@@ -86,16 +99,101 @@ object ViewEventDialog {
       hgap = 10
       vgap = 10
       padding = Insets(20, 100, 10, 10)
+      alignmentInParent = Pos.Center
 
       var row = 0
       add(new Label("Announcement:"), 0, row)
-      add(new TextArea() {
+      add(new TextField() {
             text = event.announcementTLV.hex
             editable = false
-            wrapText = true
+            minWidth = 300
           },
           columnIndex = 1,
           rowIndex = row)
+      add(copyButton(event.announcementTLV.hex),
+          columnIndex = 2,
+          rowIndex = row)
+
+      row += 1
+      add(new Label("Event Name:"), 0, row)
+      add(new TextField() {
+            text = event.eventName
+            editable = false
+            minWidth = 300
+          },
+          columnIndex = 1,
+          rowIndex = row)
+      add(copyButton(event.eventName), columnIndex = 2, rowIndex = row)
+
+      row += 1
+      add(new Label("Maturation Time:"), 0, row)
+      add(new TextField() {
+            text = event.maturationTime.toString
+            editable = false
+          },
+          columnIndex = 1,
+          rowIndex = row)
+
+      event.eventDescriptorTLV match {
+        case _: EnumEventDescriptorV0TLV => ()
+        case decomp: DigitDecompositionEventDescriptorV0TLV =>
+          row += 1
+          add(new Label("Min Value:"), 0, row)
+          add(new TextField() {
+                text = decomp.minNum.toString()
+                editable = false
+              },
+              columnIndex = 1,
+              rowIndex = row)
+
+          row += 1
+          add(new Label("Max Value:"), 0, row)
+          add(new TextField() {
+                text = decomp.maxNum.toString
+                editable = false
+              },
+              columnIndex = 1,
+              rowIndex = row)
+
+          row += 1
+          add(new Label("Unit:"), 0, row)
+          add(new TextField() {
+                text = decomp.unit
+                editable = false
+              },
+              columnIndex = 1,
+              rowIndex = row)
+
+          row += 1
+          add(new Label("Precision:"), 0, row)
+          add(new TextField() {
+                text = decomp.precision.toInt.toString
+                editable = false
+              },
+              columnIndex = 1,
+              rowIndex = row)
+      }
+
+      event match {
+        case _: PendingOracleEvent => ()
+        case completed: CompletedOracleEvent =>
+          row += 1
+          add(new Label("Outcome:"), 0, row)
+
+          val outcomeStr = completed match {
+            case enum: CompletedEnumV0OracleEvent =>
+              enum.outcome.outcomeString
+            case decomp: CompletedDigitDecompositionV0OracleEvent =>
+              decomp.outcomeBase10.toString
+          }
+
+          add(new TextField() {
+                text = outcomeStr
+                editable = false
+              },
+              columnIndex = 1,
+              rowIndex = row)
+      }
 
       row += 1
       add(new Label("Attestations:"), 0, row)
@@ -109,12 +207,15 @@ object ViewEventDialog {
       }
       event match {
         case completed: CompletedOracleEvent =>
-          add(new TextArea() {
+          add(new TextField() {
                 text = completed.oracleAttestmentV0TLV.hex
                 editable = false
-                wrapText = true
+                minWidth = 300
               },
               columnIndex = 1,
+              rowIndex = row)
+          add(copyButton(completed.oracleAttestmentV0TLV.hex),
+              columnIndex = 2,
               rowIndex = row)
         case pendingEnum: PendingEnumV0OracleEvent =>
           var outcomeOpt: Option[String] = None
@@ -145,6 +246,7 @@ object ViewEventDialog {
           val outcomeTF = new TextField() {
             promptText = "Outcome"
           }
+          GUIUtil.setNumericInput(outcomeTF)
 
           def digitsOpt: Option[Long] = {
             val str = outcomeTF.text.value

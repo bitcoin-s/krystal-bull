@@ -45,3 +45,7 @@
     -fx-border-style: solid;
     -fx-border-width: 1px;
 }
+
+.copy-button {
+    -fx-background-image: url("../icons/copy-white.png");
+}
