@@ -1,5 +1,6 @@
 package com.krystal.bull.gui.dialog
 
+import com.krystal.bull.gui.GUIUtil.numberFormatter
 import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.{GUIUtil, GlobalData}
 import org.bitcoins.core.api.dlcoracle._
@@ -16,6 +17,7 @@ import scalafx.stage.Window
 import java.awt.Toolkit.getDefaultToolkit
 import java.awt.datatransfer.StringSelection
 import scala.concurrent.Future
+import scala.util.Try
 
 object ViewEventDialog {
 
@@ -249,8 +251,9 @@ object ViewEventDialog {
           GUIUtil.setNumericInput(outcomeTF)
 
           def digitsOpt: Option[Long] = {
-            val str = outcomeTF.text.value
-            str.toLongOption
+            Try {
+              numberFormatter.parse(outcomeTF.text.value).longValue()
+            }.toOption
           }
 
           val button = new Button("Sign") {
