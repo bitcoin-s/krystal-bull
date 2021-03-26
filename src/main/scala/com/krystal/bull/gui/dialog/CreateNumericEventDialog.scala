@@ -8,8 +8,9 @@ import org.bitcoins.core.protocol.tlv.DigitDecompositionEventDescriptorV0TLV
 import scalafx.Includes._
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control._
-import scalafx.scene.layout.GridPane
+import scalafx.scene.layout.{GridPane, HBox}
 import scalafx.stage.Window
+import scalafx.util.StringConverter
 
 object CreateNumericEventDialog {
 
@@ -25,6 +26,27 @@ object CreateNumericEventDialog {
 
     val eventNameTF = new TextField()
     val datePicker: DatePicker = new DatePicker()
+
+    val hourPicker = new ComboBox[Int](1.to(12)) {
+      value = 12
+    }
+    val minutePicker = new ComboBox[Int](0.to(59)) {
+      value = 0
+      converter = new StringConverter[Int] {
+        override def fromString(string: String): Int = string.toInt
+
+        override def toString(t: Int): String = {
+          if (t < 10) {
+            s"0$t"
+          } else t.toString
+        }
+      }
+    }
+
+    val amOrPmPicker = new ComboBox[String](Vector("AM", "PM")) {
+      value = "AM"
+    }
+
     val maxTF = new TextField()
     GUIUtil.setNumericInput(maxTF)
 
@@ -50,6 +72,18 @@ object CreateNumericEventDialog {
       row += 1
       add(new Label("Maturity Date"), 0, row)
       add(datePicker, 1, row)
+
+      if (GlobalData.advancedMode) {
+        row += 1
+        add(new Label("Maturity Time"), 0, row)
+        val hbox = new HBox() {
+          alignment = Pos.Center
+          spacing = 10
+          children =
+            Vector(hourPicker, minutePicker, amOrPmPicker, new Label("UTC"))
+        }
+        add(hbox, 1, row)
+      }
 
       row += 1
       add(new Label("Max Outcome"), 0, row)
@@ -78,7 +112,11 @@ object CreateNumericEventDialog {
       if (dialogButton == ButtonType.OK) {
         val eventName = eventNameTF.text.value
 
-        val maturityDate = KrystalBullUtil.toInstant(datePicker)
+        val maturityDate = KrystalBullUtil.toInstant(
+          datePicker = datePicker,
+          hourPicker = hourPicker,
+          minutePicker = minutePicker,
+          amOrPmPicker = amOrPmPicker)
 
         val maxNumber = numberFormatter.parse(maxTF.text.value).longValue()
 
