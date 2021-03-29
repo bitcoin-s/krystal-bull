@@ -67,7 +67,9 @@ object CreateEnumEventDialog {
       outcomeGrid.add(outcomeTF, 1, row)
 
       nextOutcomeRow += 1
-      dialog.dialogPane().getScene.getWindow.sizeToScene()
+
+      if (nextOutcomeRow < 10)
+        dialog.dialogPane().getScene.getWindow.sizeToScene()
     }
 
     addOutcomeRow()
@@ -116,7 +118,12 @@ object CreateEnumEventDialog {
           spacing = 10
           children = Vector(new Label("Potential Outcomes"), addOutcomeButton)
         }
-        children = Vector(label, outcomeGrid)
+
+        val outcomePane: ScrollPane = new ScrollPane() {
+          alignment = Pos.Center
+          content = outcomeGrid
+        }
+        children = Vector(label, outcomePane)
       }
 
       children = Vector(eventDataGrid, new Separator(), outcomes)
