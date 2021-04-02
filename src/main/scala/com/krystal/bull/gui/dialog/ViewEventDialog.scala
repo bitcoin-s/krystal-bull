@@ -5,6 +5,11 @@ import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.{GUIUtil, GlobalData}
 import org.bitcoins.core.api.dlcoracle._
 import org.bitcoins.core.protocol.tlv._
+import org.bitcoins.crypto.CryptoUtil
+import org.bitcoins.explorer.model.{
+  CreateAnnouncementExplorer,
+  CreateAttestations
+}
 import scalafx.Includes._
 import scalafx.event.ActionEvent
 import scalafx.geometry.{Insets, Pos}
@@ -199,6 +204,7 @@ object ViewEventDialog {
 
       row += 1
       add(new Label("Attestations:"), 0, row)
+
       def addSignButton(nodes: Vector[Node]): Unit = {
         val hBox = new HBox() {
           spacing = 10
@@ -207,6 +213,7 @@ object ViewEventDialog {
 
         add(hBox, columnIndex = 1, rowIndex = row)
       }
+
       event match {
         case completed: CompletedOracleEvent =>
           add(new TextField() {
@@ -292,6 +299,39 @@ object ViewEventDialog {
           }
 
           addSignButton(Vector(outcomeTF, button))
+      }
+
+      oracleNameOpt match {
+        case Some(oracleName) =>
+          row += 1
+          val addToExplorerButton = new Button("Add to Oracle Explorer") {
+            alignmentInParent = Pos.Center
+            private val createAnnouncement: CreateAnnouncementExplorer =
+              event.announcementTLV match {
+                case v0: OracleAnnouncementV0TLV =>
+                  CreateAnnouncementExplorer(oracleAnnouncementV0 = v0,
+                                             oracleName = oracleName,
+                                             description = event.eventName,
+                                             eventURI = None)
+              }
+
+            private val createAttestationsOpt: Option[CreateAttestations] =
+              event match {
+                case _: PendingOracleEvent => None
+                case completed: CompletedOracleEvent =>
+                  val hash = CryptoUtil.sha256(completed.announcementTLV.bytes)
+                  Some(
+                    CreateAttestations(hash, completed.oracleAttestmentV0TLV))
+              }
+            onAction = _ => {
+              oracleExplorerClient.createAnnouncement(createAnnouncement)
+              createAttestationsOpt.foreach(
+                oracleExplorerClient.createAttestations)
+            }
+          }
+
+          add(addToExplorerButton, 1, row)
+        case None => ()
       }
     }
 

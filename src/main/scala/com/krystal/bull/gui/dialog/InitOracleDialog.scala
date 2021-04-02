@@ -11,6 +11,8 @@ import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, VBox}
 import scalafx.stage.Window
 
+import java.nio.file.Files
+
 object InitOracleDialog {
 
   def showAndWait(parentWindow: Window): Option[DLCOracle] = {
@@ -22,6 +24,7 @@ object InitOracleDialog {
     dialog.dialogPane().buttonTypes = Seq(ButtonType.OK, ButtonType.Cancel)
     dialog.dialogPane().stylesheets = GlobalData.currentStyleSheets
 
+    val oracleNameTF = new TextField()
     val passwordTF = new PasswordField()
 
     val entropy = MnemonicCode.getEntropy256Bits
@@ -57,8 +60,10 @@ object InitOracleDialog {
       vgap = 10
       padding = Insets(20, 100, 10, 10)
 
-      add(new Label("Password"), 0, 0)
-      add(passwordTF, 1, 0)
+      add(new Label("Oracle Name"), 0, 0)
+      add(oracleNameTF, 1, 0)
+      add(new Label("Password"), 0, 1)
+      add(passwordTF, 1, 1)
     }
 
     dialog.dialogPane().content = new VBox {
@@ -71,6 +76,9 @@ object InitOracleDialog {
         val password = passwordTF.text.value
         val aesPass = AesPassword.fromStringOpt(password)
         GlobalData.setPassword(aesPass)
+
+        val oracleName = oracleNameTF.text.value
+        Files.write(GlobalData.oracleNameFile, oracleName.getBytes)
 
         val krystalBull =
           DLCOracle(mnemonicCode, aesPass, None)

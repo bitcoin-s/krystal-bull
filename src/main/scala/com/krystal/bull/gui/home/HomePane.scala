@@ -3,6 +3,7 @@ package com.krystal.bull.gui.home
 import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.{GlobalData, KrystalBullUtil, TaskRunner}
 import org.bitcoins.core.api.dlcoracle._
+import scalafx.application.Platform
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -11,6 +12,7 @@ import scalafx.scene.control._
 import scalafx.scene.layout.{BorderPane, GridPane, HBox, VBox}
 import scalafx.scene.text._
 
+import java.nio.file.Files
 import java.time.ZoneId
 import java.time.format.{DateTimeFormatter, FormatStyle}
 import java.util.Locale
@@ -107,6 +109,14 @@ class HomePane(glassPane: VBox) {
     hgap = 10
 
     var row = 0
+    add(new Label("Oracle Name:") {
+          textAlignment = TextAlignment.Right
+        },
+        columnIndex = 0,
+        rowIndex = row)
+    add(oracleNameNode, columnIndex = 1, rowIndex = row)
+
+    row += 1
     add(new Label("My Public Key:") {
           textAlignment = TextAlignment.Right
         },
@@ -144,6 +154,36 @@ class HomePane(glassPane: VBox) {
     add(stakedAmtNode, columnIndex = 1, rowIndex = row)
   }
 
+  private def oracleNameNode: Node = {
+    if (oracleNameFile.toFile.isFile) {
+      val str = new String(Files.readAllBytes(oracleNameFile))
+      oracleNameOpt = Some(str)
+      new TextField() {
+        text = str
+        editable = true
+        minWidth = 500
+      }
+    } else {
+      val tf = new TextField() {
+        minWidth = 250
+        promptText = "Warning: Cannot be changed"
+      }
+      val button = new Button("Set oracle name") {
+        onAction = _ => {
+          val oracleName = tf.text.value
+          Files.write(GlobalData.oracleNameFile, oracleName.getBytes)
+
+          oracleInfoText.children.remove(1)
+          oracleInfoText.add(oracleNameNode, 1, 0)
+        }
+      }
+      new HBox() {
+        spacing = 10
+        children = Vector(tf, button)
+      }
+    }
+  }
+
   private def stakedAmtNode: Node =
     GlobalData.stakedAmountTextOpt match {
       case Some(stakedAmountText) =>
@@ -155,9 +195,8 @@ class HomePane(glassPane: VBox) {
         new Button("Fetch Balance") {
           onAction = _ => {
             model.updateBalance()
-            oracleInfoText.children.remove(5)
-            oracleInfoText.add(stakedAmtNode, 1, 2)
-
+            oracleInfoText.children.remove(7)
+            oracleInfoText.add(stakedAmtNode, 1, 3)
           }
         }
     }
@@ -217,6 +256,8 @@ class HomePane(glassPane: VBox) {
     top = KrystalBullUtil.logo()
     center = centerView
   }
+
+  Platform.runLater(createEnumEventButton.requestFocus())
 
   view.autosize()
 

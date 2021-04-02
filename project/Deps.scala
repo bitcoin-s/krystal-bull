@@ -10,13 +10,13 @@ object Deps {
   }
 
   object V {
-    val akkav = "10.1.12"
-    val akkaStreamv = "2.6.6"
+    val akkav = "10.2.4"
+    val akkaStreamv = "2.6.13"
     val akkaActorV: String = akkaStreamv
 
     val scalaFxV = "15.0.1-R21"
     val javaFxV = "17-ea+5"
-    val bitcoinsV = "0.5.0-105-2d3b3b64-SNAPSHOT"
+    val bitcoinsV = "0.5.0-116-2745fdf8-SNAPSHOT"
   }
 
   object Compile {
@@ -38,6 +38,9 @@ object Deps {
 
     val bitcoinsRpc =
       "org.bitcoin-s" %% "bitcoin-s-bitcoind-rpc" % V.bitcoinsV withSources () withJavadoc ()
+
+    val bitcoinsOracleExplorer =
+      "org.bitcoin-s" %% "bitcoin-s-oracle-explorer-client" % V.bitcoinsV withSources () withJavadoc ()
 
     val scalaFx =
       "org.scalafx" %% "scalafx" % Deps.V.scalaFxV withSources () withJavadoc ()
@@ -73,6 +76,7 @@ object Deps {
   }
 
   val core: List[ModuleID] = List(Compile.bitcoinsOracle,
+                                  Compile.bitcoinsOracleExplorer,
                                   Compile.akkaActor,
                                   Compile.akkaHttp,
                                   Compile.akkaStream,
