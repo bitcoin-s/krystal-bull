@@ -9,6 +9,8 @@ import org.bitcoins.core.protocol.BitcoinAddress
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle._
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
+import org.bitcoins.explorer.client.SbExplorerClient
+import org.bitcoins.explorer.env.ExplorerEnv
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 
 import java.nio.file.{Path, Paths}
@@ -37,6 +39,8 @@ object GlobalData {
       Paths.get(Properties.userHome, ".krystal-bull")
     }
   }
+
+  val oracleNameFile: Path = DEFAULT_DATADIR.resolve("oracleName.txt")
 
   implicit var appConfig: DLCOracleAppConfig =
     DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
@@ -76,4 +80,9 @@ object GlobalData {
   lazy val stakingAddress: BitcoinAddress = oracle.stakingAddress(MainNet)
 
   var stakedAmountTextOpt: Option[StringProperty] = None
+
+  var oracleNameOpt: Option[String] = None
+
+  val oracleExplorerClient: SbExplorerClient = SbExplorerClient(
+    ExplorerEnv.Production)
 }
