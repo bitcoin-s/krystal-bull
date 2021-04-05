@@ -5,7 +5,6 @@ import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.{GUIUtil, GlobalData}
 import org.bitcoins.core.api.dlcoracle._
 import org.bitcoins.core.protocol.tlv._
-import org.bitcoins.crypto.CryptoUtil
 import org.bitcoins.explorer.model.{
   CreateAnnouncementExplorer,
   CreateAttestations
@@ -369,9 +368,9 @@ object ViewEventDialog {
               event match {
                 case _: PendingOracleEvent => None
                 case completed: CompletedOracleEvent =>
-                  val hash = CryptoUtil.sha256(completed.announcementTLV.bytes)
                   Some(
-                    CreateAttestations(hash, completed.oracleAttestmentV0TLV))
+                    CreateAttestations(completed.announcementTLV.sha256,
+                                       completed.oracleAttestmentV0TLV))
               }
             onAction = _ => {
               oracleExplorerClient.createAnnouncement(createAnnouncement)
