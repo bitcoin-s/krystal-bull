@@ -7,4 +7,12 @@
     -fx-background-repeat: no-repeat;
     -fx-padding: 5 10 5 10;
     -fx-background-position: center;
+    -fx-background-size: 16px;
+}
+.delete-button {
+    -fx-background-image: url("../icons/trash-black.png");
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 5 10 5 10;
+    -fx-background-position: center;
+    -fx-background-size: 16px;
 }
