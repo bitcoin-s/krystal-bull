@@ -49,3 +49,7 @@
 .copy-button {
     -fx-background-image: url("../icons/copy-white.png");
 }
+
+.delete-button {
+    -fx-background-image: url("../icons/trash-white.png");
+}

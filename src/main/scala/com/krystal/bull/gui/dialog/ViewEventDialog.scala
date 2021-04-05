@@ -21,7 +21,8 @@ import scalafx.stage.Window
 
 import java.awt.Toolkit.getDefaultToolkit
 import java.awt.datatransfer.StringSelection
-import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 object ViewEventDialog {
@@ -35,6 +36,52 @@ object ViewEventDialog {
         clipboard.setContents(sel, sel)
       }
     }
+  }
+
+  private def deleteSigsButton(event: CompletedOracleEvent): Button = {
+    new Button() {
+      styleClass += "delete-button"
+      onAction = _ => {
+        val f = oracleExplorerClient
+          .getEvent(event.announcementTLV.sha256)
+          .map(_.attestations)
+
+        val res = Try(Await.result(f, 5.seconds)).getOrElse(None)
+
+        res match {
+          case None    => showDeleteSigsAlert(event)
+          case Some(_) => showCannotDeleteSigsAlert(event)
+        }
+      }
+    }
+  }
+
+  private def showDeleteSigsAlert(event: CompletedOracleEvent): Unit = {
+    new Alert(AlertType.Confirmation) {
+      initOwner(owner)
+      title = "Warning!"
+      contentText =
+        s"Deleting signatures for event ${event.eventName} can result in leaking your private key!\n\n" +
+          "Only delete signatures if you have not published the previous signatures publicly " +
+          "and are absolutely sure you know what you are doing!"
+      dialogPane().stylesheets = GlobalData.currentStyleSheets
+    }.showAndWait() match {
+      case Some(ButtonType.OK) =>
+        GlobalData.oracle.deleteAttestations(event.eventTLV)
+      case None | Some(_) => ()
+    }
+  }
+
+  private def showCannotDeleteSigsAlert(event: CompletedOracleEvent): Unit = {
+    new Alert(AlertType.Error) {
+      initOwner(owner)
+      title = "Error!"
+      contentText =
+        s"Cannot delete signatures for ${event.eventName}. " +
+          s"Signatures have already been publicly published and would result in revealing your private key!"
+      dialogPane().stylesheets = GlobalData.currentStyleSheets
+    }.showAndWait()
+    ()
   }
 
   private def showNoOutcomeAlert(): Unit = {
@@ -226,6 +273,9 @@ object ViewEventDialog {
           add(copyButton(completed.oracleAttestmentV0TLV.hex),
               columnIndex = 2,
               rowIndex = row)
+          if (GlobalData.advancedMode) {
+            add(deleteSigsButton(completed), columnIndex = 3, rowIndex = row)
+          }
         case pendingEnum: PendingEnumV0OracleEvent =>
           var outcomeOpt: Option[String] = None
 
