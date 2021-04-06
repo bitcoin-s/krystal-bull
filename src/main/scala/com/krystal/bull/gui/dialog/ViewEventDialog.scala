@@ -42,7 +42,7 @@ object ViewEventDialog {
       styleClass += "delete-button"
       onAction = _ => {
         val f = oracleExplorerClient
-          .getEvent(event.announcementTLV.sha256)
+          .getEvent(event.announcementTLV)
           .map(_.attestations)
 
         val res = Try(Await.result(f, 5.seconds)).getOrElse(None)
@@ -369,7 +369,7 @@ object ViewEventDialog {
                 case _: PendingOracleEvent => None
                 case completed: CompletedOracleEvent =>
                   Some(
-                    CreateAttestations(completed.announcementTLV.sha256,
+                    CreateAttestations(completed.announcementTLV,
                                        completed.oracleAttestmentV0TLV))
               }
             onAction = _ => {

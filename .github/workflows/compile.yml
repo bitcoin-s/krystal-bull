@@ -22,7 +22,7 @@ jobs:
             ~/.sbt
           key: ${{ runner.os }}-cache
       - name: Compile and Check Formatting
-        run: sbt test:compile scalafmtCheckAll
+        run: sbt +test:compile scalafmtCheckAll
 
   mac:
     runs-on: macos-latest
@@ -39,7 +39,7 @@ jobs:
             ~/.sbt
           key: ${{ runner.os }}-cache
       - name: Compile
-        run: sbt test:compile
+        run: sbt +test:compile
 
   windows:
     runs-on: windows-latest
@@ -59,4 +59,4 @@ jobs:
             ~/.sbt
           key: ${{ runner.os }}-cache
       - name: Compile
-        run: sbt test:compile
+        run: sbt +test:compile
