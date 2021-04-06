@@ -82,7 +82,7 @@ class HomePane(glassPane: VBox) {
       columns ++= Seq(labelCol, announcementCol, maturityDateCol, signatureCol)
       margin = Insets(10, 0, 10, 0)
 
-      val infoItem: MenuItem = new MenuItem("View Event") {
+      val viewEventItem: MenuItem = new MenuItem("View Event") {
         onAction = _ => {
           val event = selectionModel.value.getSelectedItem
           model.viewEvent(event)
@@ -90,10 +90,17 @@ class HomePane(glassPane: VBox) {
         }
       }
 
+      val cloneEventItem: MenuItem = new MenuItem("Clone Event") {
+        onAction = _ => {
+          val event = selectionModel.value.getSelectedItem
+          model.cloneEvent(event, () => updateTable())
+        }
+      }
+
       columnResizePolicy = TableView.ConstrainedResizePolicy
 
       contextMenu = new ContextMenu() {
-        items += infoItem
+        items ++= Vector(viewEventItem, cloneEventItem)
       }
     }
   }
@@ -202,38 +209,12 @@ class HomePane(glassPane: VBox) {
     }
 
   private val createEnumEventButton = new Button("Create Enum Event") {
-    onAction = _ => {
-      model.createEnumEvent() match {
-        case Some(params) =>
-          oracle
-            .createNewEvent(params.eventName,
-                            params.maturationTime,
-                            params.descriptorTLV)
-            .map { _ =>
-              updateTable()
-            }
-        case None =>
-          ()
-      }
-    }
+    onAction = _ => model.createEnumEvent(() => updateTable())
   }
 
   private val createDigitDecompEventButton = new Button(
     "Create Numeric Event") {
-    onAction = _ => {
-      model.createNumericEvent() match {
-        case Some(params) =>
-          oracle
-            .createNewEvent(params.eventName,
-                            params.maturationTime,
-                            params.descriptorTLV)
-            .map { _ =>
-              updateTable()
-            }
-        case None =>
-          ()
-      }
-    }
+    onAction = _ => model.createNumericEvent(() => updateTable())
   }
 
   private val createButtons = new HBox() {
