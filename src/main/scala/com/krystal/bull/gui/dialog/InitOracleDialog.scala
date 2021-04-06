@@ -1,7 +1,7 @@
 package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
-import com.krystal.bull.gui.GlobalData.appConfig
+import com.krystal.bull.gui.GlobalData.oracleAppConfig
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle
