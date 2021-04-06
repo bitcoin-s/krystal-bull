@@ -68,7 +68,7 @@ class LandingPane(glassPane: VBox) {
     children = Vector(new Label("Password"), passwordField, unlockButton)
   }
 
-  private val bottomBox = if (GlobalData.appConfig.exists()) {
+  private val bottomBox = if (GlobalData.oracleAppConfig.exists()) {
     unlockBottom
   } else {
     initBottom

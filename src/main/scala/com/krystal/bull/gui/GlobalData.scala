@@ -1,6 +1,8 @@
 package com.krystal.bull.gui
 
 import akka.actor.ActorSystem
+import com.krystal.bull.gui.config.KrystalBullAppConfig
+import com.krystal.bull.gui.config.KrystalBullAppConfig.DEFAULT_DATADIR
 import com.krystal.bull.gui.settings.Themes
 import com.typesafe.config.ConfigFactory
 import javafx.scene.paint.Color
@@ -13,36 +15,22 @@ import org.bitcoins.explorer.client.SbExplorerClient
 import org.bitcoins.explorer.env.ExplorerEnv
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.Path
 import scala.concurrent.ExecutionContextExecutor
-import scala.util.Properties
 
 object GlobalData {
 
   implicit val system: ActorSystem = ActorSystem("krystal-bull")
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
-  private val DEFAULT_DATADIR: Path = {
-    if (Properties.isMac) {
-      Paths.get(Properties.userHome,
-                "Library",
-                "Application Support",
-                "Krystal Bull")
-    } else if (Properties.isWin) {
-      Paths.get("C:",
-                "Users",
-                Properties.userName,
-                "Appdata",
-                "Roaming",
-                "KrystalBull")
-    } else {
-      Paths.get(Properties.userHome, ".krystal-bull")
-    }
-  }
-
   val oracleNameFile: Path = DEFAULT_DATADIR.resolve("oracleName.txt")
 
-  implicit var appConfig: DLCOracleAppConfig =
+  val config: KrystalBullAppConfig =
+    KrystalBullAppConfig.fromDatadir(DEFAULT_DATADIR)
+
+  config.writeToFile()
+
+  implicit var oracleAppConfig: DLCOracleAppConfig =
     DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
 
   def setPassword(aesPasswordOpt: Option[AesPassword]): Unit = {
@@ -51,8 +39,8 @@ object GlobalData {
         val overrideConf =
           ConfigFactory.parseString(
             s"bitcoin-s.keymanager.aesPassword = ${pass.toStringSensitive}")
-        val newConf = appConfig.newConfigOfType(Vector(overrideConf))
-        appConfig = newConf
+        val newConf = oracleAppConfig.newConfigOfType(Vector(overrideConf))
+        oracleAppConfig = newConf
       case None => ()
     }
   }
@@ -61,7 +49,9 @@ object GlobalData {
 
   val textColor: ObjectProperty[Color] = ObjectProperty(Color.WHITE)
 
-  var darkThemeEnabled: Boolean = true
+  var darkThemeEnabled: Boolean = config.darkMode
+
+  var explorerEnv: ExplorerEnv = config.explorerEnv
 
   def currentStyleSheets: Seq[String] = {
     val loaded = if (GlobalData.darkThemeEnabled) {
@@ -75,7 +65,7 @@ object GlobalData {
 
   var oracle: DLCOracle = _
 
-  var advancedMode: Boolean = false
+  var advancedMode: Boolean = config.advancedMode
 
   lazy val stakingAddress: BitcoinAddress = oracle.stakingAddress(MainNet)
 
@@ -84,5 +74,5 @@ object GlobalData {
   var oracleNameOpt: Option[String] = None
 
   val oracleExplorerClient: SbExplorerClient = SbExplorerClient(
-    ExplorerEnv.Production)
+    config.explorerEnv)
 }

@@ -72,14 +72,14 @@ class LandingPaneModel() {
       op = {
         GlobalData.setPassword(passwordOpt)
         val extKey =
-          WalletStorage.getPrivateKeyFromDisk(appConfig.seedPath,
+          WalletStorage.getPrivateKeyFromDisk(oracleAppConfig.seedPath,
                                               SegWitMainNetPriv,
                                               passwordOpt,
                                               None)
 
         val oracle = new DLCOracle(extKey)
         GlobalData.oracle = oracle
-        appConfig.initialize()
+        oracleAppConfig.initialize()
       }
     )
 

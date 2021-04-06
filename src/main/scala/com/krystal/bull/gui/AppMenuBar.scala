@@ -1,7 +1,7 @@
 package com.krystal.bull.gui
 
 import com.krystal.bull.gui.settings.Themes
-import org.bitcoins.core.config.{BitcoinNetworks, MainNet, RegTest, TestNet3}
+import org.bitcoins.explorer.env.ExplorerEnv
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 
@@ -36,13 +36,53 @@ private class SettingsMenu() {
 
   private val advancedMode: MenuItem = new CheckMenuItem("Advanced Mode") {
     selected = GlobalData.advancedMode
-    onAction = _ => GlobalData.advancedMode = !GlobalData.advancedMode
+    onAction = _ => {
+      GlobalData.advancedMode = !GlobalData.advancedMode
+      GlobalData.config.writeToFile()
+    }
+  }
+
+  private val explorerToggle: ToggleGroup = new ToggleGroup()
+
+  private val explorer: Menu = new Menu("_OracleExplorer") {
+    mnemonicParsing = true
+
+    private val productionToggle: RadioMenuItem = new RadioMenuItem(
+      "_Production") {
+      toggleGroup = explorerToggle
+      selected = GlobalData.explorerEnv == ExplorerEnv.Production
+      id = "prod"
+    }
+
+    private val testToggle: RadioMenuItem = new RadioMenuItem("_Test") {
+      toggleGroup = explorerToggle
+      selected = GlobalData.explorerEnv == ExplorerEnv.Test
+      id = "test"
+    }
+
+    items = List(productionToggle, testToggle)
+
+    onAction = _ => {
+      val selectedId = explorerToggle.selectedToggle.value
+        .asInstanceOf[javafx.scene.control.RadioMenuItem]
+        .getId
+
+      selectedId match {
+        case "prod" =>
+          GlobalData.explorerEnv = ExplorerEnv.Production
+        case "test" =>
+          GlobalData.explorerEnv = ExplorerEnv.Test
+        case _: String =>
+          throw new RuntimeException("Error, this shouldn't be possible")
+      }
+      GlobalData.config.writeToFile()
+    }
   }
 
   val settingsMenu: Menu =
     new Menu("_Settings") {
       mnemonicParsing = true
-      items = List(advancedMode)
+      items = List(advancedMode, explorer)
     }
 }
 
@@ -58,6 +98,8 @@ private class ViewMenu() {
       toggleGroup = themeToggle
       selected = GlobalData.darkThemeEnabled
       id = "dark"
+
+      onAction = _ => GlobalData.config.writeToFile()
     }
 
     private val lightThemeToggle: RadioMenuItem = new RadioMenuItem(
@@ -65,6 +107,8 @@ private class ViewMenu() {
       toggleGroup = themeToggle
       selected = !GlobalData.darkThemeEnabled
       id = "light"
+
+      onAction = _ => GlobalData.config.writeToFile()
     }
 
     items = List(darkThemeToggle, lightThemeToggle)
