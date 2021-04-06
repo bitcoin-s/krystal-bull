@@ -11,20 +11,53 @@ import org.bitcoins.commons.serializers.SerializerUtil
 import org.bitcoins.core.api.dlcoracle.OracleEvent
 import org.bitcoins.core.currency.{CurrencyUnit, Satoshis}
 import org.bitcoins.core.protocol.BitcoinAddress
-import org.bitcoins.core.protocol.tlv.EventDescriptorTLV
-import org.bitcoins.dlc.oracle._
+import org.bitcoins.core.protocol.tlv.{
+  DigitDecompositionEventDescriptorV0TLV,
+  EnumEventDescriptorV0TLV,
+  EventDescriptorTLV
+}
+import org.bitcoins.core.util.TimeUtil
 import play.api.libs.json._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.stage.Window
 
-import java.time.Instant
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 case class InitEventParams(
     eventName: String,
     maturationTime: Instant,
-    descriptorTLV: EventDescriptorTLV)
+    descriptorTLV: EventDescriptorTLV) {
+
+  val sanitizedEventName: String = {
+    val dateStr = eventName.split(" ").last
+    val dateT = Try(TimeUtil.iso8601ToDate(dateStr))
+
+    dateT match {
+      case Failure(_) => eventName // no appended date
+      case Success(_) =>
+        eventName.split(" ").init.mkString(" ").trim
+    }
+  }
+
+  val hasAppendedDate: Boolean = eventName != sanitizedEventName
+
+  val dateTime: LocalDateTime =
+    LocalDateTime.ofInstant(maturationTime, ZoneOffset.UTC)
+
+  val hour: Int = {
+    val military = dateTime.getHour
+
+    if (military > 12) military - 12
+    else if (military == 0) 12
+    else military
+  }
+
+  val minute: Int = dateTime.getMinute
+
+  val isAM: Boolean = dateTime.getHour <= 12
+}
 
 class HomePaneModel() extends Logging {
   var taskRunner: TaskRunner = _
@@ -35,16 +68,54 @@ class HomePaneModel() extends Logging {
     ObjectProperty[Window](null.asInstanceOf[Window])
   }
 
-  def createEnumEvent(): Option[InitEventParams] = {
-    CreateEnumEventDialog.showAndWait(parentWindow.value)
+  def createEnumEvent(
+      onSuccess: () => Unit,
+      initParamsOpt: Option[InitEventParams] = None): Unit = {
+    CreateEnumEventDialog.showAndWait(parentWindow.value, initParamsOpt) match {
+      case Some(params) => createEvent(params, onSuccess)
+      case None         => ()
+    }
   }
 
-  def createNumericEvent(): Option[InitEventParams] = {
-    CreateNumericEventDialog.showAndWait(parentWindow.value)
+  def createNumericEvent(
+      onSuccess: () => Unit,
+      initParamsOpt: Option[InitEventParams] = None): Unit = {
+    CreateNumericEventDialog.showAndWait(parentWindow.value,
+                                         initParamsOpt) match {
+      case Some(params) => createEvent(params, onSuccess)
+      case None         => ()
+    }
+  }
+
+  private def createEvent(
+      params: InitEventParams,
+      onSuccess: () => Unit): Unit = {
+    oracle
+      .createNewEvent(params.eventName,
+                      params.maturationTime,
+                      params.descriptorTLV)
+      .map { _ =>
+        onSuccess()
+      }
+    ()
   }
 
   def viewEvent(event: OracleEvent): Unit = {
     ViewEventDialog.showAndWait(parentWindow.value, event)
+  }
+
+  def cloneEvent(event: OracleEvent, onSuccess: () => Unit): Unit = {
+    val initialParams = InitEventParams(eventName = event.eventName,
+                                        maturationTime = event.maturationTime,
+                                        descriptorTLV =
+                                          event.eventDescriptorTLV)
+
+    event.eventDescriptorTLV match {
+      case _: EnumEventDescriptorV0TLV =>
+        createEnumEvent(onSuccess, Some(initialParams))
+      case _: DigitDecompositionEventDescriptorV0TLV =>
+        createNumericEvent(onSuccess, Some(initialParams))
+    }
   }
 
   case class AddressStats(
