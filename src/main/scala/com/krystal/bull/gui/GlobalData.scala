@@ -28,8 +28,6 @@ object GlobalData {
   val config: KrystalBullAppConfig =
     KrystalBullAppConfig.fromDatadir(DEFAULT_DATADIR)
 
-  config.writeToFile()
-
   implicit var oracleAppConfig: DLCOracleAppConfig =
     DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
 

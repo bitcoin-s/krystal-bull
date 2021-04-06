@@ -1,7 +1,7 @@
 package com.krystal.bull.gui.home
 
 import com.krystal.bull.gui.GlobalData._
-import com.krystal.bull.gui.{GlobalData, KrystalBullUtil, TaskRunner}
+import com.krystal.bull.gui.{GUI, GlobalData, KrystalBullUtil, TaskRunner}
 import org.bitcoins.core.api.dlcoracle._
 import scalafx.application.Platform
 import scalafx.beans.property.StringProperty
@@ -90,6 +90,16 @@ class HomePane(glassPane: VBox) {
         }
       }
 
+      val viewOnExplorer: MenuItem = new MenuItem("View on Explorer") {
+        onAction = _ => {
+          val event = selectionModel.value.getSelectedItem
+          val baseUrl = explorerEnv.baseUri.dropRight(3)
+          val url =
+            s"${baseUrl}event/${event.announcementTLV.sha256.hex}"
+          GUI.hostServices.showDocument(url)
+        }
+      }
+
       val cloneEventItem: MenuItem = new MenuItem("Clone Event") {
         onAction = _ => {
           val event = selectionModel.value.getSelectedItem
@@ -100,7 +110,7 @@ class HomePane(glassPane: VBox) {
       columnResizePolicy = TableView.ConstrainedResizePolicy
 
       contextMenu = new ContextMenu() {
-        items ++= Vector(viewEventItem, cloneEventItem)
+        items ++= Vector(viewEventItem, viewOnExplorer, cloneEventItem)
       }
     }
   }
