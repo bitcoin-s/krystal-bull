@@ -42,7 +42,7 @@ object ViewEventDialog {
       styleClass += "delete-button"
       onAction = _ => {
         val f = oracleExplorerClient
-          .getEvent(event.announcementTLV)
+          .getAnnouncement(event.announcementTLV)
           .map(_.attestations)
 
         val res = Try(Await.result(f, 5.seconds)).getOrElse(None)
@@ -353,7 +353,7 @@ object ViewEventDialog {
       oracleNameOpt match {
         case Some(oracleName) =>
           row += 1
-          val addToExplorerButton = new Button("Add to Oracle Explorer") {
+          val sendToExplorerButton = new Button("Send to Oracle Explorer") {
             alignmentInParent = Pos.Center
             private val createAnnouncement: CreateAnnouncementExplorer =
               event.announcementTLV match {
@@ -373,13 +373,16 @@ object ViewEventDialog {
                                        completed.oracleAttestmentV0TLV))
               }
             onAction = _ => {
-              oracleExplorerClient.createAnnouncement(createAnnouncement)
-              createAttestationsOpt.foreach(
-                oracleExplorerClient.createAttestations)
+              val createAnnouncements =
+                oracleExplorerClient.createAnnouncement(createAnnouncement)
+              createAnnouncements.onComplete { _ =>
+                createAttestationsOpt.foreach(
+                  oracleExplorerClient.createAttestations)
+              }
             }
           }
 
-          add(addToExplorerButton, 1, row)
+          add(sendToExplorerButton, 1, row)
         case None => ()
       }
     }

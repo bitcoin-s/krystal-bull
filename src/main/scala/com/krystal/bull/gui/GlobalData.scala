@@ -71,6 +71,5 @@ object GlobalData {
 
   var oracleNameOpt: Option[String] = None
 
-  val oracleExplorerClient: SbExplorerClient = SbExplorerClient(
-    config.explorerEnv)
+  def oracleExplorerClient: SbExplorerClient = SbExplorerClient(explorerEnv)
 }

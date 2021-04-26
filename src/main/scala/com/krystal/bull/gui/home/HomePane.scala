@@ -172,6 +172,10 @@ class HomePane(glassPane: VBox) {
   }
 
   private def oracleNameNode: Node = {
+    lazy val fromExplorerOpt = Await.result(
+      oracleExplorerClient.getOracleName(oracle.publicKey),
+      10.seconds)
+
     if (oracleNameFile.toFile.isFile) {
       val str = new String(Files.readAllBytes(oracleNameFile))
       oracleNameOpt = Some(str)
@@ -180,9 +184,17 @@ class HomePane(glassPane: VBox) {
         editable = true
         minWidth = 500
       }
+    } else if (fromExplorerOpt.isDefined) {
+      Files.write(GlobalData.oracleNameFile, fromExplorerOpt.get.getBytes)
+      oracleNameOpt = fromExplorerOpt
+      new TextField() {
+        text = fromExplorerOpt.get
+        editable = true
+        minWidth = 500
+      }
     } else {
       val tf = new TextField() {
-        minWidth = 250
+        minWidth = 366
         promptText = "Warning: Cannot be changed"
       }
       val button = new Button("Set oracle name") {

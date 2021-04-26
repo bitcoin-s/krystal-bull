@@ -10,28 +10,28 @@ object Deps {
   }
 
   object V {
-    val akkav = "10.2.4"
-    val akkaStreamv = "2.6.13"
-    val akkaActorV: String = akkaStreamv
+    val akkaV = "10.2.4"
+    val akkaStreamV = "2.6.14"
+    val akkaActorV: String = akkaStreamV
 
     val scalaFxV = "15.0.1-R21"
     val javaFxV = "17-ea+5"
-    val bitcoinsV = "0.5.0-129-68034600-SNAPSHOT"
+    val bitcoinsV = "0.5.0-183-80f0ecd2-SNAPSHOT"
   }
 
   object Compile {
 
     val akkaHttp =
-      "com.typesafe.akka" %% "akka-http" % V.akkav withSources () withJavadoc ()
+      "com.typesafe.akka" %% "akka-http" % V.akkaV withSources () withJavadoc ()
 
     val akkaStream =
-      "com.typesafe.akka" %% "akka-stream" % V.akkaStreamv withSources () withJavadoc ()
+      "com.typesafe.akka" %% "akka-stream" % V.akkaStreamV withSources () withJavadoc ()
 
     val akkaActor =
-      "com.typesafe.akka" %% "akka-actor" % V.akkaStreamv withSources () withJavadoc ()
+      "com.typesafe.akka" %% "akka-actor" % V.akkaStreamV withSources () withJavadoc ()
 
     val akkaSlf4j =
-      "com.typesafe.akka" %% "akka-slf4j" % V.akkaStreamv withSources () withJavadoc ()
+      "com.typesafe.akka" %% "akka-slf4j" % V.akkaStreamV withSources () withJavadoc ()
 
     val bitcoinsOracle =
       "org.bitcoin-s" %% "bitcoin-s-dlc-oracle" % V.bitcoinsV withSources () withJavadoc ()
