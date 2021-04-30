@@ -78,7 +78,7 @@ object InitOracleDialog {
         GlobalData.setPassword(aesPass)
 
         val oracleName = oracleNameTF.text.value
-        Files.write(GlobalData.oracleNameFile, oracleName.getBytes)
+        Files.write(GlobalData.oracleNameFile, oracleName.getBytes("UTF-8"))
 
         val krystalBull =
           DLCOracle(mnemonicCode, aesPass, None)
