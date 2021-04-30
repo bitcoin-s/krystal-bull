@@ -177,7 +177,7 @@ class HomePane(glassPane: VBox) {
       10.seconds)
 
     if (oracleNameFile.toFile.isFile) {
-      val str = new String(Files.readAllBytes(oracleNameFile))
+      val str = new String(Files.readAllBytes(oracleNameFile), "UTF-8")
       oracleNameOpt = Some(str)
       new TextField() {
         text = str

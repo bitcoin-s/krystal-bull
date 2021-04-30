@@ -5,7 +5,7 @@ import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
 import org.bitcoins.db._
 import org.bitcoins.explorer.env.ExplorerEnv
 
-import java.io.File
+import java.io.{File, IOException}
 import java.nio.file.{Files, Path, Paths}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -72,7 +72,7 @@ case class KrystalBullAppConfig(
 object KrystalBullAppConfig {
 
   private[bull] val DEFAULT_DATADIR: Path = {
-    if (Properties.isMac) {
+    val path = if (Properties.isMac) {
       Paths.get(Properties.userHome,
                 "Library",
                 "Application Support",
@@ -87,6 +87,17 @@ object KrystalBullAppConfig {
     } else {
       Paths.get(Properties.userHome, ".krystal-bull")
     }
+
+    val file = path.toFile
+    if (!file.exists()) {
+      if (!file.mkdirs()) {
+        val ex = new IOException(s"Cannot create data directory `$path`")
+        ex.printStackTrace()
+        throw ex
+      }
+    }
+
+    path
   }
 
   val file: File =
