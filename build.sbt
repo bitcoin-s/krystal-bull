@@ -8,7 +8,7 @@ scalaVersion := "2.13.3"
 
 libraryDependencies ++= Deps.core
 
-fork in run := true
+fork / run := true
 
 mainClass := Some("com.krystal.bull.gui.GUI")
 
