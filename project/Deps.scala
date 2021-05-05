@@ -2,11 +2,19 @@ import sbt._
 
 object Deps {
 
-  lazy val osName: String = System.getProperty("os.name") match {
+  lazy val arch = System.getProperty("os.arch")
+  lazy val osName = System.getProperty("os.name") match {
     case n if n.startsWith("Linux")   => "linux"
-    case n if n.startsWith("Mac")     => "mac"
+    case n if n.startsWith("Mac")     =>
+      if (arch == "aarch64" ) {
+        //needed to accommodate the different chip
+        //arch for M1. see: https://github.com/bitcoin-s/bitcoin-s/pull/3041
+        s"mac-${arch}"
+      } else {
+        "mac"
+      }
     case n if n.startsWith("Windows") => "win"
-    case _                            => throw new Exception("Unknown platform!")
+    case x                            => throw new Exception(s"Unknown platform $x!")
   }
 
   object V {
@@ -15,7 +23,7 @@ object Deps {
     val akkaActorV: String = akkaStreamV
 
     val scalaFxV = "15.0.1-R21"
-    val javaFxV = "17-ea+5"
+    val javaFxV = "17-ea+8"
     val bitcoinsV = "0.6.0"
   }
 
