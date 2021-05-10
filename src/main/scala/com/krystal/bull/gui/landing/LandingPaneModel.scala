@@ -8,10 +8,12 @@ import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle
 import org.bitcoins.keymanager.WalletStorage
 import scalafx.beans.property.ObjectProperty
+import scalafx.scene.control.Alert
+import scalafx.scene.control.Alert.AlertType
 import scalafx.stage.Window
 
 import scala.concurrent.Future
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class LandingPaneModel() {
   var taskRunner: TaskRunner = _
@@ -66,27 +68,30 @@ class LandingPaneModel() {
     }
   }
 
-  def loadOracle(passwordOpt: Option[AesPassword]): Unit = {
-    taskRunner.run(
-      caption = "Load Oracle",
-      op = {
-        GlobalData.setPassword(passwordOpt)
-        val extKey =
-          WalletStorage.getPrivateKeyFromDisk(oracleAppConfig.seedPath,
-                                              SegWitMainNetPriv,
-                                              passwordOpt,
-                                              None)
+  def loadOracle(passwordOpt: Option[AesPassword]): Boolean = {
+    GlobalData.setPassword(passwordOpt)
 
+    val extKeyT = Try(
+      WalletStorage.getPrivateKeyFromDisk(oracleAppConfig.seedPath,
+                                          SegWitMainNetPriv,
+                                          passwordOpt,
+                                          None))
+
+    extKeyT match {
+      case Failure(_) =>
+        new Alert(AlertType.Error) {
+          initOwner(owner)
+          title = "Incorrect Password"
+          headerText = "Error: incorrect password, please try again"
+        }.showAndWait()
+        false
+      case Success(extKey) =>
         val oracle = new DLCOracle(extKey)
         GlobalData.oracle = oracle
         oracleAppConfig.initialize()
-      }
-    )
-
-    Try {
-      Thread.sleep(1000)
-      GUI.changeToHomeScene()
+        Thread.sleep(1000)
+        GUI.changeToHomeScene()
+        true
     }
-    ()
   }
 }
