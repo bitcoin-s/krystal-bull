@@ -74,7 +74,7 @@ jobs:
           name: jars
           path: "target/scala-2.13"
       - name: Package jar as msi
-        run: "jpackage --win-shortcut --name ${{env.pkg-name}} --app-version ${{ env.pkg-version }} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.ico --verbose"
+        run: "jpackage --win-shortcut --win-menu --win-menu-group 'Krystal Bull' --name ${{env.pkg-name}} --app-version ${{ env.pkg-version }} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.ico --verbose"
       - name: View artifacts
         run: dir
       - name: Upload installer
