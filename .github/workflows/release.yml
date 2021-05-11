@@ -1,0 +1,93 @@
+# taken and modified from https://github.com/philen/scala-jpackage-workflow-demo
+name: Build for Release
+
+on:
+  push:
+    branches: [ release/* ]
+
+env:
+  pkg-assembly: 'krystal-bull-assembly-0.1.jar'
+  pkg-name: 'Krystal Bull'
+  pkg-version: '0.1'
+
+jobs:
+  fat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build fat jar
+        run: sbt assembly
+      - name: Upload fat jar
+        uses: actions/upload-artifact@v1
+        with:
+          name: jars
+          path: "target/scala-2.13/${{ env.pkg-assembly }}"
+  osx:
+    needs: fat
+    runs-on: [macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '14.0.0'
+          java-package: jdk
+          architecture: x64
+      - name: Download fat jar
+        uses: actions/download-artifact@v1
+        with:
+          name: jars
+      - name: Package jar as dmg installer
+        run: "jpackage --name ${{ env.pkg-name }} -i jars --main-class example.Main --main-jar ${{ env.pkg-assembly }}"
+      - name: Upload dmg
+        uses: actions/upload-artifact@v1
+        with:
+          name: dmgs
+          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.dmg"
+  windows:
+    needs: fat
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '14.0.0'
+          java-package: jdk
+          architecture: x64
+      - name: Download fat jar
+        uses: actions/download-artifact@v1
+        with:
+          name: jars
+      - name: Package jar as msi
+        run: "jpackage --name ${{ env.pkg-name }} --type msi -i jars --main-class example.Main --main-jar ${{ env.pkg-assembly }} --win-dir-chooser"
+      - name: View artifacts
+        run: dir
+      - name: Upload installer
+        uses: actions/upload-artifact@v1
+        with:
+          name: msis
+          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.msi"
+  linux:
+    needs: fat
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '14.0.0'
+          java-package: jdk
+          architecture: x64
+      - name: Download fat jar
+        uses: actions/download-artifact@v1
+        with:
+          name: jars
+      - name: Package jar as debian package
+        run: "jpackage --linux-shortcut --name ${{env.pkg-name}} --type deb -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
+      - name: Upload deb
+        uses: actions/upload-artifact@v1
+        with:
+          name : debs
+          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.deb"
