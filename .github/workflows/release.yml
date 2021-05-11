@@ -44,8 +44,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: jars
+          path: "target/scala-2.13"
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as dmg installer
-        run: "jpackage  --name KrystalBull --type dmg -i ${{steps.download.outputs.download-path}} --main-class com.krystal.bull.gui.GUI --main-jar krystal-bull-assembly-0.1.jar --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
+        run: "jpackage  --name KrystalBull --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar krystal-bull-assembly-0.1.jar --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
       - name: Upload dmg
         uses: actions/upload-artifact@v1
         with:
@@ -65,8 +68,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: jars
+          path: "target/scala-2.13"
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as msi
-        run: "jpackage --win-shortcut --name ${{env.pkg-name}} --type msi -i ${{steps.download.outputs.download-path}} --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
+        run: "jpackage --win-shortcut --name ${{env.pkg-name}} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
       - name: View artifacts
         run: dir
       - name: Upload installer
@@ -88,8 +94,11 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: jars
+          path: "target/scala-2.13"
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as debian package
-        run: "jpackage --linux-shortcut --name ${{env.pkg-name}} --type deb -i ${{steps.download.outputs.download-path}} --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
+        run: "jpackage --linux-shortcut --name ${{env.pkg-name}} --type deb -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
       - name: Upload deb
         uses: actions/upload-artifact@v1
         with:
