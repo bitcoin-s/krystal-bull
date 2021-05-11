@@ -4,7 +4,7 @@ name := "krystal-bull"
 
 version := "0.1"
 
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.5"
 
 libraryDependencies ++= Deps.core
 
@@ -24,3 +24,5 @@ assemblyMergeStrategy in assembly := {
   case PathList("reference.conf", _ @ _*) => MergeStrategy.concat
   case _ => MergeStrategy.first
 }
+
+scalacOptions ++= Seq("release", "11")
