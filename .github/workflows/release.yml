@@ -111,4 +111,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name : debs
-          path: "${{ env.pkg-name }}-${{ env.pkg-version }}-1_amd64.deb"
+          path: "${{ env.pkg-name }}_${{ env.pkg-version }}-1_amd64.deb"
