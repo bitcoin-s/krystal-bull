@@ -1,4 +1,6 @@
 # taken and modified from https://github.com/philen/scala-jpackage-workflow-demo
+# jpackage docs:  https://docs.oracle.com/en/java/javase/14/docs/specs/man/jpackage.html
+# jpackage jep: https://openjdk.java.net/jeps/392
 name: Build for Release
 
 on:
@@ -41,7 +43,7 @@ jobs:
         with:
           name: jars
       - name: Package jar as dmg installer
-        run: "jpackage --name ${{ env.pkg-name }} -i jars --main-class example.Main --main-jar ${{ env.pkg-assembly }}"
+        run: "jpackage  --name KrystalBull --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar krystal-bull-assembly-0.1.jar --icon src/main/resources/icons/krystal_bull_laser_eyes.png"
       - name: Upload dmg
         uses: actions/upload-artifact@v1
         with:
