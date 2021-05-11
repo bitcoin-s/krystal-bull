@@ -4,8 +4,10 @@
 name: Build for Release
 
 on:
+  pull_request:
   push:
-    branches: [ release/* ]
+    branches: [ master, main ]
+    tags: [ "*" ]
 
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
