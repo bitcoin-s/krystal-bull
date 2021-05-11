@@ -11,7 +11,7 @@ on:
 
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
-  pkg-name: 'Krystal Bull'
+  pkg-name: 'Krystal\ Bull'
   pkg-version: '0.1'
 
 jobs:
