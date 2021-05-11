@@ -24,3 +24,5 @@ assemblyMergeStrategy in assembly := {
   case PathList("reference.conf", _ @ _*) => MergeStrategy.concat
   case _ => MergeStrategy.first
 }
+krystalbull_0.1-1_amd64.deb
+krystalbull-0.1-1_amd64.deb
