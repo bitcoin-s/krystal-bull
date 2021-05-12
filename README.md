@@ -1,5 +1,5 @@
 # Krystal Bull
-[![Build Status](https://github.com/benthecarman/krystal-bull/workflows/Compile%20Check/badge.svg)](https://github.com/benthecarman/krystal-bull/actions)
+[![Build Status](https://github.com/bitcoin-s/krystal-bull/workflows/Compile%20Check/badge.svg)](https://github.com/bitcoin-s/krystal-bull/actions)
 
 Krystal Bull is a full featured DLC Oracle.
 This project is built on top of the [Bitcoin-S](https://github.com/bitcoin-s/bitcoin-s) DLC Oracle module.
