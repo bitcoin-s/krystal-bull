@@ -55,13 +55,12 @@ jobs:
       - name: Add cert to keychain and unlock keychain
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-        with:
-          filelocation: ${{ steps.write_file.outputs.filePath }}
+          MACOS_CERT_FILE_PATH: ${{ steps.write_file.outputs.filePath }}
         run: |
           echo "Hello world"
           security create-keychain -p $MACOS_CERTIFICATE_PWD build.keychain security default-keychain -s build.keychain
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD build.keychain
-          security import ${{ steps.write_file.outputs.filePath }} -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security import $MACOS_CERT_FILE_PATH -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k MACOS_CERTIFICATE_PWD build.keychain
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
