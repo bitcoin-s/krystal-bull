@@ -60,11 +60,11 @@ jobs:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
         run: |
           echo "Hello world"
-          ls -l 
+          ls -l
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
           security find-identity -v
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_CERTIFICATE_PWD signing_temp.keychain
-          jpackage --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain signing_temp.keychain --mac-signing-key-user-name "Developer ID Application: Chris Stewart (9ZG3GPKHX8)"
+          jpackage --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp --mac-signing-key-user-name "Developer ID Application: Chris Stewart (9ZG3GPKHX8)"
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: View Artifact name
