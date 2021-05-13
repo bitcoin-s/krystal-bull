@@ -51,8 +51,8 @@ jobs:
         with:
           name: jars
           path: "target/scala-2.13"
-      - name: View Artifacts
-        run: ls -l
+      - name: View Artifact name
+        run: echo "${{ env.pkg-name }}-${{ env.pkg-version }}"
       # https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
       # security create-keychain -p $MACOS_CERTIFICATE_PWD build.keychain security default-keychain -s build.keychain
       - name: Add cert to keychain and unlock keychain
@@ -60,15 +60,12 @@ jobs:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
         run: |
           echo "Hello world"
-          ls -l
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
           security find-identity -v
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_CERTIFICATE_PWD signing_temp.keychain
-          jpackage --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
+          jpackage --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
-      - name: View Artifact name
-        run: echo "${{ env.pkg-name }}-${{ env.pkg-version }}"
       - name: Upload dmg
         uses: actions/upload-artifact@v1
         with:
