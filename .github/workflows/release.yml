@@ -40,15 +40,23 @@ jobs:
           java-version: '14.0.0'
           java-package: jdk
           architecture: x64
-      - uses: apple-actions/import-codesign-certs@v1
-        with:
-          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
-          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
       - name: Download fat jar
         uses: actions/download-artifact@v1
         with:
           name: jars
           path: "target/scala-2.13"
+      # https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
+      - name: Add cert to keychain and unlock keychain
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          echo "Hello world"
+          echo "$MACOS_CERTIFICATE" | base64 --decode > certificate.p12
+          security create-keychain -p $MACOS_CERTIFICATE_PWD build.keychain security default-keychain -s build.keychain
+          security unlock-keychain -p $MACOS_CERTIFICATE_PWD build.keychain
+          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k MACOS_CERTIFICATE_PWD build.keychain
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as dmg installer
