@@ -45,23 +45,24 @@ jobs:
         with:
           name: jars
           path: "target/scala-2.13"
-      - name: Write mac osx cert to file
-        id: write_file
-        uses: timheuer/base64-to-file@v1
+      - name: Import cert to keychain
+        id: import_keychain
+        uses: apple-actions/import-codesign-certs@v1
         with:
-          fileName: 'certificate.p12'
-          encodedString: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
       # https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
+      # security create-keychain -p $MACOS_CERTIFICATE_PWD build.keychain security default-keychain -s build.keychain
       - name: Add cert to keychain and unlock keychain
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           MACOS_CERT_FILE_PATH: ${{ steps.write_file.outputs.filePath }}
         run: |
           echo "Hello world"
-          security create-keychain -p $MACOS_CERTIFICATE_PWD build.keychain security default-keychain -s build.keychain
-          security unlock-keychain -p $MACOS_CERTIFICATE_PWD build.keychain
-          security import $MACOS_CERT_FILE_PATH -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k MACOS_CERTIFICATE_PWD build.keychain
+          security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
+          security import $MACOS_CERT_FILE_PATH -k signing_temp.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security find-identity -v
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k MACOS_CERTIFICATE_PWD signing_temp.keychain
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as dmg installer
