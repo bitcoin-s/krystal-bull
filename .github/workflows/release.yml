@@ -6,7 +6,7 @@ name: Build for Release
 on:
   pull_request:
   push:
-    branches: [ master, main ]
+    branches: [ master, main, 2021-05-11-jpackage-release ]
     tags: [ "*" ]
 
 env:
