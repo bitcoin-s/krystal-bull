@@ -12,7 +12,7 @@ on:
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
-  pkg-version: '0.1.0'
+  pkg-version: '1.0.0'
 
 jobs:
   fat:
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '15'
+          java-version: '16'
           java-package: jdk
           architecture: x64
       - name: Download fat jar
