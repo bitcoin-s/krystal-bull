@@ -12,7 +12,7 @@ on:
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
-  pkg-version: '0.1'
+  pkg-version: '0.1.0'
 
 jobs:
   fat:
