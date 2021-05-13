@@ -37,7 +37,7 @@ jobs:
       - name: Import cert to keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
-          p12-file-base64: ${{secrets.CERTIFICATES_P12}}
+          p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
           p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
           keychain-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
       - uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
           echo "Hello world"
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
           security find-identity -v
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k MACOS_CERTIFICATE_PWD signing_temp.keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_CERTIFICATE_PWD signing_temp.keychain
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as dmg installer
