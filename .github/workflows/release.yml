@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '16.0.1'
+          java-version: '15'
           java-package: jdk
           architecture: x64
       - name: Download fat jar
@@ -54,7 +54,6 @@ jobs:
       - name: View Artifact name
         run: echo "${{ env.pkg-name }}-${{ env.pkg-version }}"
       # https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
-      # security create-keychain -p $MACOS_CERTIFICATE_PWD build.keychain security default-keychain -s build.keychain
       - name: Add cert to keychain and unlock keychain
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
