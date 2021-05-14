@@ -84,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: dmgs
-          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.dmg"
+          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.pkg"
   windows:
     needs: fat
     runs-on: [windows-latest]
