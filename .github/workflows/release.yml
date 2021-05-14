@@ -65,7 +65,7 @@ jobs:
       # codesign -v -v ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
       - name: Add cert to keychain and unlock keychain
         env:
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
         run: |
           echo "Hello world"
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
