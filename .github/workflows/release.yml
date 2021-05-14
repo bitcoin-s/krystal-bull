@@ -67,7 +67,7 @@ jobs:
           echo "===========jpackage begin================"
           java -version
           jpackage --version
-          jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
+          jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type pkg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
           ls -l
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
