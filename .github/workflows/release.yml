@@ -69,7 +69,9 @@ jobs:
         run: |
           echo "Hello world"
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
+          echo "1"
           security find-identity -v
+          echo "2"
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_CERTIFICATE_PWD signing_temp.keychain
           echo "===========jpackage begin================"
           java -version
