@@ -43,6 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
+          distribution: 'adopt' # See 'Supported distributions' for available options
           java-version: '16'
           java-package: jdk
           architecture: x64
@@ -54,6 +55,7 @@ jobs:
       - name: View Artifact name
         run: echo "${{ env.pkg-name }}-${{ env.pkg-version }}"
       # https://localazy.com/blog/how-to-automatically-sign-macos-apps-using-github-actions
+      # codesign -v -v ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
       - name: Add cert to keychain and unlock keychain
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
@@ -66,7 +68,6 @@ jobs:
           jpackage --version
           jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type dmg -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
           ls -l
-          codesign -v -v ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: Upload dmg
