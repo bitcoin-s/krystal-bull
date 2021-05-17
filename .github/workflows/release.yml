@@ -105,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: dmgs
-          path: $ARTIFACT_NAME
+          path: "$ARTIFACT_NAME"
   windows:
     needs: fat
     runs-on: [windows-latest]
