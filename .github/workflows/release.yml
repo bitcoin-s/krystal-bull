@@ -81,6 +81,7 @@ jobs:
           jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type app-image -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
           echo "===========jpackage dmg begin================"
           jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type dmg --app-image krystalbull.app --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
+          codesign -s "Developer ID Application: Chris Stewart (9ZG3GPKHX8)" --options runtime --entitlements macos.entitlements -vvvv --deep $ARTIFACT_NAME
           REQUEST_UUID=$(xcrun altool --notarize-app --primary-bundle-id "com.krystal.bull" --username "stewart.chris1234@gmail.com" --password "$MAC_NOTARIZATION_PW"  --file $ARTIFACT_NAME | grep RequestUUID | awk '{print $3}')
           echo "Waiting for notarization from Apple for $REQUEST_UUID"
           while xcrun altool --notarization-info "$REQUEST_UUID" -u "stewart.chris1234@gmail.com" -p "$MAC_NOTARIZATION_PW" | grep "Status: in progress" > /dev/null; do
@@ -91,6 +92,8 @@ jobs:
           echo "Done stapling"
           spctl -vvv --assess --type exec krystalbull.app
           echo "Done inspecting app with spctl"
+          codesign -vvv --deep --strict $ARTIFACT_NAME
+          echo "Done verifying code signing deep"
           codesign -dvv $ARTIFACT_NAME
           echo "Done verifying artifacts"
           ls -l
