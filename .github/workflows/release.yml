@@ -13,7 +13,6 @@ env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
   pkg-version: '1.0.0'
-  ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
 
 jobs:
   fat:
@@ -67,6 +66,7 @@ jobs:
       - name: Add cert to keychain and unlock keychain
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+          ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         #SignPackage.jar is built from https://github.com/dg76/signpackage
         # see that git repo for documentation on it
         run: |
@@ -94,6 +94,8 @@ jobs:
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: Upload dmg
+        env:
+          ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         uses: actions/upload-artifact@v1
         with:
           name: dmgs
