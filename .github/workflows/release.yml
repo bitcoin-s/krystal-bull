@@ -94,6 +94,8 @@ jobs:
           codesign -s "Developer ID Application: Chris Stewart (9ZG3GPKHX8)" --options runtime -vvvv --deep $ARTIFACT_NAME
           REQUEST_UUID=$(xcrun altool --notarize-app --primary-bundle-id "com.krystal.bull" --username "stewart.chris1234@gmail.com" --password "$MAC_NOTARIZATION_PW"  --file $ARTIFACT_NAME | grep RequestUUID | awk '{print $3}')
           echo "Waiting for notarization from Apple for $REQUEST_UUID"
+          xcrun altool --notarization-info "$REQUEST_UUID" -u "stewart.chris1234@gmail.com" -p "$MAC_NOTARIZATION_PW"
+          echo "Start while loop"
           while xcrun altool --notarization-info "$REQUEST_UUID" -u "stewart.chris1234@gmail.com" -p "$MAC_NOTARIZATION_PW" | grep "Status: in progress" > /dev/null; do
             echo "Verification in progress..."
             sleep 30
