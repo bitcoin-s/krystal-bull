@@ -13,6 +13,7 @@ env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
   pkg-version: '1.0.0'
+  ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
 
 jobs:
   fat:
@@ -66,7 +67,6 @@ jobs:
       - name: Add cert to keychain and unlock keychain
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-          ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         #SignPackage.jar is built from https://github.com/dg76/signpackage
         # see that git repo for documentation on it
         run: |
@@ -86,6 +86,10 @@ jobs:
             echo "Verification in progress..."
             sleep 30
           done
+          xcrun stapler staple $ARTIFACT_NAME
+          spctl -vvv --assess --type exec krystalbull.app
+          codesign -vvv --deep --strict $ARTIFACT_NAME
+          codesign -dvv $ARTIFACT_NAME
           ls -l
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
