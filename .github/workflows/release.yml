@@ -79,11 +79,13 @@ jobs:
         # 10. Display information about signed dmg
         run: |
           echo "Hello world"
+          java -version
+          jpackage --version
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_CERTIFICATE_PWD signing_temp.keychain
           echo "===========jpackage app image begin================"
           jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type app-image -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.icns --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
-          echo "===========jpackage pkg begin================"
+          echo "===========jpackage dmg begin================"
           jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type dmg --app-image krystalbull.app --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
           codesign -s "Developer ID Application: Chris Stewart (9ZG3GPKHX8)" --options runtime -vvvv --deep $ARTIFACT_NAME
           REQUEST_UUID=$(xcrun altool --notarize-app --primary-bundle-id "com.krystal.bull" --username "stewart.chris1234@gmail.com" --password "$MAC_NOTARIZATION_PW"  --file $ARTIFACT_NAME | grep RequestUUID | awk '{print $3}')
