@@ -67,6 +67,7 @@ jobs:
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
           ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
+          MAC_NOTARIZATION_PW: ${{secrets.MAC_NOTARIZATION_PW}}
         #SignPackage.jar is built from https://github.com/dg76/signpackage
         # see that git repo for documentation on it
         run: |
