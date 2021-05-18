@@ -88,28 +88,28 @@ jobs:
         with:
           name: dmgs
           path: ${{ env.ARTIFACT_NAME }}
-  windows:
-    runs-on: [windows-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Scala
-        uses: olafurpg/setup-scala@v10
-        with:
-          java-version: openjdk@1.15.0-2
-      - name: Build fat jar
-        shell: bash
-        run: sbt assembly
-      - name: View assembly artifacts
-        run: dir
-      - name: Package jar as msi
-        run: "jpackage --win-shortcut --win-menu --win-menu-group 'Krystal Bull' --name ${{env.pkg-name}} --app-version ${{ env.pkg-version }} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.ico --verbose"
-      - name: View artifacts
-        run: dir
-      - name: Upload installer
-        uses: actions/upload-artifact@v1
-        with:
-          name: msis
-          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.msi"
+#  windows:
+#    runs-on: [windows-latest]
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup Scala
+#        uses: olafurpg/setup-scala@v10
+#        with:
+#          java-version: openjdk@1.15.0-2
+#      - name: Build fat jar
+#        shell: bash
+#        run: sbt assembly
+#      - name: View assembly artifacts
+#        run: dir
+#      - name: Package jar as msi
+#        run: "jpackage --win-shortcut --win-menu --win-menu-group 'Krystal Bull' --name ${{env.pkg-name}} --app-version ${{ env.pkg-version }} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.ico --verbose"
+#      - name: View artifacts
+#        run: dir
+#      - name: Upload installer
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: msis
+#          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.msi"
   linux:
     runs-on: [ubuntu-latest]
     steps:
