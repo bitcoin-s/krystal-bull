@@ -72,6 +72,7 @@ jobs:
           echo "Hello world"
           java -version
           jpackage --version
+          ls -l
           security unlock-keychain -p $MACOS_CERTIFICATE_PWD signing_temp.keychain
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_CERTIFICATE_PWD signing_temp.keychain
           echo "===========jpackage app image begin================"
