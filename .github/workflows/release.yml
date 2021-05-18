@@ -86,7 +86,7 @@ jobs:
           ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         uses: actions/upload-artifact@v1
         with:
-          name: dmgs
+          name: "Mac"
           path: ${{ env.ARTIFACT_NAME }}
 #  windows:
 #    runs-on: [windows-latest]
@@ -131,5 +131,5 @@ jobs:
       - name: Upload deb
         uses: actions/upload-artifact@v1
         with:
-          name : debs
+          name : "Linux"
           path: "${{ env.pkg-name }}_${{ env.pkg-version }}-1_amd64.deb"
