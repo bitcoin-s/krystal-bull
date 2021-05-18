@@ -19,9 +19,17 @@ object AboutDialog {
 
     val version: String = getClass.getPackage.getImplementationVersion
 
+    val txt =
+      s"""Krystal Bull v$version
+         |
+         |Krystal Bull is a full featured DLC Oracle.
+         |This project is built on top of the Bitcoin-S DLC Oracle module.
+         |
+         |Repo: https://github.com/bitcoin-s/krystal-bull
+         |""".stripMargin
+
     dialog.dialogPane().content = new TextArea {
-      text =
-        s"Krystal Bull v$version\n\nCreated by: benthecarman\n\nRepo: https://github.com/benthecarman/krystal-bull"
+      text = txt
       editable = false
     }
 
