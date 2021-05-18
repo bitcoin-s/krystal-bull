@@ -87,12 +87,10 @@ jobs:
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
       - name: Upload dmg
-        env:
-          pkg-version: ${{steps.previoustag.outputs.tag}}
         uses: actions/upload-artifact@v1
         with:
           name: "krystal-bull-dmg-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
-          path: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
+          path: ${{ env.pkg-name }}-${{steps.previoustag.outputs.tag}}.dmg
 #  windows:
 #    runs-on: [windows-latest]
 #    steps:
