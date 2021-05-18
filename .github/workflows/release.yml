@@ -40,7 +40,6 @@ jobs:
         env:
           pkg-version: ${{steps.previoustag.outputs.tag}}
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-          ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
           MAC_NOTARIZATION_PW: ${{secrets.MAC_NOTARIZATION_PW}}
         # Steps to build a fully signed and notarized krystal bull dmg
         # 1. Unlock the OS x keychain so we don't have to input passwords via GUI prompts
@@ -65,8 +64,8 @@ jobs:
           echo "===========jpackage dmg begin================"
           jpackage --verbose --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --mac-package-name ${{ env.pkg-name }} --type dmg --app-image krystalbull.app --mac-sign --mac-signing-keychain /Users/runner/Library/Keychains/signing_temp.keychain-db --mac-signing-key-user-name "Chris Stewart (9ZG3GPKHX8)"
           echo "Signing dmg with code sign"
-          codesign -s "Developer ID Application: Chris Stewart (9ZG3GPKHX8)" --options runtime -vvvv --deep $ARTIFACT_NAME
-          REQUEST_UUID=$(xcrun altool --notarize-app --primary-bundle-id "com.krystal.bull" --username "stewart.chris1234@gmail.com" --password "$MAC_NOTARIZATION_PW"  --file $ARTIFACT_NAME | grep RequestUUID | awk '{print $3}')
+          codesign -s "Developer ID Application: Chris Stewart (9ZG3GPKHX8)" --options runtime -vvvv --deep ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
+          REQUEST_UUID=$(xcrun altool --notarize-app --primary-bundle-id "com.krystal.bull" --username "stewart.chris1234@gmail.com" --password "$MAC_NOTARIZATION_PW"  --file ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg | grep RequestUUID | awk '{print $3}')
           echo "Waiting for notarization from Apple for $REQUEST_UUID"
           sleep 5
           xcrun altool --notarization-info "$REQUEST_UUID" -u "stewart.chris1234@gmail.com" -p "$MAC_NOTARIZATION_PW"
@@ -75,13 +74,13 @@ jobs:
             echo "Verification in progress..."
             sleep 30
           done
-          xcrun stapler staple $ARTIFACT_NAME
+          xcrun stapler staple ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
           echo "Done stapling"
           spctl -vvv --assess --type exec krystalbull.app
           echo "Done inspecting app with spctl"
-          codesign -vvv --deep --strict $ARTIFACT_NAME
+          codesign -vvv --deep --strict ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
           echo "Done verifying code signing deep"
-          codesign -dvv $ARTIFACT_NAME
+          codesign -dvv ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
           echo "Done verifying artifacts"
           ls -l
       - name: 'Echo download path'
