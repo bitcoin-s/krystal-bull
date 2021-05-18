@@ -26,6 +26,8 @@ jobs:
           java-version: '11'
           java-package: jdk
           architecture: x64
+      - name: Setup Scala
+        uses: olafurpg/setup-scala@v10
       - name: Build fat jar
         run: sbt assembly
       - name: Upload fat jar
