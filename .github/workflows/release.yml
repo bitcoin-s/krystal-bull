@@ -89,11 +89,10 @@ jobs:
       - name: Upload dmg
         env:
           pkg-version: ${{steps.previoustag.outputs.tag}}
-          ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         uses: actions/upload-artifact@v1
         with:
           name: "krystal-bull-dmg-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
-          path: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
 #  windows:
 #    runs-on: [windows-latest]
 #    steps:
