@@ -5,13 +5,12 @@ name: Build for Release
 
 on:
   push:
-    branches: [ master, main, 2021-05-11-jpackage-release ]
+    branches: [ master, main ]
     tags: [ "*" ]
 
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
-  pkg-version: '1.0.0'
 
 jobs:
   osx:
@@ -39,6 +38,7 @@ jobs:
         run: sbt assembly
       - name: Add cert to keychain and unlock keychain & build and sign dmg
         env:
+          pkg-version: ${{steps.previoustag.outputs.tag}}
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
           ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
           MAC_NOTARIZATION_PW: ${{secrets.MAC_NOTARIZATION_PW}}
@@ -88,6 +88,7 @@ jobs:
         run: echo ${{steps.download.outputs.download-path}}
       - name: Upload dmg
         env:
+          pkg-version: ${{steps.previoustag.outputs.tag}}
           ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         uses: actions/upload-artifact@v1
         with:
@@ -131,6 +132,8 @@ jobs:
       - name: Build fat jar
         run: sbt assembly
       - name: Package jar as debian package
+        env:
+          pkg-version: ${{steps.previoustag.outputs.tag}}
         run: "jpackage --linux-shortcut --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --type deb -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.png"
       - name: View Artifacts
         run: ls -l
@@ -138,6 +141,8 @@ jobs:
         run: pwd
       - name: Upload deb
         uses: actions/upload-artifact@v1
+        env:
+          pkg-version: ${{steps.previoustag.outputs.tag}}
         with:
           name : "krystal-bull-deb-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           path: "${{ env.pkg-name }}_${{ env.pkg-version }}-1_amd64.deb"
