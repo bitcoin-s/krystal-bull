@@ -12,7 +12,7 @@ on:
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
-  pkg-version: '1.0.0'
+  pkg-version: '1.0.0-${{github.sha}}'
 
 jobs:
   osx:
