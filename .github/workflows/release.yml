@@ -18,16 +18,20 @@ jobs:
   osx:
     runs-on: [macos-latest]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt' # See 'Supported distributions' for available options
-          java-version: '11'
-          java-package: jdk
-          architecture: x64
+        uses: actions/checkout@v2
       - name: Setup Scala
         uses: olafurpg/setup-scala@v10
+        with:
+          java-version: adopt@16
+      - name: Import installer cert to keychain
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          create-keychain: false
+          p12-file-base64: ${{ secrets.CERTIFICATES_P12_INSTALLER }}
+          p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+          keychain-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+      - name: View Artifact name
+        run: echo "${{ env.pkg-name }}-${{ env.pkg-version }}"
       - name: Build fat jar
         run: sbt assembly
       - name: Import developer cert to keychain
@@ -36,22 +40,6 @@ jobs:
           p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
           p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
           keychain-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-      - name: Import installer cert to keychain
-        uses: apple-actions/import-codesign-certs@v1
-        with:
-          create-keychain: false
-          p12-file-base64: ${{ secrets.CERTIFICATES_P12_INSTALLER }}
-          p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-          keychain-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt' # See 'Supported distributions' for available options
-          java-version: '16'
-          java-package: jdk
-          architecture: x64
-      - name: View Artifact name
-        run: echo "${{ env.pkg-name }}-${{ env.pkg-version }}"
       - name: Add cert to keychain and unlock keychain & build and sign dmg
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
