@@ -6,7 +6,7 @@ version := "0.1"
 
 scalaVersion := "2.13.5"
 
-organization := "benthecarman"
+organization := "org.bitcoin-s"
 
 libraryDependencies ++= Deps.core
 
