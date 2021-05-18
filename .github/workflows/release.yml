@@ -23,7 +23,7 @@ jobs:
       - name: Setup Scala
         uses: olafurpg/setup-scala@v10
         with:
-          java-version: adopt@1.16.0-1
+          java-version: openjdk@1.16.0-1
       - name: Import installer cert to keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
