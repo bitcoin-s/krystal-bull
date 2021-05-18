@@ -23,6 +23,11 @@ jobs:
         uses: olafurpg/setup-scala@v10
         with:
           java-version: openjdk@1.15.0-2
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0 # Optional fallback tag to use when no tag can be found
       - name: Import developer cert to keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
@@ -86,7 +91,7 @@ jobs:
           ARTIFACT_NAME: ${{ env.pkg-name }}-${{ env.pkg-version }}.dmg
         uses: actions/upload-artifact@v1
         with:
-          name: "Mac"
+          name: "krystal-bull-dmg-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           path: ${{ env.ARTIFACT_NAME }}
 #  windows:
 #    runs-on: [windows-latest]
@@ -118,10 +123,13 @@ jobs:
         uses: olafurpg/setup-scala@v10
         with:
           java-version: openjdk@1.15.0-2
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0 # Optional fallback tag to use when no tag can be found
       - name: Build fat jar
         run: sbt assembly
-      - name: 'Echo download path'
-        run: echo ${{steps.download.outputs.download-path}}
       - name: Package jar as debian package
         run: "jpackage --linux-shortcut --name ${{ env.pkg-name }} --app-version ${{ env.pkg-version }} --type deb -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.png"
       - name: View Artifacts
@@ -131,5 +139,5 @@ jobs:
       - name: Upload deb
         uses: actions/upload-artifact@v1
         with:
-          name : "Linux"
+          name : "krystal-bull-deb-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           path: "${{ env.pkg-name }}_${{ env.pkg-version }}-1_amd64.deb"
