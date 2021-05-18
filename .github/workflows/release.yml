@@ -4,15 +4,14 @@
 name: Build for Release
 
 on:
-  pull_request:
   push:
-    branches: [ master, main, 2021-05-11-jpackage-release ]
+    branches: [ master, main]
     tags: [ "*" ]
 
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
   pkg-name: 'krystalbull'
-  pkg-version: '1.0.0-${{github.sha}}'
+  pkg-version: '1.0.0'
 
 jobs:
   osx:
