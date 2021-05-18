@@ -34,7 +34,7 @@ jobs:
       - name: Build fat jar
         run: sbt assembly
       - name: Print artifact names
-        - run: ls -l
+        run: ls -l
       - name: Add cert to keychain and unlock keychain & build and sign dmg
         env:
           MACOS_CERTIFICATE_PWD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
