@@ -99,8 +99,8 @@ jobs:
           java-version: openjdk@1.15.0-2
       - name: Build fat jar
         run: sbt assembly
-      - name: Print artifact names
-        run: ls -l
+      - name: View assembly artifacts
+        run: dir
       - name: Package jar as msi
         run: "jpackage --win-shortcut --win-menu --win-menu-group 'Krystal Bull' --name ${{env.pkg-name}} --app-version ${{ env.pkg-version }} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.ico --verbose"
       - name: View artifacts
