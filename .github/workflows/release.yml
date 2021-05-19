@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Setup Scala
         uses: olafurpg/setup-scala@v10
         with:
@@ -116,6 +118,8 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Setup Scala
         uses: olafurpg/setup-scala@v10
         with:
