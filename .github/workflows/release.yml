@@ -92,28 +92,29 @@ jobs:
         with:
           name: "krystal-bull-dmg-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           path: ${{ env.pkg-name }}-${{steps.previoustag.outputs.tag}}.dmg
-#  windows:
-#    runs-on: [windows-latest]
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Setup Scala
-#        uses: olafurpg/setup-scala@v10
-#        with:
-#          java-version: openjdk@1.15.0-2
-#      - name: Build fat jar
-#        shell: bash
-#        run: sbt assembly
-#      - name: View assembly artifacts
-#        run: dir
-#      - name: Package jar as msi
-#        run: "jpackage --win-shortcut --win-menu --win-menu-group 'Krystal Bull' --name ${{env.pkg-name}} --app-version ${{ env.pkg-version }} --type msi -i target/scala-2.13/ --main-class com.krystal.bull.gui.GUI --main-jar ${{ env.pkg-assembly }} --icon src/main/resources/icons/krystal_bull.ico --verbose"
-#      - name: View artifacts
-#        run: dir
-#      - name: Upload installer
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: msis
-#          path: "${{ env.pkg-name }}-${{ env.pkg-version }}.msi"
+  windows:
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Scala
+        uses: olafurpg/setup-scala@v10
+        with:
+          java-version: adopt@1.11.0-1
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0 # Optional fallback tag to use when no tag can be found
+      - name: Build msi
+        shell: bash
+        run: sbt windows:packageBin
+      - name: View artifacts
+        run: ls -R .
+      - name: Upload installer
+        uses: actions/upload-artifact@v1
+        with:
+          name: krystal-bull-msi-${{steps.previoustag.outputs.tag}}-${{github.sha}}
+          path: "D:\\a\\krystal-bull\\krystal-bull\\target\\windows\\krystal-bull.msi"
   linux:
     runs-on: [ubuntu-latest]
     steps:

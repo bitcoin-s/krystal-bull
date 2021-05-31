@@ -1,5 +1,6 @@
 package com.krystal.bull.gui
 
+import com.krystal.bull.gui.config.KrystalBullAppConfig
 import com.krystal.bull.gui.home.HomePane
 import com.krystal.bull.gui.landing.LandingPane
 import javafx.application.Platform
@@ -11,6 +12,8 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.image.Image
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
+
+import scala.util.Properties
 
 object GUI extends JFXApp {
   // Catch unhandled exceptions on FX Application thread
@@ -25,6 +28,12 @@ object GUI extends JFXApp {
         contentText = Option(ex.getMessage).getOrElse("")
       }.showAndWait()
     })
+
+  if (Properties.isWin) {
+    System.setProperty(
+      "HOME",
+      KrystalBullAppConfig.DEFAULT_DATADIR.getParent.toAbsolutePath.toString)
+  }
 
   private val glassPane = new VBox {
     children = new ProgressIndicator {
