@@ -150,6 +150,7 @@ object ViewEventDialog extends Logging {
 
     dialog.dialogPane().buttonTypes = Seq(ButtonType.Close)
     dialog.dialogPane().stylesheets = GlobalData.currentStyleSheets
+    dialog.resizable = true
 
     var sigsOpt = event match {
       case _: PendingOracleEvent => None
@@ -496,6 +497,15 @@ object ViewEventDialog extends Logging {
               imgView.fitHeight = 16
 
               add(imgView, 2, buttonRow)
+
+              val baseUrl = explorerEnv.siteUrl
+              val url =
+                s"${baseUrl}announcement/${event.announcementTLV.sha256.hex}"
+              val hyperlink = new Hyperlink(url) {
+                maxWidth = 300
+              }
+              add(hyperlink, 1, buttonRow + 1)
+
               ()
             }
           }

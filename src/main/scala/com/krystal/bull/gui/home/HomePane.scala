@@ -93,7 +93,7 @@ class HomePane(glassPane: VBox) {
       val viewOnExplorer: MenuItem = new MenuItem("View on Explorer") {
         onAction = _ => {
           val event = selectionModel.value.getSelectedItem
-          val baseUrl = explorerEnv.baseUri.dropRight(3)
+          val baseUrl = explorerEnv.siteUrl
           val url =
             s"${baseUrl}announcement/${event.announcementTLV.sha256.hex}"
           GUI.hostServices.showDocument(url)
