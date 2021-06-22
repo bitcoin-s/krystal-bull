@@ -505,6 +505,7 @@ object ViewEventDialog extends Logging {
                 maxWidth = 300
               }
               add(hyperlink, 1, buttonRow + 1)
+              dialog.dialogPane().getScene.getWindow.sizeToScene()
 
               ()
             }
