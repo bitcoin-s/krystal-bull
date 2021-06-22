@@ -79,10 +79,6 @@ object GUI extends JFXApp {
 
   stage.sizeToScene()
 
-  stage.setOnCloseRequest((_: WindowEvent) => {
-    Platform.exit()
-  })
-
   def changeToHomeScene(): Unit = {
     borderPane.center = new HomePane(glassPane).view
   }
