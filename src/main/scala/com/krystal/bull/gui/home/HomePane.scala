@@ -95,7 +95,7 @@ class HomePane(glassPane: VBox) {
           val event = selectionModel.value.getSelectedItem
           val baseUrl = explorerEnv.baseUri.dropRight(3)
           val url =
-            s"${baseUrl}event/${event.announcementTLV.sha256.hex}"
+            s"${baseUrl}announcement/${event.announcementTLV.sha256.hex}"
           GUI.hostServices.showDocument(url)
         }
       }
