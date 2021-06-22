@@ -60,7 +60,13 @@ private class SettingsMenu() {
       id = "test"
     }
 
-    items = List(productionToggle, testToggle)
+    private val localToggle: RadioMenuItem = new RadioMenuItem("_Local") {
+      toggleGroup = explorerToggle
+      selected = GlobalData.explorerEnv == ExplorerEnv.Local
+      id = "local"
+    }
+
+    items = List(productionToggle, testToggle, localToggle)
 
     onAction = _ => {
       val selectedId = explorerToggle.selectedToggle.value
@@ -72,6 +78,8 @@ private class SettingsMenu() {
           GlobalData.explorerEnv = ExplorerEnv.Production
         case "test" =>
           GlobalData.explorerEnv = ExplorerEnv.Test
+        case "local" =>
+          GlobalData.explorerEnv = ExplorerEnv.Local
         case _: String =>
           throw new RuntimeException("Error, this shouldn't be possible")
       }
