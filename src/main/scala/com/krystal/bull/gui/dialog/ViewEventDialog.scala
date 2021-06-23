@@ -2,7 +2,7 @@ package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GUIUtil.numberFormatter
 import com.krystal.bull.gui.GlobalData._
-import com.krystal.bull.gui.{GUIUtil, GlobalData}
+import com.krystal.bull.gui.{GUI, GUIUtil, GlobalData}
 import grizzled.slf4j.Logging
 import org.bitcoins.core.api.dlcoracle._
 import org.bitcoins.core.protocol.tlv._
@@ -503,6 +503,7 @@ object ViewEventDialog extends Logging {
                 s"${baseUrl}announcement/${event.announcementTLV.sha256.hex}"
               val hyperlink = new Hyperlink(url) {
                 maxWidth = 300
+                onAction = _ => GUI.hostServices.showDocument(url)
               }
               add(hyperlink, 1, buttonRow + 1)
               dialog.dialogPane().getScene.getWindow.sizeToScene()
