@@ -29,7 +29,7 @@ class HomePane(glassPane: VBox) {
         case _: PendingOracleEvent   => -1
         case _: CompletedOracleEvent => 1
       }
-      ObservableBuffer(sorted)
+      ObservableBuffer.from(sorted)
     }
     Await.result(statusF, 60.seconds)
   }
