@@ -411,7 +411,8 @@ object ViewEventDialog extends Logging {
                                              eventURI = None)
               }
 
-            private val createAttestationsOpt: Option[CreateAttestations] =
+            // this is a def so if we sign the event the changes are detected
+            private def createAttestationsOpt: Option[CreateAttestations] =
               sigsOpt.map(CreateAttestations(event.announcementTLV, _))
 
             onAction = _ => {
