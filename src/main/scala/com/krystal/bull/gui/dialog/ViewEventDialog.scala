@@ -422,9 +422,8 @@ object ViewEventDialog extends Logging {
                   .map { res =>
                     res.attestations.isDefined != createAttestationsOpt.isDefined
                   }
-                  .recover { err =>
-                    logger.error("Error retrieving announcement from explorer",
-                                 err)
+                  .recover { _ =>
+                    logger.info("Announcement not on explorer, sending")
                     true
                   }
 
