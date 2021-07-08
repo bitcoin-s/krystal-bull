@@ -2,8 +2,8 @@ package com.krystal.bull.gui.config
 
 import com.krystal.bull.gui.GlobalData
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
+import org.bitcoins.commons.jsonmodels.ExplorerEnv
 import org.bitcoins.db._
-import org.bitcoins.explorer.env.ExplorerEnv
 
 import java.io.{File, IOException}
 import java.nio.file.{Files, Path, Paths}

@@ -1,7 +1,7 @@
 package com.krystal.bull.gui
 
 import com.krystal.bull.gui.settings.Themes
-import org.bitcoins.explorer.env.ExplorerEnv
+import org.bitcoins.commons.jsonmodels.ExplorerEnv
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 
