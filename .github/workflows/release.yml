@@ -7,6 +7,8 @@ on:
   push:
     branches: [ master, main]
     tags: [ "*" ]
+  release:
+    types: [ published ]
 
 env:
   pkg-assembly: 'krystal-bull-assembly-0.1.jar'
