@@ -101,6 +101,8 @@ jobs:
         with:
           name: "krystal-bull-dmg-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           files: ${{ env.pkg-name }}-${{steps.previoustag.outputs.tag}}.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   windows:
     runs-on: [windows-latest]
     steps:
@@ -134,6 +136,8 @@ jobs:
         with:
           name: krystal-bull-msi-${{steps.previoustag.outputs.tag}}-${{github.sha}}
           files: "D:\\a\\krystal-bull\\krystal-bull\\target\\windows\\krystal-bull.msi"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   linux:
     runs-on: [ubuntu-latest]
     steps:
@@ -172,3 +176,5 @@ jobs:
         with:
           name : "krystal-bull-deb-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           files: "${{ env.pkg-name }}_${{ env.pkg-version }}-1_amd64.deb"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
