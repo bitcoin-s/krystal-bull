@@ -177,4 +177,5 @@ jobs:
           name : "krystal-bull-deb-${{steps.previoustag.outputs.tag}}-${{github.sha}}"
           files: "${{ env.pkg-name }}_${{ env.pkg-version }}-1_amd64.deb"
         env:
+          pkg-version: ${{steps.previoustag.outputs.tag}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
