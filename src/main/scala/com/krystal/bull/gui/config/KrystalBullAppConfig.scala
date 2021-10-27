@@ -2,8 +2,8 @@ package com.krystal.bull.gui.config
 
 import com.krystal.bull.gui.GlobalData
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
+import org.bitcoins.commons.config.{AppConfig, ConfigOps}
 import org.bitcoins.commons.jsonmodels.ExplorerEnv
-import org.bitcoins.db._
 
 import java.io.{File, IOException}
 import java.nio.file.{Files, Path, Paths}
@@ -33,6 +33,10 @@ case class KrystalBullAppConfig(
   override def start(): Future[Unit] = Future.unit
 
   override def stop(): Future[Unit] = Future.unit
+
+  lazy val aesPasswordOpt: Option[String] = {
+    config.getStringOrNone(s"$moduleName.aesPassword")
+  }
 
   lazy val advancedMode: Boolean =
     config.getBooleanOpt(s"$moduleName.advancedMode").getOrElse(false)

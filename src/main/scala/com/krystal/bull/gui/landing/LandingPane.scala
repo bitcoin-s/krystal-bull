@@ -8,7 +8,11 @@ import scalafx.scene.input.KeyCode
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.{Font, TextAlignment}
 
-class LandingPane(glassPane: VBox) {
+import java.nio.file.Files
+import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.duration.DurationInt
+
+class LandingPane(glassPane: VBox)(implicit ec: ExecutionContext) {
 
   val model = new LandingPaneModel()
 
@@ -78,10 +82,14 @@ class LandingPane(glassPane: VBox) {
     children = Vector(new Label("Password"), passwordField, unlockButton)
   }
 
-  private val bottomBox = if (GlobalData.oracleAppConfig.exists()) {
-    unlockBottom
-  } else {
-    initBottom
+  private val seedExists = Files.exists(GlobalData.seedPath)
+
+  private val bottomBox = {
+    if (seedExists) {
+      unlockBottom
+    } else {
+      initBottom
+    }
   }
 
   val view: BorderPane = new BorderPane {

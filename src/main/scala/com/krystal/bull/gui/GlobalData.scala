@@ -13,6 +13,7 @@ import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle._
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import org.bitcoins.explorer.client.SbExplorerClient
+import org.bitcoins.keymanager.WalletStorage
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 
 import java.nio.file.Path
@@ -23,13 +24,16 @@ object GlobalData {
   implicit val system: ActorSystem = ActorSystem("krystal-bull")
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
+  val seedPath = KrystalBullAppConfig.DEFAULT_DATADIR
+    .resolve(WalletStorage.SEED_FOLDER_NAME)
+    .resolve(WalletStorage.ENCRYPTED_SEED_FILE_NAME)
+
   val oracleNameFile: Path = DEFAULT_DATADIR.resolve("oracleName.txt")
 
   val config: KrystalBullAppConfig =
     KrystalBullAppConfig.fromDatadir(DEFAULT_DATADIR)
 
-  implicit var oracleAppConfig: DLCOracleAppConfig =
-    DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
+  var oracleAppConfigOpt: Option[DLCOracleAppConfig] = None
 
   def setPassword(aesPasswordOpt: Option[AesPassword]): Unit = {
     aesPasswordOpt match {
@@ -37,8 +41,9 @@ object GlobalData {
         val overrideConf =
           ConfigFactory.parseString(
             s"bitcoin-s.keymanager.aesPassword = ${pass.toStringSensitive}")
-        val newConf = oracleAppConfig.newConfigOfType(Vector(overrideConf))
-        oracleAppConfig = newConf
+        val newConfOpt =
+          oracleAppConfigOpt.map(_.newConfigOfType(Vector(overrideConf)))
+        oracleAppConfigOpt = newConfOpt
       case None => ()
     }
   }
@@ -71,5 +76,6 @@ object GlobalData {
 
   var oracleNameOpt: Option[String] = None
 
-  def oracleExplorerClient: SbExplorerClient = SbExplorerClient(explorerEnv)
+  def oracleExplorerClient: SbExplorerClient =
+    SbExplorerClient(explorerEnv, None)
 }

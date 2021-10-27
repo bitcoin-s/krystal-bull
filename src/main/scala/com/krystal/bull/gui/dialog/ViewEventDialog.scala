@@ -68,7 +68,7 @@ object ViewEventDialog extends Logging {
       dialogPane().stylesheets = GlobalData.currentStyleSheets
     }.showAndWait() match {
       case Some(ButtonType.OK) =>
-        GlobalData.oracle.deleteAttestations(event.eventTLV)
+        GlobalData.oracle.deleteAttestation(event.eventTLV)
       case None | Some(_) => ()
     }
   }

@@ -52,7 +52,7 @@ object GUI extends JFXApp {
 
   private val model = new GUIModel()
 
-  private val startingPane = new LandingPane(glassPane).view
+  private val startingPane = new LandingPane(glassPane)(GlobalData.ec).view
 
   private val borderPane = new BorderPane {
     top = AppMenuBar.menuBar(model)
