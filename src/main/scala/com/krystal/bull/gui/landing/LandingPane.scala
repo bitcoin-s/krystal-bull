@@ -9,10 +9,8 @@ import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.{Font, TextAlignment}
 
 import java.nio.file.Files
-import scala.concurrent.{Await, ExecutionContext}
-import scala.concurrent.duration.DurationInt
 
-class LandingPane(glassPane: VBox)(implicit ec: ExecutionContext) {
+class LandingPane(glassPane: VBox) {
 
   val model = new LandingPaneModel()
 

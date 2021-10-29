@@ -169,7 +169,7 @@ object CreateNumericEventDialog {
 
         // log 2 of maxNumber gives us how many base 2 digits are needed
         val digitsNeeded =
-          Math.ceil(Math.log(maxNumber) / Math.log(2)).toInt
+          Math.ceil(Math.log(maxNumber.toDouble) / Math.log(2)).toInt
 
         val isSigned = isSignedCheckBox.selected.value
         val unit = unitTF.text.value

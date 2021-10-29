@@ -91,9 +91,9 @@ class HomePaneModel() extends Logging {
       params: InitEventParams,
       onSuccess: () => Unit): Unit = {
     oracle
-      .createNewEvent(params.eventName,
-                      params.maturationTime,
-                      params.descriptorTLV)
+      .createNewAnnouncement(params.eventName,
+                             params.maturationTime,
+                             params.descriptorTLV)
       .map { _ =>
         onSuccess()
       }

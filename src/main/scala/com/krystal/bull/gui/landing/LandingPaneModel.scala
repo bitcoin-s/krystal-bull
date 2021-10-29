@@ -110,8 +110,8 @@ class LandingPaneModel() {
         require(
           extKey.extPublicKey == oracle.getRootXpub,
           s"Xpubs diff, derived=${extKey.extPublicKey} and appConfig.getRootXpub=${oracle.getRootXpub}")
+        val _ = Await.result(oracleAppConfigWithPw.start(), 5.seconds)
         GlobalData.oracle = oracle
-        val _ = Await.result(oracleAppConfigWithPw.start(), 2500.millis)
         GUI.changeToHomeScene()
         true
     }

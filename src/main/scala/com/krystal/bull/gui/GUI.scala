@@ -3,8 +3,6 @@ package com.krystal.bull.gui
 import com.krystal.bull.gui.config.KrystalBullAppConfig
 import com.krystal.bull.gui.home.HomePane
 import com.krystal.bull.gui.landing.LandingPane
-import javafx.application.Platform
-import javafx.stage.WindowEvent
 import scalafx.application.JFXApp
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -52,7 +50,7 @@ object GUI extends JFXApp {
 
   private val model = new GUIModel()
 
-  private val startingPane = new LandingPane(glassPane)(GlobalData.ec).view
+  private val startingPane = new LandingPane(glassPane).view
 
   private val borderPane = new BorderPane {
     top = AppMenuBar.menuBar(model)

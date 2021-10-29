@@ -2,10 +2,7 @@ package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
 import com.krystal.bull.gui.GlobalData._
-import com.krystal.bull.gui.dialog.InitOracleDialog.writeInputSeedToFile
 import org.bitcoins.core.crypto.MnemonicCode
-import org.bitcoins.crypto.AesPassword
-import org.bitcoins.dlc.oracle.DLCOracle
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import scalafx.Includes._
 import scalafx.geometry.Insets
