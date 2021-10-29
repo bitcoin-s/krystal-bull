@@ -30,7 +30,7 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="ASYNC"/>
         <appender-ref ref="FILE"/>
     </root>
@@ -44,7 +44,7 @@
     <!-- ╚═══════════════════╝ -->
 
     <!-- inspect resolved DB connection -->
-    <logger name="org.bitcoins.db.SafeDatabase" level="INFO"/>
+    <logger name="org.bitcoins.db.SafeDatabase" level="WARN"/>
 
     <!-- ╔═════════════════════════╗ -->
     <!-- ║   External libraries    ║ -->
