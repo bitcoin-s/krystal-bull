@@ -5,7 +5,7 @@ import com.krystal.bull.gui.config.KrystalBullAppConfig
 import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GUI, GlobalData, TaskRunner}
 import com.typesafe.config.ConfigFactory
-import org.bitcoins.core.crypto.ExtKeyVersion.SegWitMainNetPriv
+import org.bitcoins.core.crypto.ExtKeyVersion.{SegWitTestNet3Priv}
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
@@ -93,7 +93,7 @@ class LandingPaneModel() {
     val extKeyT =
       Try(
         WalletStorage.getPrivateKeyFromDisk(oracleAppConfigWithPw.seedPath,
-                                            SegWitMainNetPriv,
+                                            SegWitTestNet3Priv,
                                             passwordOpt,
                                             None))
 

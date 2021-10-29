@@ -24,6 +24,7 @@ import java.awt.Toolkit.getDefaultToolkit
 import java.awt.datatransfer.StringSelection
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 object ViewEventDialog extends Logging {
@@ -435,15 +436,25 @@ object ViewEventDialog extends Logging {
                     true
                   }
 
+              val annExistsF = oracleExplorerClient
+                .getAnnouncement(createAnnouncement.oracleAnnouncementV0)
+                .map(_ => true)
+                .recover { case NonFatal(_) => false }
               // Recover every function so we can display X and because
               // it will fail if already posted
               lazy val sendF = for {
+                annExists <- annExistsF
                 _ <-
-                  oracleExplorerClient
-                    .createAnnouncement(createAnnouncement)
-                    .recover(err =>
-                      logger.error("Error sending announcement to explorer",
-                                   err))
+                  if (annExists) {
+                    //don't send it again
+                    Future.unit
+                  } else {
+                    oracleExplorerClient
+                      .createAnnouncement(createAnnouncement)
+                      .recover(err =>
+                        logger.error("Error sending announcement to explorer",
+                                     err))
+                  }
                 _ <- createAttestationsOpt match {
                   case Some(attestations) =>
                     oracleExplorerClient
