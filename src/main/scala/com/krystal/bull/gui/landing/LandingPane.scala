@@ -54,10 +54,10 @@ class LandingPane(glassPane: VBox) {
     onKeyReleased = keyEvent => {
       if (keyEvent.getCode == KeyCode.Enter.delegate) {
         val correct = model.loadOracle(AesPassword.fromStringOpt(text.value))
-
         if (!correct) {
           this.text = ""
         }
+        ()
       }
     }
   }
@@ -66,10 +66,10 @@ class LandingPane(glassPane: VBox) {
     onAction = _ => {
       val correct =
         model.loadOracle(AesPassword.fromStringOpt(passwordField.text.value))
-
       if (!correct) {
         passwordField.text = ""
       }
+      ()
     }
   }
 

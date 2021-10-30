@@ -1,7 +1,6 @@
 package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
-import com.krystal.bull.gui.config.KrystalBullAppConfig
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
@@ -12,14 +11,12 @@ import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, VBox}
 import scalafx.stage.Window
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
 import java.time.Instant
-import scala.concurrent.ExecutionContext
 
 object InitOracleDialog {
 
-  def showAndWait(parentWindow: Window)(implicit
-      ec: ExecutionContext): Option[DLCOracleAppConfig] = {
+  def showAndWait(parentWindow: Window): Option[DLCOracleAppConfig] = {
     val dialog = new Dialog[Option[DLCOracleAppConfig]]() {
       initOwner(parentWindow)
       title = "Initialize Oracle"
@@ -91,21 +88,31 @@ object InitOracleDialog {
     }
   }
 
-  /** Writes the given mnemonic code to the default datadir/seeds/ */
+  /** Writes the given mnemonic code to the default datadir/seeds/
+    * @return the DLCOracleAppConfig with the password included if it
+    *         was defined in GlobalData.aesPassword
+    */
   def writeInputSeedToFile(
       passwordTF: PasswordField,
-      mnemonicCode: MnemonicCode)(implicit
-      ec: ExecutionContext): DLCOracleAppConfig = {
+      mnemonicCode: MnemonicCode): DLCOracleAppConfig = {
     val password = passwordTF.text.value
     val aesPass = AesPassword.fromStringOpt(password)
-    GlobalData.setPassword(aesPass)
+    val oracleAppConfig = GlobalData.getOracleAppConfig(aesPass)
 
-    //write mnemonic to disk
-    val _ = WalletStorage.writeSeedToDisk(
-      GlobalData.seedPath,
-      DecryptedMnemonic(mnemonicCode, Instant.now))
-    val oracleAppConfig =
-      DLCOracleAppConfig.fromDatadir(KrystalBullAppConfig.DEFAULT_DATADIR)
+    val decryptedMnemonic = DecryptedMnemonic(mnemonicCode, Instant.now)
+    aesPass match {
+      case Some(password) =>
+        val _: Path = WalletStorage.writeSeedToDisk(
+          seedPath = GlobalData.seedPath,
+          seed = decryptedMnemonic.encrypt(password)
+        )
+      case None =>
+        //write mnemonic to disk
+        val _: Path = WalletStorage.writeSeedToDisk(
+          seedPath = GlobalData.seedPath,
+          mnemonic = decryptedMnemonic)
+    }
+
     oracleAppConfig
   }
 }

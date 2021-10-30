@@ -33,19 +33,29 @@ object GlobalData {
   val config: KrystalBullAppConfig =
     KrystalBullAppConfig.fromDatadir(DEFAULT_DATADIR)
 
-  var oracleAppConfigOpt: Option[DLCOracleAppConfig] = None
+  private var oracleAppConfigOpt: Option[DLCOracleAppConfig] = None
 
-  def setPassword(aesPasswordOpt: Option[AesPassword]): Unit = {
-    aesPasswordOpt match {
+  def getOracleAppConfig(
+      aesPasswordOpt: Option[AesPassword]): DLCOracleAppConfig = {
+    val appConfig: DLCOracleAppConfig = aesPasswordOpt match {
       case Some(pass) =>
         val overrideConf =
           ConfigFactory.parseString(
             s"bitcoin-s.keymanager.aesPassword = ${pass.toStringSensitive}")
-        val newConfOpt =
-          oracleAppConfigOpt.map(_.newConfigOfType(Vector(overrideConf)))
-        oracleAppConfigOpt = newConfOpt
-      case None => ()
+
+        oracleAppConfigOpt match {
+          case Some(oracleAppConfig) =>
+            oracleAppConfig.newConfigOfType(Vector(overrideConf))
+          case None =>
+            DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR,
+                                           Vector(overrideConf))
+        }
+      case None =>
+        DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
     }
+    oracleAppConfigOpt = Some(appConfig)
+
+    appConfig
   }
 
   val statusText: StringProperty = StringProperty("")

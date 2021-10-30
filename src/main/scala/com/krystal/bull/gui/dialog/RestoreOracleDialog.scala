@@ -1,7 +1,6 @@
 package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
-import com.krystal.bull.gui.GlobalData._
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import scalafx.Includes._

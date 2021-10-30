@@ -1,14 +1,10 @@
 package com.krystal.bull.gui.landing
 
-import com.krystal.bull.gui.GlobalData._
-import com.krystal.bull.gui.config.KrystalBullAppConfig
 import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GUI, GlobalData, TaskRunner}
-import com.typesafe.config.ConfigFactory
-import org.bitcoins.core.crypto.ExtKeyVersion.{SegWitTestNet3Priv}
+import org.bitcoins.core.crypto.ExtKeyVersion.SegWitTestNet3Priv
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle
-import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import org.bitcoins.keymanager.WalletStorage
 import scalafx.beans.property.ObjectProperty
 import scalafx.scene.control.Alert
@@ -75,27 +71,15 @@ class LandingPaneModel() {
   }
 
   def loadOracle(passwordOpt: Option[AesPassword]): Boolean = {
-    GlobalData.setPassword(passwordOpt)
-
-    val configOpt = passwordOpt match {
-      case Some(password) =>
-        val str =
-          s"${KrystalBullAppConfig.moduleName}.aesPassword=${password.toStringSensitive}"
-        Some(ConfigFactory.parseString(str))
-      case None =>
-        None
-    }
-    val oracleAppConfigWithPw = DLCOracleAppConfig
-      .fromDatadir(KrystalBullAppConfig.DEFAULT_DATADIR, configOpt.toVector)
-
-    GlobalData.oracleAppConfigOpt = Some(oracleAppConfigWithPw)
-
-    val extKeyT =
+    val oracleAppConfigWithPw = GlobalData.getOracleAppConfig(passwordOpt)
+    val _ = Await.result(oracleAppConfigWithPw.start(), 5.seconds)
+    val extKeyT = {
       Try(
         WalletStorage.getPrivateKeyFromDisk(oracleAppConfigWithPw.seedPath,
                                             SegWitTestNet3Priv,
                                             passwordOpt,
                                             None))
+    }
 
     extKeyT match {
       case Failure(_) =>
@@ -110,7 +94,6 @@ class LandingPaneModel() {
         require(
           extKey.extPublicKey == oracle.getRootXpub,
           s"Xpubs diff, derived=${extKey.extPublicKey} and appConfig.getRootXpub=${oracle.getRootXpub}")
-        val _ = Await.result(oracleAppConfigWithPw.start(), 5.seconds)
         GlobalData.oracle = oracle
         GUI.changeToHomeScene()
         true

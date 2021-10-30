@@ -89,7 +89,7 @@ object KrystalBullAppConfig {
                 "Roaming",
                 "KrystalBull")
     } else {
-      Paths.get(Properties.userHome, ".krystal-bull")
+      Paths.get("/tmp", "krystal-bull")
     }
 
     val file = path.toFile
