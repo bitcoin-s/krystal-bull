@@ -32,7 +32,20 @@ assembly / assemblyMergeStrategy := {
 }
 
 Compile / doc := (target.value / "none")
-scalacOptions ++= Seq("release", "11")
+scalacOptions ++= Seq("release", "11", "-Xfatal-warnings") ++
+  Seq(
+    "-unchecked",
+    "-feature",
+    "-deprecation",
+    "-Ywarn-dead-code",
+    "-Ywarn-value-discard",
+    "-Ywarn-unused",
+    "-unchecked",
+    "-deprecation",
+    "-feature",
+    "-Ypatmat-exhaust-depth",
+    "off"
+  )
 
 // general package information (can be scoped to Windows)
 maintainer := "Chris Stewart <stewart.chris1234@gmail.com>"

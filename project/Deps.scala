@@ -18,13 +18,13 @@ object Deps {
   }
 
   object V {
-    val akkaV = "10.2.4"
-    val akkaStreamV = "2.6.15"
+    val akkaV = "10.2.6"
+    val akkaStreamV = "2.6.17"
     val akkaActorV: String = akkaStreamV
 
     val scalaFxV = "16.0.0-R22"
     val javaFxV = "17-ea+8"
-    val bitcoinsV = "1.7.0"
+    val bitcoinsV = "1.8.0"
   }
 
   object Compile {

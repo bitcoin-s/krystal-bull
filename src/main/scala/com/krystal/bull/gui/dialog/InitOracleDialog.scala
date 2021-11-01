@@ -1,22 +1,23 @@
 package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
-import com.krystal.bull.gui.GlobalData.oracleAppConfig
 import org.bitcoins.core.crypto.MnemonicCode
 import org.bitcoins.crypto.AesPassword
-import org.bitcoins.dlc.oracle.DLCOracle
+import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
+import org.bitcoins.keymanager.{DecryptedMnemonic, WalletStorage}
 import scalafx.Includes._
 import scalafx.geometry.Insets
 import scalafx.scene.control._
 import scalafx.scene.layout.{GridPane, VBox}
 import scalafx.stage.Window
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
+import java.time.Instant
 
 object InitOracleDialog {
 
-  def showAndWait(parentWindow: Window): Option[DLCOracle] = {
-    val dialog = new Dialog[Option[DLCOracle]]() {
+  def showAndWait(parentWindow: Window): Option[DLCOracleAppConfig] = {
+    val dialog = new Dialog[Option[DLCOracleAppConfig]]() {
       initOwner(parentWindow)
       title = "Initialize Oracle"
     }
@@ -73,22 +74,45 @@ object InitOracleDialog {
     // When the OK button is clicked, convert the result to a T.
     dialog.resultConverter = dialogButton =>
       if (dialogButton == ButtonType.OK) {
-        val password = passwordTF.text.value
-        val aesPass = AesPassword.fromStringOpt(password)
-        GlobalData.setPassword(aesPass)
-
         val oracleName = oracleNameTF.text.value
         Files.write(GlobalData.oracleNameFile, oracleName.getBytes("UTF-8"))
 
-        val krystalBull =
-          DLCOracle(mnemonicCode, aesPass, None)
-        Some(krystalBull)
+        val oracleAppConfig = writeInputSeedToFile(passwordTF, mnemonicCode)
+        Some(oracleAppConfig)
       } else None
 
     dialog.showAndWait() match {
-      case Some(Some(oracle: DLCOracle)) =>
-        Some(oracle)
+      case Some(Some(appConfig: DLCOracleAppConfig)) =>
+        Some(appConfig)
       case Some(_) | None => None
     }
+  }
+
+  /** Writes the given mnemonic code to the default datadir/seeds/
+    * @return the DLCOracleAppConfig with the password included if it
+    *         was defined in GlobalData.aesPassword
+    */
+  def writeInputSeedToFile(
+      passwordTF: PasswordField,
+      mnemonicCode: MnemonicCode): DLCOracleAppConfig = {
+    val password = passwordTF.text.value
+    val aesPass = AesPassword.fromStringOpt(password)
+    val oracleAppConfig = GlobalData.getOracleAppConfig(aesPass)
+
+    val decryptedMnemonic = DecryptedMnemonic(mnemonicCode, Instant.now)
+    aesPass match {
+      case Some(password) =>
+        val _: Path = WalletStorage.writeSeedToDisk(
+          seedPath = GlobalData.seedPath,
+          seed = decryptedMnemonic.encrypt(password)
+        )
+      case None =>
+        //write mnemonic to disk
+        val _: Path = WalletStorage.writeSeedToDisk(
+          seedPath = GlobalData.seedPath,
+          mnemonic = decryptedMnemonic)
+    }
+
+    oracleAppConfig
   }
 }

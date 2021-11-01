@@ -13,6 +13,7 @@ import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle._
 import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import org.bitcoins.explorer.client.SbExplorerClient
+import org.bitcoins.keymanager.WalletStorage
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 
 import java.nio.file.Path
@@ -23,24 +24,38 @@ object GlobalData {
   implicit val system: ActorSystem = ActorSystem("krystal-bull")
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
+  val seedPath = KrystalBullAppConfig.DEFAULT_DATADIR
+    .resolve(WalletStorage.SEED_FOLDER_NAME)
+    .resolve(WalletStorage.ENCRYPTED_SEED_FILE_NAME)
+
   val oracleNameFile: Path = DEFAULT_DATADIR.resolve("oracleName.txt")
 
   val config: KrystalBullAppConfig =
     KrystalBullAppConfig.fromDatadir(DEFAULT_DATADIR)
 
-  implicit var oracleAppConfig: DLCOracleAppConfig =
-    DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
+  private var oracleAppConfigOpt: Option[DLCOracleAppConfig] = None
 
-  def setPassword(aesPasswordOpt: Option[AesPassword]): Unit = {
-    aesPasswordOpt match {
+  def getOracleAppConfig(
+      aesPasswordOpt: Option[AesPassword]): DLCOracleAppConfig = {
+    val appConfig: DLCOracleAppConfig = aesPasswordOpt match {
       case Some(pass) =>
         val overrideConf =
           ConfigFactory.parseString(
             s"bitcoin-s.keymanager.aesPassword = ${pass.toStringSensitive}")
-        val newConf = oracleAppConfig.newConfigOfType(Vector(overrideConf))
-        oracleAppConfig = newConf
-      case None => ()
+
+        oracleAppConfigOpt match {
+          case Some(oracleAppConfig) =>
+            oracleAppConfig.newConfigOfType(Vector(overrideConf))
+          case None =>
+            DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR,
+                                           Vector(overrideConf))
+        }
+      case None =>
+        DLCOracleAppConfig.fromDatadir(DEFAULT_DATADIR)
     }
+    oracleAppConfigOpt = Some(appConfig)
+
+    appConfig
   }
 
   val statusText: StringProperty = StringProperty("")
@@ -71,5 +86,6 @@ object GlobalData {
 
   var oracleNameOpt: Option[String] = None
 
-  def oracleExplorerClient: SbExplorerClient = SbExplorerClient(explorerEnv)
+  def oracleExplorerClient: SbExplorerClient =
+    SbExplorerClient(explorerEnv, None)
 }

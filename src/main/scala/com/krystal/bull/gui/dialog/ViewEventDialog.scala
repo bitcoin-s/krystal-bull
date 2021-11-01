@@ -24,6 +24,7 @@ import java.awt.Toolkit.getDefaultToolkit
 import java.awt.datatransfer.StringSelection
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 object ViewEventDialog extends Logging {
@@ -43,21 +44,25 @@ object ViewEventDialog extends Logging {
     new Button() {
       styleClass += "delete-button"
       onAction = _ => {
-        val f = oracleExplorerClient
+        val f: Future[Option[OracleAttestmentTLV]] = oracleExplorerClient
           .getAnnouncement(event.announcementTLV)
           .map(_.attestations)
 
-        val res = Try(Await.result(f, 5.seconds)).getOrElse(None)
-
-        res match {
-          case None    => showDeleteSigsAlert(event)
-          case Some(_) => showCannotDeleteSigsAlert(event)
+        val resultF = f.flatMap {
+          case None => showDeleteSigsAlert(event)
+          case Some(_) =>
+            showCannotDeleteSigsAlert(event)
+            Future.unit
         }
+
+        Await.result(resultF, 5.seconds)
+        ()
       }
     }
   }
 
-  private def showDeleteSigsAlert(event: CompletedOracleEvent): Unit = {
+  private def showDeleteSigsAlert(
+      event: CompletedOracleEvent): Future[Option[OracleEvent]] = {
     new Alert(AlertType.Confirmation) {
       initOwner(owner)
       title = "Warning!"
@@ -68,8 +73,11 @@ object ViewEventDialog extends Logging {
       dialogPane().stylesheets = GlobalData.currentStyleSheets
     }.showAndWait() match {
       case Some(ButtonType.OK) =>
-        GlobalData.oracle.deleteAttestations(event.eventTLV)
-      case None | Some(_) => ()
+        GlobalData.oracle
+          .deleteAttestation(event.eventTLV)
+          .map(Some(_))
+      case None | Some(_) =>
+        Future.successful(None)
     }
   }
 
@@ -127,7 +135,7 @@ object ViewEventDialog extends Logging {
       outcome: Long,
       bound: BigInt,
       isUpperBound: Boolean,
-      signFunc: => Future[OracleEvent]): Unit = {
+      signFunc: => Future[OracleEvent]): Future[Option[OracleEvent]] = {
     val boundStr = if (isUpperBound) "upper" else "lower"
     new Alert(AlertType.Confirmation) {
       initOwner(owner)
@@ -137,8 +145,8 @@ object ViewEventDialog extends Logging {
           s"Will instead sign $bound, the $boundStr bound.\n\nPlease confirm."
       dialogPane().stylesheets = GlobalData.currentStyleSheets
     }.showAndWait() match {
-      case Some(ButtonType.OK) => signFunc
-      case None | Some(_)      => ()
+      case Some(ButtonType.OK) => signFunc.map(Some(_))
+      case None | Some(_)      => Future.successful(None)
     }
   }
 
@@ -309,7 +317,8 @@ object ViewEventDialog extends Logging {
                     showConfirmSignAlert(
                       outcome,
                       GlobalData.oracle
-                        .signEvent(pendingEnum.nonce, EnumAttestation(outcome))
+                        .createAttestation(pendingEnum.nonce,
+                                           EnumAttestation(outcome))
                         .map(_.toOracleEvent)) match {
                       case Some(newEvent) =>
                         children.remove(9)
@@ -427,15 +436,25 @@ object ViewEventDialog extends Logging {
                     true
                   }
 
+              val annExistsF = oracleExplorerClient
+                .getAnnouncement(createAnnouncement.oracleAnnouncementV0)
+                .map(_ => true)
+                .recover { case NonFatal(_) => false }
               // Recover every function so we can display X and because
               // it will fail if already posted
               lazy val sendF = for {
+                annExists <- annExistsF
                 _ <-
-                  oracleExplorerClient
-                    .createAnnouncement(createAnnouncement)
-                    .recover(err =>
-                      logger.error("Error sending announcement to explorer",
-                                   err))
+                  if (annExists) {
+                    //don't send it again
+                    Future.unit
+                  } else {
+                    oracleExplorerClient
+                      .createAnnouncement(createAnnouncement)
+                      .recover(err =>
+                        logger.error("Error sending announcement to explorer",
+                                     err))
+                  }
                 _ <- createAttestationsOpt match {
                   case Some(attestations) =>
                     oracleExplorerClient

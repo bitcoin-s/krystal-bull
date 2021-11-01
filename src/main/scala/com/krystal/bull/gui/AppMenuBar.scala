@@ -5,6 +5,8 @@ import org.bitcoins.commons.jsonmodels.ExplorerEnv
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
 
+import java.nio.file.Path
+
 object AppMenuBar {
 
   def menuBar(model: GUIModel): MenuBar =
@@ -38,7 +40,8 @@ private class SettingsMenu() {
     selected = GlobalData.advancedMode
     onAction = _ => {
       GlobalData.advancedMode = !GlobalData.advancedMode
-      GlobalData.config.writeToFile()
+      val _: Path = GlobalData.config.writeToFile()
+      ()
     }
   }
 
@@ -75,7 +78,8 @@ private class SettingsMenu() {
         case _: String =>
           throw new RuntimeException("Error, this shouldn't be possible")
       }
-      GlobalData.config.writeToFile()
+      val _: Path = GlobalData.config.writeToFile()
+      ()
     }
   }
 
@@ -99,7 +103,10 @@ private class ViewMenu() {
       selected = GlobalData.darkThemeEnabled
       id = "dark"
 
-      onAction = _ => GlobalData.config.writeToFile()
+      onAction = _ => {
+        GlobalData.config.writeToFile()
+        ()
+      }
     }
 
     private val lightThemeToggle: RadioMenuItem = new RadioMenuItem(
@@ -108,7 +115,10 @@ private class ViewMenu() {
       selected = !GlobalData.darkThemeEnabled
       id = "light"
 
-      onAction = _ => GlobalData.config.writeToFile()
+      onAction = _ => {
+        GlobalData.config.writeToFile()
+        ()
+      }
     }
 
     items = List(darkThemeToggle, lightThemeToggle)
@@ -121,10 +131,12 @@ private class ViewMenu() {
       selectedId match {
         case "dark" =>
           GlobalData.darkThemeEnabled = true
-          Themes.DarkTheme.applyTheme
+          val _: Boolean = Themes.DarkTheme.applyTheme
+          ()
         case "light" =>
           GlobalData.darkThemeEnabled = false
-          Themes.DarkTheme.undoTheme
+          val _: Boolean = Themes.DarkTheme.undoTheme
+          ()
         case _: String =>
           throw new RuntimeException("Error, this shouldn't be possible")
       }

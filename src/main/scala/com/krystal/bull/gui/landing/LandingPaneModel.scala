@@ -1,9 +1,8 @@
 package com.krystal.bull.gui.landing
 
-import com.krystal.bull.gui.GlobalData._
 import com.krystal.bull.gui.dialog._
 import com.krystal.bull.gui.{GUI, GlobalData, TaskRunner}
-import org.bitcoins.core.crypto.ExtKeyVersion.SegWitMainNetPriv
+import org.bitcoins.core.crypto.ExtKeyVersion.SegWitTestNet3Priv
 import org.bitcoins.crypto.AesPassword
 import org.bitcoins.dlc.oracle.DLCOracle
 import org.bitcoins.keymanager.WalletStorage
@@ -12,7 +11,8 @@ import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.stage.Window
 
-import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
 
 class LandingPaneModel() {
@@ -31,9 +31,10 @@ class LandingPaneModel() {
       caption = "Initialize Oracle",
       op = {
         krystalBullOpt match {
-          case Some(oracle) =>
+          case Some(oracleAppConfig) =>
+            val oracle = DLCOracle()(oracleAppConfig)
             GlobalData.oracle = oracle
-            oracle.conf.initialize()
+            oracle.conf.start()
           case None =>
             Future.unit
         }
@@ -53,9 +54,10 @@ class LandingPaneModel() {
       caption = "Restore Oracle",
       op = {
         oracleOpt match {
-          case Some(oracle) =>
+          case Some(oracleAppConfig) =>
+            val oracle = DLCOracle()(oracleAppConfig)
             GlobalData.oracle = oracle
-            oracle.conf.initialize()
+            oracle.conf.start()
           case None =>
             Future.unit
         }
@@ -69,13 +71,15 @@ class LandingPaneModel() {
   }
 
   def loadOracle(passwordOpt: Option[AesPassword]): Boolean = {
-    GlobalData.setPassword(passwordOpt)
-
-    val extKeyT = Try(
-      WalletStorage.getPrivateKeyFromDisk(oracleAppConfig.seedPath,
-                                          SegWitMainNetPriv,
-                                          passwordOpt,
-                                          None))
+    val oracleAppConfigWithPw = GlobalData.getOracleAppConfig(passwordOpt)
+    val _ = Await.result(oracleAppConfigWithPw.start(), 5.seconds)
+    val extKeyT = {
+      Try(
+        WalletStorage.getPrivateKeyFromDisk(oracleAppConfigWithPw.seedPath,
+                                            SegWitTestNet3Priv,
+                                            passwordOpt,
+                                            None))
+    }
 
     extKeyT match {
       case Failure(_) =>
@@ -86,10 +90,11 @@ class LandingPaneModel() {
         }.showAndWait()
         false
       case Success(extKey) =>
-        val oracle = new DLCOracle(extKey)
+        val oracle = new DLCOracle()(oracleAppConfigWithPw)
+        require(
+          extKey.extPublicKey == oracle.getRootXpub,
+          s"Xpubs diff, derived=${extKey.extPublicKey} and appConfig.getRootXpub=${oracle.getRootXpub}")
         GlobalData.oracle = oracle
-        oracleAppConfig.initialize()
-        Thread.sleep(1000)
         GUI.changeToHomeScene()
         true
     }

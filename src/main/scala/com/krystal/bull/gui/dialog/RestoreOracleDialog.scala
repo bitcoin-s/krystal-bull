@@ -1,10 +1,8 @@
 package com.krystal.bull.gui.dialog
 
 import com.krystal.bull.gui.GlobalData
-import com.krystal.bull.gui.GlobalData._
 import org.bitcoins.core.crypto.MnemonicCode
-import org.bitcoins.crypto.AesPassword
-import org.bitcoins.dlc.oracle.DLCOracle
+import org.bitcoins.dlc.oracle.config.DLCOracleAppConfig
 import scalafx.Includes._
 import scalafx.geometry.Insets
 import scalafx.scene.control._
@@ -13,8 +11,8 @@ import scalafx.stage.Window
 
 object RestoreOracleDialog {
 
-  def showAndWait(parentWindow: Window): Option[DLCOracle] = {
-    val dialog = new Dialog[Option[DLCOracle]]() {
+  def showAndWait(parentWindow: Window): Option[DLCOracleAppConfig] = {
+    val dialog = new Dialog[Option[DLCOracleAppConfig]]() {
       initOwner(parentWindow)
       title = "Restore Oracle"
     }
@@ -60,21 +58,17 @@ object RestoreOracleDialog {
     // When the OK button is clicked, convert the result to a T.
     dialog.resultConverter = dialogButton =>
       if (dialogButton == ButtonType.OK) {
-        val password = passwordTF.text.value
-        val aesPass = AesPassword.fromStringOpt(password)
-        GlobalData.setPassword(aesPass)
-
         val words = wordTFs.map(_.text.value)
         val mnemonicCode = MnemonicCode.fromWords(words.toVector)
-
-        val oracle = DLCOracle(mnemonicCode, aesPass, None)
-        Some(oracle)
+        val oracleAppConfig =
+          InitOracleDialog.writeInputSeedToFile(passwordTF, mnemonicCode)
+        Some(oracleAppConfig)
       } else None
 
     dialog.dialogPane().getScene.getWindow.sizeToScene()
 
     dialog.showAndWait() match {
-      case Some(Some(oracle: DLCOracle)) =>
+      case Some(Some(oracle: DLCOracleAppConfig)) =>
         Some(oracle)
       case Some(_) | None => None
     }
