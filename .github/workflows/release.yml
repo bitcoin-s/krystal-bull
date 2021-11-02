@@ -11,7 +11,7 @@ on:
     types: [ published ]
 
 env:
-  pkg-assembly: 'krystal-bull-assembly-0.1.jar'
+  pkg-assembly: 'krystal-bull-assembly-0.2.jar'
   pkg-name: 'krystalbull'
 
 jobs:
