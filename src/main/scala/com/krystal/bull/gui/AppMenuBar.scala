@@ -4,6 +4,7 @@ import com.krystal.bull.gui.settings.Themes
 import org.bitcoins.commons.jsonmodels.ExplorerEnv
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
+import scalafx.application.Platform
 
 import java.nio.file.Path
 
@@ -24,7 +25,7 @@ private class FileMenu() {
     mnemonicParsing = true
     accelerator =
       new KeyCodeCombination(KeyCode.Q, KeyCombination.ControlDown) // CTRL + Q
-    onAction = _ => sys.exit()
+    onAction = _ => Platform.exit()
   }
 
   val fileMenu: Menu =
