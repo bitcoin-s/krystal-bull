@@ -13,7 +13,7 @@ object AppMenuBar {
   def menuBar(model: GUIModel): MenuBar =
     new MenuBar {
       menus = List(new FileMenu().fileMenu,
-                   new SettingsMenu().settingsMenu,
+                   new SettingsMenu(model).settingsMenu,
                    new ViewMenu().viewMenu,
                    new HelpMenu(model).helpMenu)
     }
@@ -35,11 +35,16 @@ private class FileMenu() {
     }
 }
 
-private class SettingsMenu() {
+private class SettingsMenu(model: GUIModel) {
 
+  //private val advancedMode = {
+  //new MenuItem("Advanced Mode") {
   private val advancedMode: MenuItem = new CheckMenuItem("Advanced Mode") {
     selected = GlobalData.advancedMode
     onAction = _ => {
+      if (!GlobalData.advancedMode) {
+        model.onAdvanced()
+      }
       GlobalData.advancedMode = !GlobalData.advancedMode
       val _: Path = GlobalData.config.writeToFile()
       ()
