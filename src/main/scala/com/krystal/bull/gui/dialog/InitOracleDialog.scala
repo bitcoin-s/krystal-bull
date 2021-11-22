@@ -49,10 +49,9 @@ object InitOracleDialog {
           row += 1
         }
       }
-      mnemonicCode.zipWithIndex.foreach {
-        case (word, index) =>
-          val text = s"${index + 1}) $word"
-          addWord(text)
+      mnemonicCode.zipWithIndex.foreach { case (word, index) =>
+        val text = s"${index + 1}) $word"
+        addWord(text)
       }
     }
 
