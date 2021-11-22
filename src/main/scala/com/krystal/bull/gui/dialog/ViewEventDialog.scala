@@ -85,9 +85,8 @@ object ViewEventDialog extends Logging {
     new Alert(AlertType.Error) {
       initOwner(owner)
       title = "Error!"
-      contentText =
-        s"Cannot delete signatures for ${event.eventName}. " +
-          s"Signatures have already been publicly published and would result in revealing your private key!"
+      contentText = s"Cannot delete signatures for ${event.eventName}. " +
+        s"Signatures have already been publicly published and would result in revealing your private key!"
       dialogPane().stylesheets = GlobalData.currentStyleSheets
     }.showAndWait()
     ()

@@ -3,10 +3,11 @@ import sbt._
 object Deps {
 
   lazy val arch = System.getProperty("os.arch")
+
   lazy val osName = System.getProperty("os.name") match {
-    case n if n.startsWith("Linux")   => "linux"
-    case n if n.startsWith("Mac")     =>
-      if (arch == "aarch64" ) {
+    case n if n.startsWith("Linux") => "linux"
+    case n if n.startsWith("Mac") =>
+      if (arch == "aarch64") {
         //needed to accommodate the different chip
         //arch for M1. see: https://github.com/bitcoin-s/bitcoin-s/pull/3041
         s"mac-${arch}"
