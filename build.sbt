@@ -5,7 +5,7 @@ name := "krystal-bull"
 
 version := "0.2"
 
-scalaVersion := "2.13.7"
+scalaVersion := "2.13.8"
 
 organization := "org.bitcoin-s"
 
