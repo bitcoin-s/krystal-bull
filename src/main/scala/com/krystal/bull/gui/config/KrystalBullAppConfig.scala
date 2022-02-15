@@ -12,21 +12,18 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Properties
 
 case class KrystalBullAppConfig(
-    private val directory: Path,
-    private val confs: Config*)(implicit val ec: ExecutionContext)
+    override val baseDatadir: Path,
+    override val configOverrides: Vector[Config])(implicit
+    val ec: ExecutionContext)
     extends AppConfig {
-
-  override def configOverrides: List[Config] = confs.toList
 
   override type ConfigType = KrystalBullAppConfig
 
   override def newConfigOfType(
-      configOverrides: Seq[Config]): KrystalBullAppConfig =
-    KrystalBullAppConfig(directory, configOverrides: _*)
+      configOverrides: Vector[Config]): KrystalBullAppConfig =
+    KrystalBullAppConfig(baseDatadir, configOverrides)
 
   override def moduleName: String = KrystalBullAppConfig.moduleName
-
-  override def baseDatadir: Path = directory
 
   override lazy val datadir: Path = baseDatadir
 
@@ -112,6 +109,6 @@ object KrystalBullAppConfig {
   def fromDatadir(datadir: Path)(implicit
       ec: ExecutionContext): KrystalBullAppConfig = {
     val conf = ConfigFactory.parseFile(file)
-    KrystalBullAppConfig(datadir, conf)
+    KrystalBullAppConfig(datadir, Vector(conf))
   }
 }
