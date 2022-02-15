@@ -3,7 +3,7 @@ import sbt.Resolver
 
 name := "krystal-bull"
 
-version := "0.2"
+version := "1.4.0"
 
 organization := "org.bitcoin-s"
 
