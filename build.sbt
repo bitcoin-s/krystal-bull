@@ -5,8 +5,6 @@ name := "krystal-bull"
 
 version := "0.2"
 
-scalaVersion := "2.13.7"
-
 organization := "org.bitcoin-s"
 
 libraryDependencies ++= Deps.core
