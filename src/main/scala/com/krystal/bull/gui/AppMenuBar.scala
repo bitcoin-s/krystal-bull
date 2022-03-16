@@ -4,6 +4,7 @@ import com.krystal.bull.gui.settings.Themes
 import org.bitcoins.commons.jsonmodels.ExplorerEnv
 import scalafx.scene.control._
 import scalafx.scene.input.{KeyCode, KeyCodeCombination, KeyCombination}
+import scalafx.application.Platform
 
 import java.nio.file.Path
 
@@ -12,7 +13,7 @@ object AppMenuBar {
   def menuBar(model: GUIModel): MenuBar =
     new MenuBar {
       menus = List(new FileMenu().fileMenu,
-                   new SettingsMenu().settingsMenu,
+                   new SettingsMenu(model).settingsMenu,
                    new ViewMenu().viewMenu,
                    new HelpMenu(model).helpMenu)
     }
@@ -24,7 +25,7 @@ private class FileMenu() {
     mnemonicParsing = true
     accelerator =
       new KeyCodeCombination(KeyCode.Q, KeyCombination.ControlDown) // CTRL + Q
-    onAction = _ => sys.exit()
+    onAction = _ => Platform.exit()
   }
 
   val fileMenu: Menu =
@@ -34,11 +35,16 @@ private class FileMenu() {
     }
 }
 
-private class SettingsMenu() {
+private class SettingsMenu(model: GUIModel) {
 
+  //private val advancedMode = {
+  //new MenuItem("Advanced Mode") {
   private val advancedMode: MenuItem = new CheckMenuItem("Advanced Mode") {
     selected = GlobalData.advancedMode
     onAction = _ => {
+      if (!GlobalData.advancedMode) {
+        model.onAdvanced()
+      }
       GlobalData.advancedMode = !GlobalData.advancedMode
       val _: Path = GlobalData.config.writeToFile()
       ()

@@ -1,6 +1,7 @@
 package com.krystal.bull.gui
 
 import com.krystal.bull.gui.dialog.AboutDialog
+import com.krystal.bull.gui.dialog.AdvancedDialog
 import scalafx.beans.property.ObjectProperty
 import scalafx.stage.Window
 
@@ -14,4 +15,9 @@ class GUIModel() {
   def onAbout(): Unit = {
     AboutDialog.showAndWait(parentWindow.value)
   }
+
+  def onAdvanced(): Unit = {
+    AdvancedDialog.showAndWait(parentWindow.value)
+  }
+
 }
